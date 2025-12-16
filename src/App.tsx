@@ -61,7 +61,14 @@ function App() {
     }
 
     // Check active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error recovering session:', error);
+        // If session recovery fails (e.g. stale token), clear hash to prevent loops
+        if (window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
       setSession(session);
       setIsCheckingSession(false);
     });
