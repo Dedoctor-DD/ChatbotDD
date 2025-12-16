@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import './App.css';
+import { Send, Bot, User, Sparkles, Mic, MicOff, Truck, Wrench } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
+import { ConfirmationCard } from './components/ConfirmationCard';
+import { Login } from './components/Login';
 
 interface Message {
   id: string;
@@ -10,18 +13,92 @@ interface Message {
   timestamp: Date;
 }
 
+
+
+
+// ... imports ...
+
+interface ConfirmationData {
+  service_type: 'transport' | 'workshop';
+  data: Record<string, any>;
+}
+
 function App() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [session, setSession] = useState<any>(null);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef('');
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+
+  useEffect(() => {
+    inputRef.current = input;
+  }, [input]);
+
+  useEffect(() => {
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setIsCheckingSession(false);
+    });
+
+    // Listen for changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setIsCheckingSession(false);
+      
+      // Si el usuario acaba de hacer login, limpiar mensajes anteriores
+      if (session && _event === 'SIGNED_IN') {
+        setMessages([]);
+      }
+      
+      // Si el usuario cerró sesión, limpiar todo
+      if (!session && _event === 'SIGNED_OUT') {
+        setMessages([]);
+        setConfirmationData(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Voice Recognition Setup
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.lang = 'es-ES';
+      recognitionRef.current.interimResults = true;
+
+      recognitionRef.current.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0])
+          .map((result) => result.transcript)
+          .join('');
+        setInput(transcript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+        // Auto-send if we have text
+        if (inputRef.current.trim()) {
+          sendMessage(inputRef.current);
+        }
+      };
+    }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,29 +108,45 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  // Log initial supabase connection check
+  // Initial greeting when session starts
   useEffect(() => {
-    const checkSupabase = async () => {
-      const { data, error } = await supabase.from('test').select('*').limit(1);
-      // We interpret error as connection issue or just table missing, which is expected.
-      // Just logging to show it's initialized.
-      console.log('Supabase Initialized', {
-        supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
-        data,
-        error
-      });
-    };
-    checkSupabase();
-  }, []);
+    if (session && messages.length === 0) {
+      const userName = session.user.user_metadata?.full_name || 
+                       session.user.user_metadata?.name || 
+                       session.user.email?.split('@')[0] || 
+                       'Usuario';
+      setMessages([
+        {
+          id: '1',
+          role: 'assistant',
+          content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿En qué puedo ayudarte hoy?`,
+          timestamp: new Date(),
+        },
+      ]);
+    }
+  }, [session, messages.length]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const toggleMic = () => {
+    if (!recognitionRef.current) {
+      alert('Tu navegador no soporta reconocimiento de voz.');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      setInput(''); // Clear input before starting
+      recognitionRef.current.start();
+    }
+  };
+
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: text,
       timestamp: new Date(),
     };
 
@@ -61,7 +154,7 @@ function App() {
     setInput('');
     setIsLoading(true);
 
-    // Log user message
+    // Log to Supabase
     supabase.from('messages').insert({
       role: 'user',
       content: userMessage.content,
@@ -71,25 +164,47 @@ function App() {
     });
 
     try {
-      const responseText = await getGeminiResponse(input);
+      // Build conversation history (last 2 messages only to minimize tokens)
+      const history = messages.slice(-2).map(m => ({ role: m.role, content: m.content }));
+      const responseText = await getGeminiResponse(text, history);
 
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: responseText || 'Lo siento, no pude procesar tu solicitud.',
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
+      // Check for confirmation signal
+      const confirmMatch = responseText.match(/\[CONFIRM_READY:\s*({.*?})\]/s);
+      if (confirmMatch) {
+        try {
+          const confirmData = JSON.parse(confirmMatch[1]);
+          setConfirmationData(confirmData);
+          // Remove the tag from display
+          const cleanResponse = responseText.replace(/\[CONFIRM_READY:.*?\]/s, '').trim();
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: cleanResponse,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, botMessage]);
+        } catch (e) {
+          console.error('Failed to parse confirmation data:', e);
+        }
+      } else {
+        const botMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: responseText || 'Lo siento, no pude procesar tu solicitud.',
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      }
 
       // Log assistant message
       supabase.from('messages').insert({
         role: 'assistant',
-        content: botMessage.content,
-        created_at: botMessage.timestamp.toISOString()
+        content: responseText,
+        created_at: new Date().toISOString()
       }).then(({ error }) => {
         if (error) console.error('Error logging assistant message:', error);
       });
+
     } catch (error) {
       console.error('Error getting response:', error);
       const errorMessage: Message = {
@@ -104,72 +219,182 @@ function App() {
     }
   };
 
+  const handleQuickAction = (action: string) => {
+    const prompts: Record<string, string> = {
+      transport: 'Necesito solicitar un servicio de transporte accesible',
+      workshop: 'Necesito reparar mi silla de ruedas'
+    };
+    sendMessage(prompts[action] || action);
+  };
+
+  const handleConfirm = async () => {
+    if (!confirmationData) return;
+
+    try {
+      const { error } = await supabase.from('service_requests').insert({
+        session_id: sessionId,
+        service_type: confirmationData.service_type,
+        status: 'confirmed',
+        collected_data: confirmationData.data
+      });
+
+      if (error) throw error;
+
+      const successMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: '✅ ¡Solicitud confirmada! Hemos registrado tu pedido. Nos pondremos en contacto contigo pronto.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, successMessage]);
+      setConfirmationData(null);
+    } catch (error) {
+      console.error('Error confirming request:', error);
+      alert('Hubo un error al confirmar la solicitud. Por favor intenta nuevamente.');
+    }
+  };
+
+  const handleEdit = () => {
+    setConfirmationData(null);
+    const editMessage: Message = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: '¿Qué información deseas modificar?',
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, editMessage]);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage(input);
+  };
+
+  // Mostrar loading mientras se verifica la sesión
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar Login si no hay sesión
+  if (!session) {
+    return <Login />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-4 sm:p-6 text-gray-900 font-sans">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col h-[85vh] border border-gray-100">
+    <div className="app-container">
+      <div className="chat-window">
 
         {/* Header */}
-        <div className="bg-white p-4 border-b border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Sparkles className="w-6 h-6 text-white" />
+        <div className="chat-header">
+          <div className="header-branding">
+            <div className="logo-container">
+              <Sparkles className="icon-md text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Chatbot Assistant</h1>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <h1 className="app-title">DD Chatbot</h1>
+              <p className="status-indicator">
+                <span className="status-dot"></span>
                 En línea
               </p>
             </div>
           </div>
-          {/* Optional: Add clear chat button here */}
+          <div className="flex items-center gap-4">
+            {session?.user && (
+              <div className="flex items-center gap-3">
+                {session.user.user_metadata?.avatar_url && (
+                  <img
+                    src={session.user.user_metadata.avatar_url}
+                    alt="Avatar"
+                    className="w-8 h-8 rounded-full border-2 border-white/30"
+                  />
+                )}
+                <div className="text-right">
+                  <p className="text-sm font-medium text-white">
+                    {session.user.user_metadata?.full_name || 
+                     session.user.user_metadata?.name || 
+                     session.user.email?.split('@')[0] || 
+                     'Usuario'}
+                  </p>
+                  <p className="text-xs text-white/80">{session.user.email}</p>
+                </div>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                  }}
+                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors"
+                  title="Cerrar sesión"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="quick-actions">
+          <button
+            className="quick-action-chip"
+            onClick={() => handleQuickAction('transport')}
+          >
+            <Truck className="icon-sm" />
+            Solicitar Transporte
+          </button>
+          <button
+            className="quick-action-chip"
+            onClick={() => handleQuickAction('workshop')}
+          >
+            <Wrench className="icon-sm" />
+            Reparar Silla
+          </button>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+        <div className="messages-area">
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''
-                }`}
+              className={`message-row ${msg.role === 'user' ? 'user' : 'assistant'}`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-blue-600' : 'bg-emerald-600'
-                  }`}
+                className={`avatar ${msg.role === 'user' ? 'user' : 'assistant'}`}
               >
                 {msg.role === 'user' ? (
-                  <User className="w-5 h-5 text-white" />
+                  <User className="icon-sm text-white" />
                 ) : (
-                  <Bot className="w-5 h-5 text-white" />
+                  <Bot className="icon-sm text-white" />
                 )}
               </div>
 
               <div
-                className={`max-w-[80%] p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-tr-none'
-                  : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                  }`}
+                className={`message-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}
               >
-                {/* Simple markdown rendering could be added here */}
                 {msg.content.split('\n').map((line, i) => (
-                  <p key={i} className={i > 0 ? 'mt-2' : ''}>{line}</p>
+                  <p key={i} style={{ margin: i > 0 ? '0.5rem 0 0 0' : 0 }}>{line}</p>
                 ))}
-                <span className={`text-[10px] mt-2 block opacity-70 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-400'}`}>
+                <span className={`message-time ${msg.role === 'user' ? 'user' : 'assistant'}`}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>
           ))}
           {isLoading && (
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
-                <Bot className="w-5 h-5 text-white" />
+            <div className="message-row assistant">
+              <div className="avatar assistant">
+                <Bot className="icon-sm text-white" />
               </div>
-              <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+              <div className="typing-content">
+                <div className="typing-dots">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
                 </div>
               </div>
             </div>
@@ -177,27 +402,45 @@ function App() {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Confirmation Card */}
+        {confirmationData && (
+          <ConfirmationCard
+            serviceType={confirmationData.service_type}
+            data={confirmationData.data}
+            onConfirm={handleConfirm}
+            onEdit={handleEdit}
+          />
+        )}
+
         {/* Input Area */}
-        <div className="p-4 bg-white border-t border-gray-100">
-          <form onSubmit={handleSubmit} className="relative flex items-center gap-2">
+        <div className="input-area">
+          <form onSubmit={handleSubmit} className="input-form">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Escribe tu mensaje aquí..."
-              className="w-full pl-4 pr-12 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-700 placeholder-gray-400"
+              placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
+              className="chat-input"
               disabled={isLoading}
             />
             <button
+              type="button"
+              onClick={toggleMic}
+              className={`mic-button ${isListening ? 'listening' : 'default'}`}
+              title="Hablar"
+            >
+              {isListening ? <MicOff className="icon-sm" /> : <Mic className="icon-sm" />}
+            </button>
+            <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="absolute right-2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md hover:shadow-lg"
+              className="send-button"
             >
-              <Send className="w-5 h-5" />
+              <Send className="icon-sm" />
             </button>
           </form>
-          <div className="text-center mt-2">
-            <p className="text-xs text-gray-400">Powered by Gemini & Supabase</p>
+          <div className="footer-text">
+            <p>Powered by Gemini & Supabase</p>
           </div>
         </div>
       </div>
