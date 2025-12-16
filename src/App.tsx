@@ -588,29 +588,60 @@ function App() {
                 )}
 
                 <form onSubmit={handleSubmit} className="input-form">
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
-                    className="chat-input"
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="button"
-                    onClick={toggleMic}
-                    className={`mic-button ${isListening ? 'listening' : 'default'}`}
-                    title="Hablar"
-                  >
-                    {isListening ? <MicOff className="icon-sm" /> : <Mic className="icon-sm" />}
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={!input.trim() || isLoading}
-                    className="send-button"
-                  >
-                    <Send className="icon-sm" />
-                  </button>
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
+                      className="chat-input pr-10"
+                      disabled={isLoading}
+                    />
+                  </div>
+
+                  {/* Action Buttons Group */}
+                  <div className="flex items-center gap-1.5 ml-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!navigator.geolocation) {
+                          alert('Geolocalización no soportada');
+                          return;
+                        }
+
+                        navigator.geolocation.getCurrentPosition((pos) => {
+                          const { latitude, longitude } = pos.coords;
+                          const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                          const msg = `📍 Mi ubicación actual: ${mapsLink}`;
+                          sendMessage(msg);
+                        }, (err) => {
+                          console.error(err);
+                          alert('No se pudo obtener la ubicación.');
+                        }, { enableHighAccuracy: true });
+                      }}
+                      className="p-2.5 rounded-full bg-gray-700/50 text-gray-300 hover:bg-green-600/20 hover:text-green-400 transition-colors"
+                      title="📍 Enviar mi ubicación actual"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={toggleMic}
+                      className={`p-2.5 rounded-full transition-all duration-200 ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
+                      title="Dictar voz"
+                    >
+                      {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={!input.trim() || isLoading}
+                      className={`p-2.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>

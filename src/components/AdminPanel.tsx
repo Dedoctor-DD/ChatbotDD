@@ -301,11 +301,39 @@ export function AdminPanel() {
 
       {/* DASHBOARD */}
       {activeView === 'dashboard' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-          <DashboardBtn icon={Truck} title="Transporte" count={requests.filter(r => r.service_type === 'transport').length} onClick={() => setActiveView('transport')} colorClass="bg-blue-500" bgClass="bg-blue-50" />
-          <DashboardBtn icon={Wrench} title="Taller" count={requests.filter(r => r.service_type === 'workshop').length} onClick={() => setActiveView('workshop')} colorClass="bg-orange-500" bgClass="bg-orange-50" />
-          <DashboardBtn icon={Clock} title="Pendientes" count={requests.filter(r => r.status === 'draft' || r.status === 'confirmed').length} onClick={() => setActiveView('pending')} colorClass="bg-yellow-500" bgClass="bg-yellow-50" />
-          <DashboardBtn icon={Users} title="Clientes" count={profiles.length} onClick={() => setActiveView('clients')} colorClass="bg-purple-500" bgClass="bg-purple-50" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+          <DashboardBtn
+            icon={Truck}
+            title="Transporte"
+            count={requests.filter(r => r.service_type === 'transport').length}
+            onClick={() => setActiveView('transport')}
+            colorClass="text-white"
+            bgClass="bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
+          />
+          <DashboardBtn
+            icon={Wrench}
+            title="Taller"
+            count={requests.filter(r => r.service_type === 'workshop').length}
+            onClick={() => setActiveView('workshop')}
+            colorClass="text-white"
+            bgClass="bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30"
+          />
+          <DashboardBtn
+            icon={Clock}
+            title="Pendientes"
+            count={requests.filter(r => r.status === 'draft' || r.status === 'confirmed').length}
+            onClick={() => setActiveView('pending')}
+            colorClass="text-white"
+            bgClass="bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg shadow-yellow-500/30"
+          />
+          <DashboardBtn
+            icon={Users}
+            title="Clientes"
+            count={profiles.length}
+            onClick={() => setActiveView('clients')}
+            colorClass="text-white"
+            bgClass="bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/30"
+          />
         </div>
       )}
 
@@ -317,24 +345,26 @@ export function AdminPanel() {
             <input
               type="text"
               placeholder="Buscar por nombre o email..."
-              className="w-full pl-10 p-2 border rounded-lg"
+              className="w-full pl-10 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none shadow-sm"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="grid gap-3">
             {filteredClients.map(client => (
-              <div key={client.id} onClick={() => handleClientSelect(client)} className="p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">
-                    {client.full_name?.charAt(0) || <User className="w-5 h-5" />}
+              <div key={client.id} onClick={() => handleClientSelect(client)} className="p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex justify-between items-center active:scale-[0.98]">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-inner">
+                    {client.full_name?.charAt(0) || <User className="w-6 h-6" />}
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{client.full_name || 'Usuario sin nombre'}</h3>
+                    <h3 className="font-semibold text-gray-900 text-base">{client.full_name || 'Usuario sin nombre'}</h3>
                     <p className="text-sm text-gray-500">{client.email}</p>
                   </div>
                 </div>
-                <div className="text-gray-400">→</div>
+                <div className="text-gray-300">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
               </div>
             ))}
           </div>
@@ -343,33 +373,56 @@ export function AdminPanel() {
 
       {/* REQUESTS LISTS (Transport, Workshop, Pending) */}
       {(activeView !== 'dashboard' && activeView !== 'clients') && (
-        <div className="requests-list">
+        <div className="requests-list p-4 grid gap-4">
           {filteredRequests.length === 0 ? (
-            <div className="empty-state"><Users className="w-12 h-12 text-gray-400" /><p>No hay solicitudes.</p></div>
+            <div className="empty-state text-center py-20">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Truck className="w-10 h-10 text-gray-300" />
+              </div>
+              <p className="text-gray-500 font-medium">No hay solicitudes en esta categoría.</p>
+            </div>
           ) : (
             filteredRequests.map((request) => (
-              <div key={request.id} className="request-card">
-                <div className="request-header">
-                  <div className="request-type">
-                    {request.service_type === 'transport' ? <Truck className="w-5 h-5 text-blue-500" /> : <Wrench className="w-5 h-5 text-orange-500" />}
-                    <span className="request-type-label">{request.service_type === 'transport' ? 'Transporte' : 'Mantenimiento'}</span>
+              <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                  <div className="flex items-center gap-2">
+                    {request.service_type === 'transport' ?
+                      <div className="p-1.5 bg-blue-100 rounded-lg"><Truck className="w-4 h-4 text-blue-600" /></div> :
+                      <div className="p-1.5 bg-orange-100 rounded-lg"><Wrench className="w-4 h-4 text-orange-600" /></div>
+                    }
+                    <span className="font-semibold text-gray-700">{request.service_type === 'transport' ? 'Transporte' : 'Mantenimiento'}</span>
                   </div>
-                  <div className="request-status">
+                  <div className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1
+                     ${request.status === 'confirmed' ? 'bg-blue-100 text-blue-700' :
+                      request.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        request.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
                     {getStatusIcon(request.status)}
-                    <span className="status-text">{request.status}</span>
+                    <span className="uppercase tracking-wider text-[10px]">
+                      {request.status === 'confirmed' ? 'CONFIRMADO' :
+                        request.status === 'completed' ? 'COMPLETADO' :
+                          request.status === 'cancelled' ? 'CANCELADO' : 'BORRADOR'}
+                    </span>
                   </div>
                 </div>
-                <div className="request-body">
-                  <p className="request-date">{new Date(request.created_at).toLocaleString()}</p>
+                <div className="p-4">
+                  <p className="text-xs text-gray-400 mb-3 uppercase font-semibold tracking-wide">
+                    {new Date(request.created_at).toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+
                   {request.collected_data && (
-                    <div className="text-sm text-gray-600 mt-2">
-                      {Object.entries(request.collected_data).map(([k, v]) => <div key={k}><b>{k}:</b> {String(v)}</div>)}
+                    <div className="grid grid-cols-1 gap-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                      {Object.entries(request.collected_data).map(([k, v]) => (
+                        <div key={k} className="flex flex-col sm:flex-row sm:justify-between border-b last:border-0 border-gray-200 pb-2 last:pb-0 mb-2 last:mb-0">
+                          <span className="font-semibold text-gray-500 capitalize">{k.replace(/_/g, ' ')}:</span>
+                          <span className="text-gray-900">{String(v)}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
-                <div className="request-actions pt-3 border-t mt-3 flex gap-2 justify-end">
-                  {request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'completed')} className="text-green-600 hover:bg-green-50 px-3 py-1 rounded text-sm font-medium">Completar</button>}
-                  {request.status !== 'cancelled' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="text-red-600 hover:bg-red-50 px-3 py-1 rounded text-sm font-medium">Cancelar</button>}
+                <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex gap-3 justify-end">
+                  {request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 sm:flex-none border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">✔ Completar</button>}
+                  {request.status !== 'cancelled' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="flex-1 sm:flex-none border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">✖ Cancelar</button>}
                 </div>
               </div>
             ))
