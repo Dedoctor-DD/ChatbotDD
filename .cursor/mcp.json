@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "supabase": {
+            "command": "node",
+            "args": [
+                "c:/Users/s_pk_/Desktop/MANUEL/CHATBOT/mcp-server/packages/mcp-server-supabase/dist/index.js"
+            ],
+            "env": {
+                "SUPABASE_ACCESS_TOKEN": "sbp_aff5587b227798c53aa466d7b36b987c9a7e1806"
+            }
+        }
+    }
+}
