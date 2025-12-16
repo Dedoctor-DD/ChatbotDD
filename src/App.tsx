@@ -62,18 +62,23 @@ function App() {
 
     // Check active session logic
     const handleSessionCheck = async () => {
-      const isAuthRedirect = window.location.hash && window.location.hash.includes('access_token');
+      // Check for both Implicit (hash) and PKCE (search param) redirects
+      const isAuthRedirect =
+        (window.location.hash && window.location.hash.includes('access_token')) ||
+        (window.location.search && window.location.search.includes('code='));
 
       if (isAuthRedirect) {
-        console.log('Detectada redirección OAuth, esperando procesamiento...');
+        console.log('Detectada redirección OAuth (PKCE o Implicit), esperando procesamiento...');
         // Set a timeout to clear loading state in case auth event never fires (failsafe)
         setTimeout(() => {
           setIsCheckingSession(false);
-          // If we still have the hash after timeout, something went wrong, clean it
-          if (window.location.hash.includes('access_token')) {
-            window.history.replaceState(null, '', window.location.pathname);
+          // Clean URL if stuck
+          if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
+            // Use replaceState to clear both hash and search
+            const newUrl = window.location.pathname;
+            window.history.replaceState(null, '', newUrl);
           }
-        }, 5000);
+        }, 8000); // 8 seconds for PKCE exchange which needs a network call
       } else {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
