@@ -48,22 +48,24 @@ export function Login() {
 
     return (
         <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 text-center border border-slate-700">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="max-w-md w-full bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 text-center border border-slate-700/50">
+                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/5 rotate-3">
                     <LogIn className="w-8 h-8 text-blue-500" />
                 </div>
 
-                <h2 className="text-2xl font-bold text-white mb-2">Bienvenido a DD Chatbot</h2>
-                <p className="text-slate-400 mb-8">Inicia sesión con Google para comenzar a usar DD Chatbot.</p>
+                <h2 className="text-2xl font-bold text-white mb-3">Bienvenido</h2>
+                <p className="text-slate-400 mb-8 text-sm leading-relaxed px-4">
+                    Tu asistente virtual inteligente para servicios de transporte y mantenimiento.
+                </p>
 
                 <button
                     onClick={handleLogin}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-medium py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                    className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-900 font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed mb-6 active:scale-[0.98]"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin text-gray-900" />
+                            <Loader2 className="w-5 h-5 animate-spin text-slate-900" />
                             <span>Conectando...</span>
                         </>
                     ) : (
@@ -71,19 +73,19 @@ export function Login() {
                             <img
                                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                                 alt="Google logo"
-                                className="w-5 h-5"
+                                className="w-5 h-5 shrink-0"
                             />
-                            Continuar con Google
+                            <span>Continuar con Google</span>
                         </>
                     )}
                 </button>
 
-                <div className="relative my-6">
+                <div className="relative my-8">
                     <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-slate-700"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-slate-800 text-slate-500">O ingresa como invitado</span>
+                    <div className="relative flex justify-center text-xs uppercase tracking-wider font-medium">
+                        <span className="px-3 bg-slate-900/0 backdrop-blur-sm text-slate-500 rounded-full">O prueba sin cuenta</span>
                     </div>
                 </div>
 
@@ -96,22 +98,22 @@ export function Login() {
                                 user_metadata: {
                                     full_name: 'Usuario de Prueba',
                                     avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-                                    role: 'admin' // Force admin for testing
+                                    role: 'admin'
                                 }
                             }
                         };
                         localStorage.setItem('dd_chatbot_test_session', JSON.stringify(testSession));
                         window.location.reload();
                     }}
-                    className="w-full flex items-center justify-center gap-3 bg-slate-700 border border-slate-600 hover:bg-slate-600 text-slate-200 font-medium py-3 px-4 rounded-xl transition-all text-sm group"
+                    className="w-full flex items-center justify-center gap-2 bg-slate-700/50 border border-slate-600/50 hover:bg-slate-700 text-slate-300 font-medium py-3 px-4 rounded-xl transition-all text-sm hover:border-slate-500 group active:scale-[0.98]"
                 >
-                    <span className="group-hover:scale-110 transition-transform">🧪</span>
-                    Modo Pruebas (Sin Login)
+                    <span className="group-hover:rotate-12 transition-transform duration-300 text-base">🧪</span>
+                    <span>Ingresar modo pruebas</span>
                 </button>
 
                 {error && (
-                    <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg">
-                        <p className="text-sm text-red-400">{error}</p>
+                    <div className="mt-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl animate-shake">
+                        <p className="text-xs text-red-400 font-medium">{error}</p>
                     </div>
                 )}
             </div>
