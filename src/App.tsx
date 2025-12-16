@@ -62,25 +62,32 @@ function App() {
 
     // Check active session logic
     const handleSessionCheck = async () => {
-      // First, check if we are handling an OAuth redirect
       const isAuthRedirect = window.location.hash && window.location.hash.includes('access_token');
 
       if (isAuthRedirect) {
         console.log('Detectada redirección OAuth, esperando procesamiento...');
-        // Let supabase internal logic handle the hash via onAuthStateChange
-        // We do NOT set isCheckingSession(false) here, we wait for the event
+        // Set a timeout to clear loading state in case auth event never fires (failsafe)
+        setTimeout(() => {
+          setIsCheckingSession(false);
+          // If we still have the hash after timeout, something went wrong, clean it
+          if (window.location.hash.includes('access_token')) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        }, 5000);
       } else {
-        // Normal load
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
           if (error.status === 401) {
-            // Token invalido, limpiar todo
             await supabase.auth.signOut();
             localStorage.clear();
           }
         }
-        setSession(session);
+
+        // Only set session if we got one, otherwise wait for auth listener or keep null
+        if (session) {
+          setSession(session);
+        }
         setIsCheckingSession(false);
       }
     };
