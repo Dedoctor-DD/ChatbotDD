@@ -35,7 +35,6 @@ export function AdminPanel() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending' | 'clients'>('dashboard');
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [loading, setLoading] = useState(true);
 
   // Client Management State
@@ -80,7 +79,7 @@ export function AdminPanel() {
   };
 
   const loadClientDebts = async (userId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('client_debts')
       .select('*')
       .eq('user_id', userId)
@@ -291,8 +290,14 @@ export function AdminPanel() {
                   activeView === 'workshop' ? 'Taller' : 'Pendientes'}
           </h2>
         </div>
-        <button onClick={loadData} className="refresh-btn"><RefreshCw className="w-5 h-5" /></button>
+        <button onClick={loadData} className="refresh-btn">
+          <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+        </button>
       </div>
+
+      {loading && activeView !== 'dashboard' && (
+        <div className="p-8 text-center text-gray-400">Cargando...</div>
+      )}
 
       {/* DASHBOARD */}
       {activeView === 'dashboard' && (

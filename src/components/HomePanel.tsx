@@ -66,6 +66,14 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
 
   const totalDebt = debts.reduce((sum, debt) => sum + debt.amount, 0);
 
+  if (loading) {
+    return (
+      <div className="home-panel w-full max-w-2xl mx-auto pb-20 flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="home-panel w-full max-w-2xl mx-auto pb-20">
       <div className="home-header mb-6">
