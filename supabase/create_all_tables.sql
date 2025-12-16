@@ -128,25 +128,10 @@ BEGIN
         CREATE INDEX idx_service_requests_service_type ON service_requests(service_type);
         CREATE INDEX idx_service_requests_created_at ON service_requests(created_at DESC);
         
-        -- Índice GIN para búsquedas en JSONB
+        -- Crear índice para búsquedas en JSONB
         CREATE INDEX idx_service_requests_collected_data ON service_requests USING GIN (collected_data);
 
-        -- Crear función para actualizar updated_at automáticamente
-        CREATE OR REPLACE FUNCTION update_service_requests_updated_at()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            NEW.updated_at = timezone('utc'::text, now());
-            RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;
-
-        -- Crear trigger para actualizar updated_at
-        CREATE TRIGGER update_service_requests_timestamp
-            BEFORE UPDATE ON service_requests
-            FOR EACH ROW
-            EXECUTE FUNCTION update_service_requests_updated_at();
-
-        RAISE NOTICE '✅ Tabla service_requests creada exitosamente con RLS, políticas, índices y triggers';
+        RAISE NOTICE '✅ Tabla service_requests creada exitosamente con RLS, políticas e índices';
     ELSE
         RAISE NOTICE 'ℹ️  Tabla service_requests ya existe';
         
@@ -167,10 +152,10 @@ BEGIN
             SELECT 1 FROM pg_policies 
             WHERE schemaname = 'public' 
             AND tablename = 'service_requests' 
-            AND policyname = 'Allow anonymous inserts'
+            AND policyname = 'Users can insert their own requests'
         ) THEN
-            CREATE POLICY "Allow anonymous inserts" ON service_requests
-                FOR INSERT TO anon, authenticated WITH CHECK (true);
+            CREATE POLICY "Users can insert their own requests" ON service_requests
+                FOR INSERT WITH CHECK (auth.uid() = user_id);
             RAISE NOTICE '✅ Política INSERT creada para service_requests';
         END IF;
 
@@ -178,38 +163,43 @@ BEGIN
             SELECT 1 FROM pg_policies 
             WHERE schemaname = 'public' 
             AND tablename = 'service_requests' 
-            AND policyname = 'Allow reading own requests'
+            AND policyname = 'Users can view their own requests'
         ) THEN
-            CREATE POLICY "Allow reading own requests" ON service_requests
-                FOR SELECT TO anon, authenticated USING (true);
+            CREATE POLICY "Users can view their own requests" ON service_requests
+                FOR SELECT USING (auth.uid() = user_id);
             RAISE NOTICE '✅ Política SELECT creada para service_requests';
         END IF;
+    END IF;
+END
+$$;
 
-        -- Crear función y trigger para updated_at si no existen
-        IF NOT EXISTS (
-            SELECT 1 FROM pg_proc 
-            WHERE proname = 'update_service_requests_updated_at'
-        ) THEN
-            CREATE OR REPLACE FUNCTION update_service_requests_updated_at()
-            RETURNS TRIGGER AS $$
-            BEGIN
-                NEW.updated_at = timezone('utc'::text, now());
-                RETURN NEW;
-            END;
-            $$ LANGUAGE plpgsql;
-            RAISE NOTICE '✅ Función update_service_requests_updated_at creada';
-        END IF;
+-- =====================================================
+-- 4. FUNCIONES Y TRIGGERS (Global)
+-- =====================================================
 
-        IF NOT EXISTS (
-            SELECT 1 FROM pg_trigger 
-            WHERE tgname = 'update_service_requests_timestamp'
-        ) THEN
-            CREATE TRIGGER update_service_requests_timestamp
-                BEFORE UPDATE ON service_requests
-                FOR EACH ROW
-                EXECUTE FUNCTION update_service_requests_updated_at();
-            RAISE NOTICE '✅ Trigger update_service_requests_timestamp creado';
-        END IF;
+-- Crear función para actualizar updated_at automáticamente
+CREATE OR REPLACE FUNCTION update_service_requests_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = timezone('utc'::text, now());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear trigger para actualizar updated_at (si no existe)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger 
+        WHERE tgname = 'update_service_requests_timestamp'
+    ) THEN
+        CREATE TRIGGER update_service_requests_timestamp
+            BEFORE UPDATE ON service_requests
+            FOR EACH ROW
+            EXECUTE FUNCTION update_service_requests_updated_at();
+        RAISE NOTICE '✅ Trigger update_service_requests_timestamp creado';
+    ELSE
+         RAISE NOTICE 'ℹ️  Trigger update_service_requests_timestamp ya existe';
     END IF;
 END
 $$;
