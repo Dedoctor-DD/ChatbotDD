@@ -91,6 +91,20 @@ export function Login() {
                         <p className="text-xs text-red-400 font-medium">{error}</p>
                     </div>
                 )}
+
+                <div className="mt-6 text-center">
+                    <button
+                        onClick={() => {
+                            localStorage.clear();
+                            sessionStorage.clear();
+                            window.location.hash = '';
+                            window.location.reload();
+                        }}
+                        className="text-xs text-gray-400 hover:text-white transition-colors underline"
+                    >
+                        ¿Problemas de conexión? Borrar datos
+                    </button>
+                </div>
             </div>
         </div>
     );
