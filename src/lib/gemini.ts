@@ -1,7 +1,8 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!SUPABASE_URL) {
-    throw new Error('VITE_SUPABASE_URL is not set');
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error('VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set');
 }
 
 // Nota: Ya NO necesitamos VITE_GEMINI_API_KEY
@@ -22,6 +23,7 @@ export async function getGeminiResponse(
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                 },
                 body: JSON.stringify({
                     prompt,
