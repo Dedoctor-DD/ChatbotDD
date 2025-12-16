@@ -62,38 +62,32 @@ function App() {
 
     // Check active session logic
     const handleSessionCheck = async () => {
-      // Check for both Implicit (hash) and PKCE (search param) redirects
-      const isAuthRedirect =
-        (window.location.hash && window.location.hash.includes('access_token')) ||
-        (window.location.search && window.location.search.includes('code='));
+      // In PKCE flow, getSession() handles the code exchange.
+      // We must call it even if we see a code/token in the URL.
 
-      if (isAuthRedirect) {
-        console.log('Detectada redirección OAuth (PKCE o Implicit), esperando procesamiento...');
-        // Set a timeout to clear loading state in case auth event never fires (failsafe)
-        setTimeout(() => {
-          setIsCheckingSession(false);
-          // Clean URL if stuck
-          if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
-            // Use replaceState to clear both hash and search
-            const newUrl = window.location.pathname;
-            window.history.replaceState(null, '', newUrl);
-          }
-        }, 8000); // 8 seconds for PKCE exchange which needs a network call
-      } else {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error getting session:', error);
-          if (error.status === 401) {
-            await supabase.auth.signOut();
-            localStorage.clear();
-          }
-        }
+      const { data: { session }, error } = await supabase.auth.getSession();
 
-        // Only set session if we got one, otherwise wait for auth listener or keep null
-        if (session) {
-          setSession(session);
+      if (error) {
+        console.error('Error getting session:', error);
+        // If token/code is invalid (401), or any other error during exchange
+        if (error.status === 401 || error.message.includes('invalid_grant')) {
+          console.warn('Session invalid, clearing data...');
+          await supabase.auth.signOut();
+          localStorage.clear();
+          // Clean URL to avoid infinite loops
+          window.history.replaceState(null, '', window.location.pathname);
         }
+      }
+
+      if (session) {
+        setSession(session);
+        // If we have a session, we can clear the loading state immediately
         setIsCheckingSession(false);
+      } else {
+        // If no session yet, we might still be waiting for onAuthStateChange event
+        // specifically if the auto-refresh or initial load is slightly delayed.
+        // However, we shouldn't wait forever.
+        setTimeout(() => setIsCheckingSession(false), 2000);
       }
     };
 
