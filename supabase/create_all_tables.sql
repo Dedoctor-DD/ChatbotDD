@@ -42,63 +42,45 @@ BEGIN
             id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
             content TEXT NOT NULL,
             role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+            user_id UUID DEFAULT auth.uid(), -- Link to auth.users
+            session_id TEXT, -- Optional: for grouping chats
             created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
         );
 
         -- Habilitar Row Level Security
         ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
-        -- Crear política para INSERT
-        CREATE POLICY "Enable insert for all users" ON messages
+        -- Crear política para INSERT: Solo el propio usuario puede insertar
+        CREATE POLICY "Users can insert their own messages" ON messages
             FOR INSERT 
-            WITH CHECK (true);
+            WITH CHECK (auth.uid() = user_id);
 
-        -- Crear política para SELECT
-        CREATE POLICY "Enable select for all users" ON messages
+        -- Crear política para SELECT: Solo el propio usuario puede ver sus mensajes
+        CREATE POLICY "Users can view their own messages" ON messages
             FOR SELECT 
-            USING (true);
+            USING (auth.uid() = user_id);
 
-        -- Crear índice para búsquedas por fecha (opcional pero recomendado)
+        -- Crear índice para búsquedas por fecha y usuario
         CREATE INDEX idx_messages_created_at ON messages(created_at DESC);
-        CREATE INDEX idx_messages_role ON messages(role);
+        CREATE INDEX idx_messages_user_id ON messages(user_id);
+        CREATE INDEX idx_messages_session_id ON messages(session_id);
 
-        RAISE NOTICE '✅ Tabla messages creada exitosamente con RLS y políticas';
+        RAISE NOTICE '✅ Tabla messages creada exitosamente con RLS estricto y políticas';
     ELSE
         RAISE NOTICE 'ℹ️  Tabla messages ya existe';
         
-        -- Verificar que RLS esté habilitado
-        IF NOT EXISTS (
-            SELECT 1 FROM pg_tables t
-            JOIN pg_class c ON c.relname = t.tablename
-            WHERE t.schemaname = 'public' 
-            AND t.tablename = 'messages'
-            AND c.relrowsecurity = true
-        ) THEN
-            ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
-            RAISE NOTICE '✅ RLS habilitado en tabla messages';
+        -- Verificar si falta la columna user_id y agregarla
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='messages' AND column_name='user_id') THEN
+            ALTER TABLE messages ADD COLUMN user_id UUID DEFAULT auth.uid();
+            CREATE INDEX idx_messages_user_id ON messages(user_id);
+            RAISE NOTICE '✅ Columna user_id agregada a messages';
         END IF;
 
-        -- Verificar y crear políticas si no existen
-        IF NOT EXISTS (
-            SELECT 1 FROM pg_policies 
-            WHERE schemaname = 'public' 
-            AND tablename = 'messages' 
-            AND policyname = 'Enable insert for all users'
-        ) THEN
-            CREATE POLICY "Enable insert for all users" ON messages
-                FOR INSERT WITH CHECK (true);
-            RAISE NOTICE '✅ Política INSERT creada para messages';
-        END IF;
-
-        IF NOT EXISTS (
-            SELECT 1 FROM pg_policies 
-            WHERE schemaname = 'public' 
-            AND tablename = 'messages' 
-            AND policyname = 'Enable select for all users'
-        ) THEN
-            CREATE POLICY "Enable select for all users" ON messages
-                FOR SELECT USING (true);
-            RAISE NOTICE '✅ Política SELECT creada para messages';
+        -- Verificar si falta la columna session_id y agregarla
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='messages' AND column_name='session_id') THEN
+            ALTER TABLE messages ADD COLUMN session_id TEXT;
+            CREATE INDEX idx_messages_session_id ON messages(session_id);
+            RAISE NOTICE '✅ Columna session_id agregada a messages';
         END IF;
     END IF;
 END
@@ -115,6 +97,7 @@ BEGIN
         CREATE TABLE service_requests (
             id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
             session_id TEXT NOT NULL,
+            user_id UUID DEFAULT auth.uid(), -- Link to auth.users
             service_type service_type NOT NULL,
             status request_status DEFAULT 'draft' NOT NULL,
             collected_data JSONB DEFAULT '{}'::jsonb,
@@ -126,19 +109,21 @@ BEGIN
         ALTER TABLE service_requests ENABLE ROW LEVEL SECURITY;
 
         -- Crear política para INSERT
-        CREATE POLICY "Allow anonymous inserts" ON service_requests
+        CREATE POLICY "Users can insert their own requests" ON service_requests
             FOR INSERT 
-            TO anon, authenticated
-            WITH CHECK (true);
+            WITH CHECK (auth.uid() = user_id);
 
         -- Crear política para SELECT
-        CREATE POLICY "Allow reading own requests" ON service_requests
+        CREATE POLICY "Users can view their own requests" ON service_requests
             FOR SELECT
-            TO anon, authenticated
-            USING (true);
+            USING (auth.uid() = user_id);
+            
+         -- Permitir a admins ver todas las solicitudes (Opcional, basado en rol/email)
+         -- Por ahora mantenemos simple para el usuario base.
 
         -- Crear índices para mejor rendimiento
-        CREATE INDEX idx_service_requests_session_id ON service_requests(session_id);
+        CREATE INDEX idx_service_requests_user_id ON service_requests(user_id);
+
         CREATE INDEX idx_service_requests_status ON service_requests(status);
         CREATE INDEX idx_service_requests_service_type ON service_requests(service_type);
         CREATE INDEX idx_service_requests_created_at ON service_requests(created_at DESC);
