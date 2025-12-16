@@ -1,14 +1,11 @@
+import { supabase } from './supabase';
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.error('Missing env vars:', { url: !!SUPABASE_URL, key: !!SUPABASE_ANON_KEY });
-    // Don't throw top-level error to avoid crashing the whole app if variables are missing
-    // Instead, let the function call fail later if needed
 }
-
-// Nota: Ya NO necesitamos VITE_GEMINI_API_KEY
-// La API key ahora está protegida en la Edge Function de Supabase
 
 export async function getGeminiResponse(
     prompt: string,
@@ -18,6 +15,10 @@ export async function getGeminiResponse(
         // Limitar historial a últimos 2 mensajes para optimizar tokens
         const recentHistory = conversationHistory.slice(-2);
 
+        // Obtener sesión actual para enviar token de usuario si existe
+        const { data: { session } } = await supabase.auth.getSession();
+        const authToken = session?.access_token ? `Bearer ${session.access_token}` : `Bearer ${SUPABASE_ANON_KEY}`;
+
         // Llamar a Edge Function de Supabase en lugar de Gemini directamente
         const response = await fetch(
             `${SUPABASE_URL}/functions/v1/chat`,
@@ -25,7 +26,7 @@ export async function getGeminiResponse(
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Authorization': authToken,
                 },
                 body: JSON.stringify({
                     prompt,
@@ -40,14 +41,17 @@ export async function getGeminiResponse(
             console.error('Edge Function Error:', data);
 
             // Manejo de errores específicos
-            if (data.error?.includes('quota') || data.error?.includes('RESOURCE_EXHAUSTED')) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((data as any).error?.includes('quota') || (data as any).error?.includes('RESOURCE_EXHAUSTED')) {
                 return 'Lo siento, hemos alcanzado el límite de la API. Por favor intenta en unos minutos.';
             }
 
-            return `Error: ${data.error || response.statusText}`;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return `Error: ${(data as any).error || response.statusText}`;
         }
 
-        return data.text || "Lo siento, no pude generar una respuesta.";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (data as any).text || "Lo siento, no pude generar una respuesta.";
 
     } catch (error) {
         console.error("Error calling Edge Function:", error);
