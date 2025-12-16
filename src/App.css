@@ -82,22 +82,27 @@ body {
 /* ============================================
    APP CONTAINER (Premium Background)
    ============================================ */
+/* ============================================
+   APP CONTAINER (Premium Background - Static)
+   ============================================ */
 .app-container {
   min-height: 100vh;
   /* Fallback */
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
-  background-size: 400% 400%;
-  animation: gradient-bg 15s ease infinite;
+  background: #0f172a;
+  /* Deep static dark */
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 25%);
   position: relative;
   overflow: hidden;
   /* Prevent body scroll */
 }
 
-/* Reusing the Orbs concept from Login but applied here via pseudo-elements or just simple class composition if possible. 
-   Since we can't easily inject divs into App.tsx without more code, we'll try to use pseudo-elements on app-container 
+/* Reusing the Orbs concept from Login but applied here via pseudo-elements or just simple class composition if possible.
+   Since we can't easily inject divs into App.tsx without more code, we'll try to use pseudo-elements on app-container
    or assume the background gradient is sufficient, but user asked for "same style".
    Let's use the radial-gradient we defined which is very close.
 */
@@ -130,15 +135,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(30, 41, 59, 0.7);
-  /* Glass */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.9);
+  /* More solid for readability */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  position: sticky;
-  top: 0;
+  position: relative;
+  /* Changed from sticky to relative since main-content doesn't scroll */
   z-index: 50;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.3);
 }
 
 .header-branding {
@@ -148,25 +153,22 @@ body {
 }
 
 .logo-container {
-  width: 32px;
-  /* Smaller logo on mobile */
-  height: 32px;
+  width: 36px;
+  height: 36px;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px var(--accent-glow);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
 .app-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: -0.5px;
-  background: linear-gradient(to right, #fff, #cbd5e1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #f8fafc;
   margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .status-indicator {
@@ -232,19 +234,46 @@ body {
 }
 
 .logout-btn {
-  padding: 0.4rem 0.6rem;
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--error);
-  border: 1px solid rgba(239, 68, 68, 0.1);
+  padding: 0.4rem 0.8rem;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.75rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 /* ============================================
-   HOME PANEL (Refined Mobile)
+   CONTENT AREA (Fixed Layout)
+   ============================================ */
+.content-area {
+  flex: 1;
+  overflow: hidden;
+  /* Disable page-level scroll */
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--bottom-nav-height);
+  /* Reserve space for fixed nav */
+  background: transparent;
+}
+
+@media (min-width: 768px) {
+  .content-area {
+    padding: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+/* ============================================
+   HOME PANEL (Scrollable)
    ============================================ */
 .home-panel {
   padding: 1rem;
@@ -252,59 +281,63 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  height: 100%;
+  overflow-y: auto;
+  /* Enable scroll here */
+  -webkit-overflow-scrolling: touch;
 }
 
 .user-greeting {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   padding: 1.5rem;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .user-avatar-large {
-  width: 60px;
-  /* Reduced from 80px */
-  height: 60px;
+  width: 64px;
+  height: 64px;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
+  border: 3px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-avatar-large svg {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
+  color: white;
 }
 
 .welcome-title {
-  font-size: 1.25rem;
-  /* Reduced from 1.75rem */
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 800;
   margin: 0 0 0.25rem 0;
   color: #fff;
+  letter-spacing: -0.02em;
 }
 
 .welcome-subtitle {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: #94a3b8;
   margin: 0;
-  opacity: 0.8;
 }
 
 @media (min-width: 640px) {
   .user-greeting {
     flex-direction: row;
     text-align: left;
-    padding: 2rem;
+    padding: 2.5rem;
   }
 
   .user-avatar-large {
@@ -313,7 +346,7 @@ body {
   }
 
   .welcome-title {
-    font-size: 1.75rem;
+    font-size: 2rem;
   }
 }
 
@@ -325,31 +358,31 @@ body {
 }
 
 .service-card {
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 1.25rem;
   text-align: left;
-  /* Better for mobile lists if needed, or keeping center */
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .service-card:active {
   transform: scale(0.98);
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.8);
 }
 
 .service-icon {
-  width: 48px;
+  width: 50px;
   /* Smaller icon container */
-  height: 48px;
+  height: 50px;
   margin: 0;
   /* Remove bottom margin */
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -357,8 +390,13 @@ body {
 }
 
 .service-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
+}
+
+.service-card:hover .service-icon {
+  transform: none;
+  /* Disable rotation on mobile list view for cleaner look */
 }
 
 .service-content {
@@ -386,9 +424,9 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
-  /* IMPORTANT: Account for bottom nav in mobile chat tab height */
+  background: transparent;
   padding-bottom: 0;
+  position: relative;
 }
 
 @media (min-width: 768px) {
@@ -397,7 +435,6 @@ body {
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
     height: calc(100vh - 120px);
-    padding-bottom: 0;
   }
 }
 
@@ -408,6 +445,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  /* Ensure messages are visible above input */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .message-row {
