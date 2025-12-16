@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Sparkles, Mic, MicOff } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { ConfirmationCard } from './components/ConfirmationCard';
@@ -36,7 +36,24 @@ function App() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  // Session ID management for individual chats
+  const [sessionId, setSessionId] = useState(() => {
+    const saved = localStorage.getItem('dd_current_session_id');
+    return saved || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  });
+
+  // Persist session ID
+  useEffect(() => {
+    localStorage.setItem('dd_current_session_id', sessionId);
+  }, [sessionId]);
+
+  const createNewSession = () => {
+    const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setSessionId(newId);
+    setMessages([]);
+    setConfirmationData(null);
+    return newId;
+  };
 
   // Determinar si el usuario es admin (basado en email)
   const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com' ||
@@ -177,7 +194,7 @@ function App() {
     }
   }, [messages, activeTab]);
 
-  // Load persistent history when entering chat
+  // Load persistent history for CURRENT SESSION ONLY
   useEffect(() => {
     if (session && activeTab === 'chat') {
       const loadHistory = async () => {
@@ -186,6 +203,7 @@ function App() {
           .from('messages')
           .select('*')
           .eq('user_id', session.user.id)
+          .eq('session_id', sessionId) // Only load active session
           .order('created_at', { ascending: false }) // Traemos los más recientes primero
           .limit(50);
 
@@ -205,7 +223,7 @@ function App() {
           setMessages(sortedHistory);
           // Opcional: Agregar una pequeña marca visual de "Historial cargado"
         } else {
-          // Si no hay historial, mostramos el saludo inicial
+          // Si es una sesión nueva, saludo
           if (messages.length === 0) {
             const userName = session.user.user_metadata?.full_name ||
               session.user.user_metadata?.name ||
@@ -225,7 +243,7 @@ function App() {
 
       loadHistory();
     }
-  }, [session, activeTab]);
+  }, [session, activeTab, sessionId]); // Add sessionId dep
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
@@ -412,7 +430,21 @@ function App() {
               <Sparkles className="icon-md text-white" />
             </div>
             <div>
-              <h1 className="app-title">DD Chatbot</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="app-title">DD Chatbot</h1>
+                {/* NEW CHAT BUTTON */}
+                <button
+                  onClick={() => {
+                    if (window.confirm('¿Iniciar nueva conversación?')) {
+                      createNewSession();
+                    }
+                  }}
+                  className="text-white/80 hover:text-white"
+                  title="Nueva Conversación"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                </button>
+              </div>
               <p className="status-indicator">
                 <span className="status-dot"></span>
                 En línea
@@ -458,11 +490,12 @@ function App() {
           {activeTab === 'home' && (
             <HomePanel
               onServiceSelect={(type) => {
+                // START NEW CHAT SESSION
+                createNewSession();
+
                 const prompt = type === 'transport' ? 'Quiero solicitar transporte' : 'Necesito mantenimiento para mi silla';
                 setInput(prompt);
                 setActiveTab('chat');
-                // Optional: Auto-send message
-                // sendMessage(prompt);
               }}
               onGoToChat={() => setActiveTab('chat')}
               userName={userName}
