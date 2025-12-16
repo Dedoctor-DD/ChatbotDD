@@ -320,7 +320,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="main-content">
-        {/* Header - Solo visible en desktop */}
+        {/* Header - Visible */}
         <div className="top-header">
           <div className="header-branding">
             <div className="logo-container">

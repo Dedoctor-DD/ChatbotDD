@@ -387,6 +387,8 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  /* IMPORTANT: Account for bottom nav in mobile chat tab height */
+  padding-bottom: 0;
 }
 
 @media (min-width: 768px) {
@@ -395,17 +397,17 @@ body {
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
     height: calc(100vh - 120px);
-    /* Adjust for desktop padding */
+    padding-bottom: 0;
   }
 }
 
 .messages-area {
   flex: 1;
-  padding: 1.5rem;
+  padding: 1rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .message-row {
@@ -591,6 +593,20 @@ body {
   background: var(--bg-tertiary);
   color: var(--text-muted);
   cursor: not-allowed;
+}
+
+/* ============================================
+   CONTENT AREA
+   ============================================ */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  height: 100%;
+  padding-top: 20px;
+  /* Space from header */
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 20px);
+  /* Add space for bottom nav on mobile */
 }
 
 /* ============================================
