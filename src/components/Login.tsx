@@ -47,14 +47,20 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 text-center border border-slate-700/50">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/5 rotate-3">
-                    <LogIn className="w-8 h-8 text-blue-500" />
+    return (
+        <div className="login-container min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[100px] animate-pulse"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+            </div>
+
+            <div className="relative max-w-md w-full bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 text-center border border-slate-700/30">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/10 rotate-3 border border-blue-500/20">
+                    <LogIn className="w-8 h-8 text-blue-400 drop-shadow-md" />
                 </div>
 
-                <h2 className="text-2xl font-bold text-white mb-3">Bienvenido</h2>
-                <p className="text-slate-400 mb-8 text-sm leading-relaxed px-4">
+                <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-white via-blue-100 to-slate-200 bg-clip-text text-transparent">Bienvenido</h2>
+                <p className="text-slate-400 mb-8 text-sm leading-relaxed px-4 font-light">
                     Tu asistente virtual inteligente para servicios de transporte y mantenimiento.
                 </p>
 
