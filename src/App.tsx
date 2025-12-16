@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Sparkles, Mic, MicOff, Truck, Wrench } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Mic, MicOff } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
+import { BottomNav } from './components/BottomNav';
+import { AdminPanel } from './components/AdminPanel';
+import { HomePanel } from './components/HomePanel';
 
 interface Message {
   id: string;
@@ -13,19 +16,17 @@ interface Message {
   timestamp: Date;
 }
 
-
-
-
-// ... imports ...
-
 interface ConfirmationData {
   service_type: 'transport' | 'workshop';
   data: Record<string, any>;
 }
 
+type TabType = 'home' | 'chat' | 'admin';
+
 function App() {
   const [session, setSession] = useState<any>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('home');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +36,10 @@ function App() {
   const recognitionRef = useRef<any>(null);
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+
+  // Determinar si el usuario es admin (basado en email)
+  const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com' || 
+                  session?.user?.user_metadata?.role === 'admin';
 
   useEffect(() => {
     inputRef.current = input;
@@ -57,12 +62,14 @@ function App() {
       // Si el usuario acaba de hacer login, limpiar mensajes anteriores
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
+        setActiveTab('home');
       }
       
       // Si el usuario cerró sesión, limpiar todo
       if (!session && _event === 'SIGNED_OUT') {
         setMessages([]);
         setConfirmationData(null);
+        setActiveTab('home');
       }
     });
 
@@ -105,12 +112,14 @@ function App() {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (activeTab === 'chat') {
+      scrollToBottom();
+    }
+  }, [messages, activeTab]);
 
-  // Initial greeting when session starts
+  // Initial greeting when entering chat
   useEffect(() => {
-    if (session && messages.length === 0) {
+    if (session && activeTab === 'chat' && messages.length === 0) {
       const userName = session.user.user_metadata?.full_name || 
                        session.user.user_metadata?.name || 
                        session.user.email?.split('@')[0] || 
@@ -124,7 +133,7 @@ function App() {
         },
       ]);
     }
-  }, [session, messages.length]);
+  }, [session, activeTab]);
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
@@ -135,7 +144,7 @@ function App() {
     if (isListening) {
       recognitionRef.current.stop();
     } else {
-      setInput(''); // Clear input before starting
+      setInput('');
       recognitionRef.current.start();
     }
   };
@@ -164,7 +173,6 @@ function App() {
     });
 
     try {
-      // Build conversation history (last 2 messages only to minimize tokens)
       const history = messages.slice(-2).map(m => ({ role: m.role, content: m.content }));
       const responseText = await getGeminiResponse(text, history);
 
@@ -174,7 +182,6 @@ function App() {
         try {
           const confirmData = JSON.parse(confirmMatch[1]);
           setConfirmationData(confirmData);
-          // Remove the tag from display
           const cleanResponse = responseText.replace(/\[CONFIRM_READY:.*?\]/s, '').trim();
           const botMessage: Message = {
             id: (Date.now() + 1).toString(),
@@ -219,12 +226,16 @@ function App() {
     }
   };
 
-  const handleQuickAction = (action: string) => {
+  const handleServiceSelect = (service: 'transport' | 'workshop') => {
+    setActiveTab('chat');
     const prompts: Record<string, string> = {
       transport: 'Necesito solicitar un servicio de transporte accesible',
       workshop: 'Necesito reparar mi silla de ruedas'
     };
-    sendMessage(prompts[action] || action);
+    // Esperar un momento para que el tab cambie antes de enviar
+    setTimeout(() => {
+      sendMessage(prompts[service] || service);
+    }, 300);
   };
 
   const handleConfirm = async () => {
@@ -287,12 +298,17 @@ function App() {
     return <Login />;
   }
 
+  const userName = session.user.user_metadata?.full_name || 
+                   session.user.user_metadata?.name || 
+                   session.user.email?.split('@')[0] || 
+                   'Usuario';
+  const userEmail = session.user.email || '';
+
   return (
     <div className="app-container">
-      <div className="chat-window">
-
-        {/* Header */}
-        <div className="chat-header">
+      <div className="main-content">
+        {/* Header - Solo visible en desktop */}
+        <div className="top-header">
           <div className="header-branding">
             <div className="logo-container">
               <Sparkles className="icon-md text-white" />
@@ -305,30 +321,25 @@ function App() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="header-user">
             {session?.user && (
-              <div className="flex items-center gap-3">
+              <div className="user-info">
                 {session.user.user_metadata?.avatar_url && (
                   <img
                     src={session.user.user_metadata.avatar_url}
                     alt="Avatar"
-                    className="w-8 h-8 rounded-full border-2 border-white/30"
+                    className="user-avatar"
                   />
                 )}
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">
-                    {session.user.user_metadata?.full_name || 
-                     session.user.user_metadata?.name || 
-                     session.user.email?.split('@')[0] || 
-                     'Usuario'}
-                  </p>
-                  <p className="text-xs text-white/80">{session.user.email}</p>
+                <div className="user-details">
+                  <p className="user-name">{userName}</p>
+                  <p className="user-email">{userEmail}</p>
                 </div>
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut();
                   }}
-                  className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="logout-btn"
                   title="Cerrar sesión"
                 >
                   Cerrar sesión
@@ -338,112 +349,113 @@ function App() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="quick-actions">
-          <button
-            className="quick-action-chip"
-            onClick={() => handleQuickAction('transport')}
-          >
-            <Truck className="icon-sm" />
-            Solicitar Transporte
-          </button>
-          <button
-            className="quick-action-chip"
-            onClick={() => handleQuickAction('workshop')}
-          >
-            <Wrench className="icon-sm" />
-            Reparar Silla
-          </button>
-        </div>
+        {/* Content Area */}
+        <div className="content-area">
+          {activeTab === 'home' && (
+            <HomePanel
+              onServiceSelect={handleServiceSelect}
+              onGoToChat={() => setActiveTab('chat')}
+              userName={userName}
+              userEmail={userEmail}
+            />
+          )}
 
-        {/* Messages Area */}
-        <div className="messages-area">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`message-row ${msg.role === 'user' ? 'user' : 'assistant'}`}
-            >
-              <div
-                className={`avatar ${msg.role === 'user' ? 'user' : 'assistant'}`}
-              >
-                {msg.role === 'user' ? (
-                  <User className="icon-sm text-white" />
-                ) : (
-                  <Bot className="icon-sm text-white" />
-                )}
-              </div>
-
-              <div
-                className={`message-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}
-              >
-                {msg.content.split('\n').map((line, i) => (
-                  <p key={i} style={{ margin: i > 0 ? '0.5rem 0 0 0' : 0 }}>{line}</p>
+          {activeTab === 'chat' && (
+            <div className="chat-tab">
+              {/* Messages Area */}
+              <div className="messages-area">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`message-row ${msg.role === 'user' ? 'user' : 'assistant'}`}
+                  >
+                    <div className={`avatar ${msg.role === 'user' ? 'user' : 'assistant'}`}>
+                      {msg.role === 'user' ? (
+                        <User className="icon-sm text-white" />
+                      ) : (
+                        <Bot className="icon-sm text-white" />
+                      )}
+                    </div>
+                    <div className={`message-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}>
+                      {msg.content.split('\n').map((line, i) => (
+                        <p key={i} style={{ margin: i > 0 ? '0.5rem 0 0 0' : 0 }}>{line}</p>
+                      ))}
+                      <span className={`message-time ${msg.role === 'user' ? 'user' : 'assistant'}`}>
+                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
                 ))}
-                <span className={`message-time ${msg.role === 'user' ? 'user' : 'assistant'}`}>
-                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                {isLoading && (
+                  <div className="message-row assistant">
+                    <div className="avatar assistant">
+                      <Bot className="icon-sm text-white" />
+                    </div>
+                    <div className="typing-content">
+                      <div className="typing-dots">
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                        <span className="dot"></span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="message-row assistant">
-              <div className="avatar assistant">
-                <Bot className="icon-sm text-white" />
-              </div>
-              <div className="typing-content">
-                <div className="typing-dots">
-                  <span className="dot"></span>
-                  <span className="dot"></span>
-                  <span className="dot"></span>
-                </div>
+
+              {/* Confirmation Card */}
+              {confirmationData && (
+                <ConfirmationCard
+                  serviceType={confirmationData.service_type}
+                  data={confirmationData.data}
+                  onConfirm={handleConfirm}
+                  onEdit={handleEdit}
+                />
+              )}
+
+              {/* Input Area - Fijo en la parte inferior */}
+              <div className="chat-input-area">
+                <form onSubmit={handleSubmit} className="input-form">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
+                    className="chat-input"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleMic}
+                    className={`mic-button ${isListening ? 'listening' : 'default'}`}
+                    title="Hablar"
+                  >
+                    {isListening ? <MicOff className="icon-sm" /> : <Mic className="icon-sm" />}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isLoading}
+                    className="send-button"
+                  >
+                    <Send className="icon-sm" />
+                  </button>
+                </form>
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
-        </div>
 
-        {/* Confirmation Card */}
-        {confirmationData && (
-          <ConfirmationCard
-            serviceType={confirmationData.service_type}
-            data={confirmationData.data}
-            onConfirm={handleConfirm}
-            onEdit={handleEdit}
-          />
-        )}
-
-        {/* Input Area */}
-        <div className="input-area">
-          <form onSubmit={handleSubmit} className="input-form">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
-              className="chat-input"
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              onClick={toggleMic}
-              className={`mic-button ${isListening ? 'listening' : 'default'}`}
-              title="Hablar"
-            >
-              {isListening ? <MicOff className="icon-sm" /> : <Mic className="icon-sm" />}
-            </button>
-            <button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              className="send-button"
-            >
-              <Send className="icon-sm" />
-            </button>
-          </form>
-          <div className="footer-text">
-            <p>Powered by Gemini & Supabase</p>
-          </div>
+          {activeTab === 'admin' && isAdmin && (
+            <AdminPanel />
+          )}
         </div>
       </div>
+
+      {/* Bottom Navigation - Fijo en móvil */}
+      <BottomNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 }
