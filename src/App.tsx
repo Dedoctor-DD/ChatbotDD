@@ -117,6 +117,13 @@ function App() {
         setMessages([]);
         setConfirmationData(null);
         setActiveTab('home');
+
+        // CRITICAL: If we are signed out but still have an auth hash, it means the auth failed (stale/invalid).
+        // We MUST clear the hash so the Login component doesn't get stuck in "Loading..."
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+          console.warn('Authentication failed (stale token), clearing hash...');
+          window.history.replaceState(null, '', window.location.pathname);
+        }
       }
     });
 
