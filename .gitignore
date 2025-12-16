@@ -40,3 +40,5 @@ mcp-server/
 *.tmp
 *.temp
 .cache/
+
+.vercel

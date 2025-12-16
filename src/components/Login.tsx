@@ -19,7 +19,7 @@ export function Login() {
     const handleLogin = async () => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -31,7 +31,7 @@ export function Login() {
                     }
                 }
             });
-            
+
             if (error) {
                 console.error('Error logging in:', error);
                 setError(error.message || 'Error al iniciar sesión con Google');
@@ -47,23 +47,23 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <LogIn className="w-8 h-8 text-blue-600" />
+        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+            <div className="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 text-center border border-slate-700">
+                <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <LogIn className="w-8 h-8 text-blue-500" />
                 </div>
 
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Bienvenido a DD Chatbot</h2>
-                <p className="text-gray-500 mb-8">Inicia sesión con Google para comenzar a usar DD Chatbot.</p>
+                <h2 className="text-2xl font-bold text-white mb-2">Bienvenido a DD Chatbot</h2>
+                <p className="text-slate-400 mb-8">Inicia sesión con Google para comenzar a usar DD Chatbot.</p>
 
                 <button
                     onClick={handleLogin}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-medium py-3 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mb-4"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="w-5 h-5 animate-spin text-gray-900" />
                             <span>Conectando...</span>
                         </>
                     ) : (
@@ -77,10 +77,41 @@ export function Login() {
                         </>
                     )}
                 </button>
-                
+
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-slate-700"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-slate-800 text-slate-500">O ingresa como invitado</span>
+                    </div>
+                </div>
+
+                <button
+                    onClick={() => {
+                        const testSession = {
+                            user: {
+                                id: 'test-user-id',
+                                email: 'usuario_prueba@ejemplo.com',
+                                user_metadata: {
+                                    full_name: 'Usuario de Prueba',
+                                    avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+                                    role: 'admin' // Force admin for testing
+                                }
+                            }
+                        };
+                        localStorage.setItem('dd_chatbot_test_session', JSON.stringify(testSession));
+                        window.location.reload();
+                    }}
+                    className="w-full flex items-center justify-center gap-3 bg-slate-700 border border-slate-600 hover:bg-slate-600 text-slate-200 font-medium py-3 px-4 rounded-xl transition-all text-sm group"
+                >
+                    <span className="group-hover:scale-110 transition-transform">🧪</span>
+                    Modo Pruebas (Sin Login)
+                </button>
+
                 {error && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-sm text-red-600">{error}</p>
+                    <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg">
+                        <p className="text-sm text-red-400">{error}</p>
                     </div>
                 )}
             </div>

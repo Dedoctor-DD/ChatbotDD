@@ -38,14 +38,27 @@ function App() {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   // Determinar si el usuario es admin (basado en email)
-  const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com' || 
-                  session?.user?.user_metadata?.role === 'admin';
+  const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com' ||
+    session?.user?.user_metadata?.role === 'admin';
 
   useEffect(() => {
     inputRef.current = input;
   }, [input]);
 
   useEffect(() => {
+    // Check for test session first
+    const testSessionStr = localStorage.getItem('dd_chatbot_test_session');
+    if (testSessionStr) {
+      try {
+        setSession(JSON.parse(testSessionStr));
+        setIsCheckingSession(false);
+        return; // Skip Supabase check
+      } catch (e) {
+        console.error('Invalid test session', e);
+        localStorage.removeItem('dd_chatbot_test_session');
+      }
+    }
+
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -58,13 +71,13 @@ function App() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setIsCheckingSession(false);
-      
+
       // Si el usuario acaba de hacer login, limpiar mensajes anteriores
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
         setActiveTab('home');
       }
-      
+
       // Si el usuario cerró sesión, limpiar todo
       if (!session && _event === 'SIGNED_OUT') {
         setMessages([]);
@@ -120,10 +133,10 @@ function App() {
   // Initial greeting when entering chat
   useEffect(() => {
     if (session && activeTab === 'chat' && messages.length === 0) {
-      const userName = session.user.user_metadata?.full_name || 
-                       session.user.user_metadata?.name || 
-                       session.user.email?.split('@')[0] || 
-                       'Usuario';
+      const userName = session.user.user_metadata?.full_name ||
+        session.user.user_metadata?.name ||
+        session.user.email?.split('@')[0] ||
+        'Usuario';
       setMessages([
         {
           id: '1',
@@ -298,10 +311,10 @@ function App() {
     return <Login />;
   }
 
-  const userName = session.user.user_metadata?.full_name || 
-                   session.user.user_metadata?.name || 
-                   session.user.email?.split('@')[0] || 
-                   'Usuario';
+  const userName = session.user.user_metadata?.full_name ||
+    session.user.user_metadata?.name ||
+    session.user.email?.split('@')[0] ||
+    'Usuario';
   const userEmail = session.user.email || '';
 
   return (
@@ -337,7 +350,10 @@ function App() {
                 </div>
                 <button
                   onClick={async () => {
+                    localStorage.removeItem('dd_chatbot_test_session'); // Clear test session if any
                     await supabase.auth.signOut();
+                    setSession(null); // Force update state
+                    window.location.reload();
                   }}
                   className="logout-btn"
                   title="Cerrar sesión"
