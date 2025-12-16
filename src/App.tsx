@@ -180,7 +180,9 @@ function App() {
     supabase.from('messages').insert({
       role: 'user',
       content: userMessage.content,
-      created_at: userMessage.timestamp.toISOString()
+      created_at: userMessage.timestamp.toISOString(),
+      user_id: session.user.id,
+      session_id: sessionId
     }).then(({ error }) => {
       if (error) console.error('Error logging user message:', error);
     });
@@ -220,7 +222,9 @@ function App() {
       supabase.from('messages').insert({
         role: 'assistant',
         content: responseText,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        user_id: session.user.id,
+        session_id: sessionId
       }).then(({ error }) => {
         if (error) console.error('Error logging assistant message:', error);
       });
@@ -348,7 +352,8 @@ function App() {
                   className="logout-btn"
                   title="Cerrar sesión"
                 >
-                  Cerrar sesión
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                  <span className="logout-text">Cerrar sesión</span>
                 </button>
               </div>
             )}
