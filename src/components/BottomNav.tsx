@@ -1,4 +1,4 @@
-import { MessageSquare, Users, Home } from 'lucide-react';
+import { MessageSquare, Users } from 'lucide-react';
 
 interface BottomNavProps {
   activeTab: 'chat' | 'admin' | 'home';
@@ -9,14 +9,8 @@ interface BottomNavProps {
 export function BottomNav({ activeTab, onTabChange, isAdmin }: BottomNavProps) {
   return (
     <nav className="bottom-nav">
-      <button
-        onClick={() => onTabChange('home')}
-        className={`nav-item ${activeTab === 'home' ? 'active' : ''}`}
-      >
-        <Home className="nav-icon" />
-        <span className="nav-label">Inicio</span>
-      </button>
-      
+
+
       <button
         onClick={() => onTabChange('chat')}
         className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}

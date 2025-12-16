@@ -7,7 +7,7 @@ import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
 import { BottomNav } from './components/BottomNav';
 import { AdminPanel } from './components/AdminPanel';
-import { HomePanel } from './components/HomePanel';
+
 
 interface Message {
   id: string;
@@ -26,7 +26,7 @@ type TabType = 'home' | 'chat' | 'admin';
 function App() {
   const [session, setSession] = useState<any>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [activeTab, setActiveTab] = useState<TabType>('chat');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -141,7 +141,7 @@ function App() {
         {
           id: '1',
           role: 'assistant',
-          content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿En qué puedo ayudarte hoy?`,
+          content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿Necesitas solicitar 'Transporte' 🚌 o 'Mantenimiento' 🔧?`,
           timestamp: new Date(),
         },
       ]);
@@ -239,17 +239,7 @@ function App() {
     }
   };
 
-  const handleServiceSelect = (service: 'transport' | 'workshop') => {
-    setActiveTab('chat');
-    const prompts: Record<string, string> = {
-      transport: 'Necesito solicitar un servicio de transporte accesible',
-      workshop: 'Necesito reparar mi silla de ruedas'
-    };
-    // Esperar un momento para que el tab cambie antes de enviar
-    setTimeout(() => {
-      sendMessage(prompts[service] || service);
-    }, 300);
-  };
+
 
   const handleConfirm = async () => {
     if (!confirmationData) return;
@@ -367,14 +357,7 @@ function App() {
 
         {/* Content Area */}
         <div className="content-area">
-          {activeTab === 'home' && (
-            <HomePanel
-              onServiceSelect={handleServiceSelect}
-              onGoToChat={() => setActiveTab('chat')}
-              userName={userName}
-              userEmail={userEmail}
-            />
-          )}
+
 
           {activeTab === 'chat' && (
             <div className="chat-tab">
