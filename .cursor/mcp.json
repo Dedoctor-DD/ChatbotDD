@@ -3,10 +3,11 @@
         "supabase": {
             "command": "node",
             "args": [
-                "c:/Users/s_pk_/Desktop/MANUEL/CHATBOT/mcp-server/packages/mcp-server-supabase/dist/index.js"
+                "c:\\Users\\s_pk_\\Desktop\\MANUEL\\CHATBOT\\mcp-server\\packages\\mcp-server-supabase\\dist\\transports\\stdio.js"
             ],
             "env": {
-                "SUPABASE_ACCESS_TOKEN": "sbp_aff5587b227798c53aa466d7b36b987c9a7e1806"
+                "SUPABASE_URL": "https://utsuqmulvfcyxqlonlnf.supabase.co",
+                "SUPABASE_ACCESS_TOKEN": "sbp_7deddf1bb8ab372fbae4375d5e1e3bc4e93e6c91"
             }
         }
     }

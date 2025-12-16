@@ -7,6 +7,7 @@ import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
 import { BottomNav } from './components/BottomNav';
 import { AdminPanel } from './components/AdminPanel';
+import { HomePanel } from './components/HomePanel';
 
 
 interface Message {
@@ -364,6 +365,22 @@ function App() {
         {/* Content Area */}
         <div className="content-area">
 
+
+          {activeTab === 'home' && (
+            <HomePanel
+              onServiceSelect={(type) => {
+                const prompt = type === 'transport' ? 'Quiero solicitar transporte' : 'Necesito mantenimiento para mi silla';
+                setInput(prompt);
+                setActiveTab('chat');
+                // Optional: Auto-send message
+                // sendMessage(prompt);
+              }}
+              onGoToChat={() => setActiveTab('chat')}
+              userName={userName}
+              userEmail={userEmail}
+              userId={session.user.id}
+            />
+          )}
 
           {activeTab === 'chat' && (
             <div className="chat-tab">

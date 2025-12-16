@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Bot, Loader2 } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 export function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -94,12 +94,12 @@ export function Login() {
                     onClick={() => {
                         const testSession = {
                             user: {
-                                id: 'test-user-id',
+                                id: '00000000-0000-0000-0000-000000000000', // UUID válido para evitar errores de tipo en DB
                                 email: 'usuario_prueba@ejemplo.com',
                                 user_metadata: {
                                     full_name: 'Usuario de Prueba',
                                     avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-                                    role: 'admin'
+                                    role: 'guest'
                                 }
                             }
                         };
