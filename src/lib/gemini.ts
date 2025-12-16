@@ -1,8 +1,10 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error('VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set');
+    console.error('Missing env vars:', { url: !!SUPABASE_URL, key: !!SUPABASE_ANON_KEY });
+    // Don't throw top-level error to avoid crashing the whole app if variables are missing
+    // Instead, let the function call fail later if needed
 }
 
 // Nota: Ya NO necesitamos VITE_GEMINI_API_KEY
