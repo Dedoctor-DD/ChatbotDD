@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { LogIn, Loader2 } from 'lucide-react';
+import { Bot, Loader2 } from 'lucide-react';
 
 export function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -47,40 +47,36 @@ export function Login() {
     };
 
     return (
-        <div className="login-container min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[100px] animate-pulse"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-            </div>
+        <div className="login-wrapper">
+            {/* Background Orbs */}
+            <div className="login-bg-glow glow-blue"></div>
+            <div className="login-bg-glow glow-indigo"></div>
 
-            <div className="relative max-w-md w-full bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 sm:p-8 text-center border border-slate-700/30">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/10 rotate-3 border border-blue-500/20">
-                    <LogIn className="w-8 h-8 text-blue-400 drop-shadow-md" />
+            <div className="login-card">
+                <div className="login-logo-box">
+                    <Bot className="w-8 h-8 text-blue-400" />
                 </div>
 
-                <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-white via-blue-100 to-slate-200 bg-clip-text text-transparent">Bienvenido</h2>
-                <p className="text-slate-400 mb-8 text-sm leading-relaxed px-4 font-light">
-                    Tu asistente virtual inteligente para servicios de transporte y mantenimiento.
+                <h2 className="login-title">DD Chatbot</h2>
+                <p className="login-subtitle">
+                    Tu asistente virtual inteligente para transportes y mantenimiento.
                 </p>
 
                 <button
                     onClick={handleLogin}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-900 font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed mb-6 active:scale-[0.98]"
+                    className="login-btn btn-google"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin text-slate-900" />
+                            <div className="spinner"></div>
                             <span>Conectando...</span>
                         </>
                     ) : (
                         <>
                             <img
                                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                                alt="Google logo"
-                                className="w-5 h-5 shrink-0"
-                                width="20"
-                                height="20"
+                                alt="Google"
                                 style={{ width: '20px', height: '20px' }}
                             />
                             <span>Continuar con Google</span>
@@ -88,13 +84,10 @@ export function Login() {
                     )}
                 </button>
 
-                <div className="relative my-8">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-slate-700"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase tracking-wider font-medium">
-                        <span className="px-3 bg-slate-900/0 backdrop-blur-sm text-slate-500 rounded-full">O prueba sin cuenta</span>
-                    </div>
+                <div className="login-divider">
+                    <span className="divider-text" style={{ background: 'rgba(30, 41, 59, 0.8)', padding: '0 8px', borderRadius: '4px' }}>
+                        opciones de prueba
+                    </span>
                 </div>
 
                 <button
@@ -113,14 +106,13 @@ export function Login() {
                         localStorage.setItem('dd_chatbot_test_session', JSON.stringify(testSession));
                         window.location.reload();
                     }}
-                    className="w-full flex items-center justify-center gap-2 bg-slate-700/50 border border-slate-600/50 hover:bg-slate-700 text-slate-300 font-medium py-3 px-4 rounded-xl transition-all text-sm hover:border-slate-500 group active:scale-[0.98]"
+                    className="login-btn btn-test"
                 >
-                    <span className="group-hover:rotate-12 transition-transform duration-300 text-base">🧪</span>
-                    <span>Ingresar modo pruebas</span>
+                    <span>🧪 Ingresar sin cuenta (Demo)</span>
                 </button>
 
                 {error && (
-                    <div className="mt-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl animate-shake">
+                    <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                         <p className="text-xs text-red-400 font-medium">{error}</p>
                     </div>
                 )}
