@@ -249,8 +249,9 @@ export function AdminPanel() {
               </div>
             ))
           )}
-      )}
         </div>
-      );
+      )}
+    </div>
+  );
 }
 
