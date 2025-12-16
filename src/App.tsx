@@ -251,6 +251,7 @@ function App() {
     try {
       const { error } = await supabase.from('service_requests').insert({
         session_id: sessionId,
+        user_id: session.user.id,
         service_type: confirmationData.service_type,
         status: 'confirmed',
         collected_data: confirmationData.data
