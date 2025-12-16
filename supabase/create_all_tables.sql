@@ -135,6 +135,13 @@ BEGIN
     ELSE
         RAISE NOTICE 'ℹ️  Tabla service_requests ya existe';
         
+        -- Verificar si falta la columna user_id y agregarla (CRÍTICO: Hacer esto antes de las políticas)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='service_requests' AND column_name='user_id') THEN
+            ALTER TABLE service_requests ADD COLUMN user_id UUID DEFAULT auth.uid();
+            CREATE INDEX idx_service_requests_user_id ON service_requests(user_id);
+            RAISE NOTICE '✅ Columna user_id agregada a service_requests';
+        END IF;
+
         -- Verificar que RLS esté habilitado
         IF NOT EXISTS (
             SELECT 1 FROM pg_tables t
