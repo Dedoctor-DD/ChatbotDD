@@ -181,10 +181,8 @@ function App() {
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        // Auto-send if we have text
-        if (inputRef.current.trim()) {
-          sendMessage(inputRef.current);
-        }
+        // Do NOT auto-send. Let user review and add more if needed.
+        // User must click send manually.
       };
     }
   }, []);

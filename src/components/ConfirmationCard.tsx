@@ -76,6 +76,13 @@ export function ConfirmationCard({ serviceType, data, onConfirm, onEdit }: Confi
             </div>
 
             <div className="confirmation-actions">
+                <button
+                    onClick={() => alert('¡Próximamente podrás subir fotos aquí! Estamos habilitando el almacenamiento seguro.')}
+                    className="btn-secondary text-xs"
+                    title="Próximamente"
+                >
+                    📷 Adjuntar Foto
+                </button>
                 <button onClick={onEdit} className="btn-secondary">
                     <Edit3 className="icon-sm" />
                     Editar

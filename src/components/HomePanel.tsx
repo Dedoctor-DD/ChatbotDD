@@ -152,31 +152,59 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       </div>
 
       {/* RECENT ACTIVITY */}
-      {recentRequests.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-3 ml-1">Actividad Reciente</h3>
+      <div className="mb-8">
+        <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-3 ml-1">Estado de Solicitudes</h3>
+
+        {recentRequests.length > 0 ? (
           <div className="space-y-3">
-            {recentRequests.map(req => (
-              <div key={req.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${req.service_type === 'transport' ? 'bg-blue-500/20 text-blue-400' : 'bg-orange-500/20 text-orange-400'}`}>
-                    {req.service_type === 'transport' ? <Truck className="w-4 h-4" /> : <Wrench className="w-4 h-4" />}
+            {recentRequests.map(req => {
+              // Status Logic mapping
+              let statusLabel = 'Pendiente';
+              let statusClass = 'bg-yellow-500/20 text-yellow-400';
+
+              if (req.status === 'confirmed') {
+                statusLabel = 'Confirmado';
+                statusClass = 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+              } else if (req.status === 'in_process') {
+                statusLabel = 'En Proceso';
+                statusClass = 'bg-purple-500/20 text-purple-400 border border-purple-500/30 animate-pulse';
+              } else if (req.status === 'completed') {
+                statusLabel = 'Completado';
+                statusClass = 'bg-green-500/20 text-green-400';
+              } else if (req.status === 'cancelled') {
+                statusLabel = 'Cancelado';
+                statusClass = 'bg-red-500/20 text-red-400';
+              }
+
+              return (
+                <div key={req.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full ${req.service_type === 'transport' ? 'bg-blue-600/20 text-blue-400' : 'bg-orange-600/20 text-orange-400'}`}>
+                      {req.service_type === 'transport' ? <Truck className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
+                    </div>
+                    <div>
+                      <p className="font-medium text-white text-sm">
+                        {req.service_type === 'transport' ? 'Solicitud de Transporte' : 'Solicitud de Taller'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(req.created_at).toLocaleDateString()} • {new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-white text-sm">Solved {req.service_type === 'transport' ? 'Transporte' : 'Taller'}</p>
-                    <p className="text-xs text-gray-400">{new Date(req.created_at).toLocaleDateString()}</p>
+                  <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}>
+                    {statusLabel}
                   </div>
                 </div>
-                <div className={`px-2 py-1 rounded text-xs font-medium ${req.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                  req.status === 'cancelled' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                  {req.status}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
+            <p className="text-gray-400 text-sm mb-2">No tienes solicitudes recientes.</p>
+            <p className="text-xs text-gray-500">Usa los botones de arriba para crear una nueva.</p>
+          </div>
+        )}
+      </div>
 
       <div className="quick-actions-section">
         <button
