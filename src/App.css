@@ -240,13 +240,12 @@ body {
    ============================================ */
 .content-area {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+  /* Prevent double scrollbar, let chat-tab handle it */
   position: relative;
   width: 100%;
-  padding-top: 10px;
-  padding-bottom: 20px;
-  /* Scrollbar will appear inside this area, stopping above bottom nav */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  /* Separator line */
 }
 
 /* Scrollbar styling for content area */
@@ -417,12 +416,15 @@ body {
 /* ============================================
    CHAT TAB (Polished Light Theme)
    ============================================ */
+/* ============================================
+   CHAT TAB (Polished Layout)
+   ============================================ */
 .chat-tab {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  width: 100%;
   background: transparent;
-  padding-bottom: 0;
   position: relative;
 }
 
@@ -431,18 +433,18 @@ body {
     background: #ffffff;
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
-    height: calc(100vh - 120px);
+    /* height is handled by parent flex */
   }
 }
 
 .messages-area {
   flex: 1;
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
+  /* Remove bottom padding to let input area handle spacing */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  /* Increased gap */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
