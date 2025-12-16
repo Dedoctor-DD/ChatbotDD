@@ -35,7 +35,12 @@ function App() {
   const inputRef = useRef('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+
+  // State for Quick Replies
+  const [quickReplies, setQuickReplies] = useState<string[]>([]);
+
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+
   // Session ID management for individual chats
   const [sessionId, setSessionId] = useState(() => {
     const saved = localStorage.getItem('dd_current_session_id');
@@ -285,62 +290,71 @@ function App() {
     });
 
     try {
-      const history = messages.slice(-2).map(m => ({ role: m.role, content: m.content }));
+      const history = messages.slice(-15).map(m => ({ role: m.role, content: m.content }));
+
       const responseText = await getGeminiResponse(text, history);
 
-      // Check for confirmation signal
-      const confirmMatch = responseText.match(/\[CONFIRM_READY:\s*({.*?})\]/s);
+      // 1. Check for Quick Replies
+      const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\]/s);
+      let cleanResponse = responseText;
+
+      if (quickRepliesMatch) {
+        try {
+          const options = JSON.parse(quickRepliesMatch[1]);
+          setQuickReplies(options);
+          cleanResponse = cleanResponse.replace(/\[QUICK_REPLIES:.*?\]/s, '').trim();
+        } catch (e) {
+          console.error('Error parsing quick replies:', e);
+        }
+      } else {
+        setQuickReplies([]);
+      }
+
+      // 2. Check for Confirmation
+      const confirmMatch = cleanResponse.match(/\[CONFIRM_READY:\s*({.*?})\]/s);
+
       if (confirmMatch) {
         try {
           const confirmData = JSON.parse(confirmMatch[1]);
           setConfirmationData(confirmData);
-          const cleanResponse = responseText.replace(/\[CONFIRM_READY:.*?\]/s, '').trim();
-          const botMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: cleanResponse,
-            timestamp: new Date(),
-          };
-          setMessages((prev) => [...prev, botMessage]);
+          cleanResponse = cleanResponse.replace(/\[CONFIRM_READY:.*?\]/s, '').trim();
+          setQuickReplies([]);
         } catch (e) {
           console.error('Failed to parse confirmation data:', e);
         }
-      } else {
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: responseText || 'Lo siento, no pude procesar tu solicitud.',
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botMessage]);
       }
+
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: cleanResponse || 'Lo siento, no pude procesar tu solicitud.',
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
 
       // Log assistant message
       supabase.from('messages').insert({
         role: 'assistant',
-        content: responseText,
+        content: cleanResponse,
         created_at: new Date().toISOString(),
         user_id: session.user.id,
         session_id: sessionId
-      }).then(({ error }) => {
-        if (error) console.error('Error logging assistant message:', error);
       });
 
     } catch (error) {
       console.error('Error getting response:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Hubo un error al conectar con el servicio.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setQuickReplies([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-
+  // Helper to handle Quick Reply click
+  const handleQuickReply = (text: string) => {
+    sendMessage(text);
+    setQuickReplies([]);
+  };
 
   const handleConfirm = async () => {
     if (!confirmationData) return;
@@ -559,6 +573,22 @@ function App() {
 
               {/* Input Area - Fijo en la parte inferior */}
               <div className="chat-input-area">
+
+                {/* QUICK REPLIES */}
+                {quickReplies.length > 0 && !confirmationData && (
+                  <div className="flex gap-2 mb-3 overflow-x-auto pb-2 px-1">
+                    {quickReplies.map((reply, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleQuickReply(reply)}
+                        className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-200 text-sm px-4 py-2 rounded-full whitespace-nowrap transition-colors border border-blue-500/30"
+                      >
+                        {reply}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="input-form">
                   <input
                     type="text"
