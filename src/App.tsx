@@ -113,7 +113,7 @@ function App() {
       // Successfully signed in
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
-        setActiveTab('chat');
+        setActiveTab('home'); // Send to Home Dashboard first
         // Clean URL
         window.history.replaceState(null, '', window.location.pathname);
       }
