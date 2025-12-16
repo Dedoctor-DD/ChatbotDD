@@ -60,35 +60,52 @@ function App() {
       }
     }
 
-    // Check active session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error recovering session:', error);
-        // If session recovery fails (e.g. stale token), clear hash to prevent loops
-        if (window.location.hash) {
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }
-      setSession(session);
-      setIsCheckingSession(false);
-    });
+    // Check active session logic
+    const handleSessionCheck = async () => {
+      // First, check if we are handling an OAuth redirect
+      const isAuthRedirect = window.location.hash && window.location.hash.includes('access_token');
 
-    // Listen for changes
+      if (isAuthRedirect) {
+        console.log('Detectada redirección OAuth, esperando procesamiento...');
+        // Let supabase internal logic handle the hash via onAuthStateChange
+        // We do NOT set isCheckingSession(false) here, we wait for the event
+      } else {
+        // Normal load
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          if (error.status === 401) {
+            // Token invalido, limpiar todo
+            await supabase.auth.signOut();
+            localStorage.clear();
+          }
+        }
+        setSession(session);
+        setIsCheckingSession(false);
+      }
+    };
+
+    handleSessionCheck();
+
+    // Listen for auth changes (Login, Logout, OAuth finish)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth Event:', _event);
       setSession(session);
+
+      // Stop loading state on any auth event
       setIsCheckingSession(false);
 
-      // Si el usuario acaba de hacer login, limpiar mensajes anteriores y llevar al chat
+      // Successfully signed in
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
         setActiveTab('chat');
-        // Limpiar el hash de la URL (access_token) para que se vea limpio
+        // Clean URL
         window.history.replaceState(null, '', window.location.pathname);
       }
 
-      // Si el usuario cerró sesión, limpiar todo
+      // Signed out
       if (!session && _event === 'SIGNED_OUT') {
         setMessages([]);
         setConfirmationData(null);
