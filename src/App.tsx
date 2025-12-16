@@ -177,21 +177,53 @@ function App() {
     }
   }, [messages, activeTab]);
 
-  // Initial greeting when entering chat
+  // Load persistent history when entering chat
   useEffect(() => {
-    if (session && activeTab === 'chat' && messages.length === 0) {
-      const userName = session.user.user_metadata?.full_name ||
-        session.user.user_metadata?.name ||
-        session.user.email?.split('@')[0] ||
-        'Usuario';
-      setMessages([
-        {
-          id: '1',
-          role: 'assistant',
-          content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿Necesitas solicitar 'Transporte' 🚌 o 'Mantenimiento' 🔧?`,
-          timestamp: new Date(),
-        },
-      ]);
+    if (session && activeTab === 'chat') {
+      const loadHistory = async () => {
+        // Obtenemos los últimos 50 mensajes de este usuario (orden cronológico)
+        const { data: history, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false }) // Traemos los más recientes primero
+          .limit(50);
+
+        if (error) {
+          console.error('Error loading history:', error);
+          return;
+        }
+
+        if (history && history.length > 0) {
+          // Supabase los devuelve "más recientes primero" por el orden, así que invertimos para mostrar cronológicamente
+          const sortedHistory = history.reverse().map((msg: any) => ({
+            id: msg.id,
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content,
+            timestamp: new Date(msg.created_at)
+          }));
+          setMessages(sortedHistory);
+          // Opcional: Agregar una pequeña marca visual de "Historial cargado"
+        } else {
+          // Si no hay historial, mostramos el saludo inicial
+          if (messages.length === 0) {
+            const userName = session.user.user_metadata?.full_name ||
+              session.user.user_metadata?.name ||
+              session.user.email?.split('@')[0] ||
+              'Usuario';
+            setMessages([
+              {
+                id: '1',
+                role: 'assistant',
+                content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿Necesitas solicitar 'Transporte' 🚌 o 'Mantenimiento' 🔧?`,
+                timestamp: new Date(),
+              },
+            ]);
+          }
+        }
+      };
+
+      loadHistory();
     }
   }, [session, activeTab]);
 
