@@ -12,110 +12,111 @@ interface ServiceRequest {
   updated_at: string;
 }
 
-export function AdminPanel() {
-  const [requests, setRequests] = useState<ServiceRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'confirmed' | 'completed' | 'cancelled'>('all');
+/* New State for Admin Dashboard View */
+const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending'>('dashboard');
 
-  useEffect(() => {
-    loadRequests();
-    // Refrescar cada 30 segundos
-    const interval = setInterval(loadRequests, 30000);
-    return () => clearInterval(interval);
-  }, [filter]);
+useEffect(() => {
+  loadRequests();
+  const interval = setInterval(loadRequests, 30000);
+  return () => clearInterval(interval);
+}, []); // Reload when component mounts
 
-  const loadRequests = async () => {
-    try {
-      let query = supabase
-        .from('service_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
+const loadRequests = async () => {
+  try {
+    // Load all requests initially
+    const { data, error } = await supabase
+      .from('service_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-      if (filter !== 'all') {
-        query = query.eq('status', filter);
-      }
+    if (error) throw error;
+    setRequests(data || []);
+  } catch (error) {
+    console.error('Error loading requests:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const { data, error } = await query;
+// Filter logic based on View
+const getFilteredRequests = () => {
+  if (activeView === 'transport') return requests.filter(r => r.service_type === 'transport');
+  if (activeView === 'workshop') return requests.filter(r => r.service_type === 'workshop');
+  if (activeView === 'pending') return requests.filter(r => r.status === 'confirmed' || r.status === 'draft');
+  return requests;
+};
 
-      if (error) throw error;
-      setRequests(data || []);
-    } catch (error) {
-      console.error('Error loading requests:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const filteredRequests = getFilteredRequests();
 
-  const updateStatus = async (id: string, newStatus: 'confirmed' | 'completed' | 'cancelled') => {
-    try {
-      const { error } = await supabase
-        .from('service_requests')
-        .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', id);
+// Dashboard Button Component
+const DashboardBtn = ({ icon: Icon, title, count, onClick, colorClass, bgClass }: any) => (
+  <button onClick={onClick} className={`dashboard-btn ${bgClass}`}>
+    <div className={`icon-circle ${colorClass}`}>
+      <Icon className="w-6 h-6 text-white" />
+    </div>
+    <div className="btn-info">
+      <h3>{title}</h3>
+      <span className="count-badge">{count} Solicitudes</span>
+    </div>
+  </button>
+);
 
-      if (error) throw error;
-      loadRequests();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      alert('Error al actualizar el estado');
-    }
-  };
+return (
+  <div className="admin-panel">
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case 'completed':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'cancelled':
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      default:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels: Record<string, string> = {
-      draft: 'Borrador',
-      confirmed: 'Confirmado',
-      completed: 'Completado',
-      cancelled: 'Cancelado'
-    };
-    return labels[status] || status;
-  };
-
-  const filteredRequests = filter === 'all' 
-    ? requests 
-    : requests.filter(r => r.status === filter);
-
-  return (
-    <div className="admin-panel">
-      <div className="admin-header">
-        <h2 className="admin-title">Panel de Administración</h2>
-        <button
-          onClick={loadRequests}
-          className="refresh-btn"
-          title="Actualizar"
-        >
-          <RefreshCw className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Filtros */}
-      <div className="admin-filters">
-        {(['all', 'confirmed', 'completed', 'cancelled'] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`filter-btn ${filter === f ? 'active' : ''}`}
-          >
-            {f === 'all' ? 'Todos' : getStatusLabel(f)}
+    {/* Dynamic Header */}
+    <div className="admin-header">
+      <div className="header-left">
+        {activeView !== 'dashboard' && (
+          <button onClick={() => setActiveView('dashboard')} className="back-btn">
+            ← Volver
           </button>
-        ))}
+        )}
+        <h2 className="admin-title">
+          {activeView === 'dashboard' ? 'Panel de Control' :
+            activeView === 'transport' ? 'Transporte 🚌' :
+              activeView === 'workshop' ? 'Taller 🔧' : 'Pendientes ⏳'}
+        </h2>
       </div>
+      <button onClick={loadRequests} className="refresh-btn">
+        <RefreshCw className="w-5 h-5" />
+      </button>
+    </div>
 
-      {/* Lista de solicitudes */}
+    {/* DASHBOARD VIEW */}
+    {activeView === 'dashboard' && (
+      <div className="dashboard-grid">
+        <DashboardBtn
+          icon={Truck}
+          title="Transporte"
+          count={requests.filter(r => r.service_type === 'transport').length}
+          onClick={() => setActiveView('transport')}
+          colorClass="bg-blue-500"
+          bgClass="bg-blue-50"
+        />
+        <DashboardBtn
+          icon={Wrench}
+          title="Sillas de Ruedas"
+          count={requests.filter(r => r.service_type === 'workshop').length}
+          onClick={() => setActiveView('workshop')}
+          colorClass="bg-orange-500"
+          bgClass="bg-orange-50"
+        />
+        <DashboardBtn
+          icon={Clock}
+          title="Pendientes"
+          count={requests.filter(r => r.status === 'draft' || r.status === 'confirmed').length}
+          onClick={() => setActiveView('pending')}
+          colorClass="bg-yellow-500"
+          bgClass="bg-yellow-50"
+        />
+      </div>
+    )}
+
+    {/* LIST VIEW (If not dashboard) */}
+    {activeView !== 'dashboard' && (
       <div className="requests-list">
+        {/* ... existing list logic ... */}
         {loading ? (
           <div className="loading-state">
             <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
@@ -209,6 +210,6 @@ export function AdminPanel() {
         )}
       </div>
     </div>
-  );
+);
 }
 
