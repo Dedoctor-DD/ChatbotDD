@@ -84,6 +84,8 @@ function App() {
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
         setActiveTab('chat');
+        // Limpiar el hash de la URL (access_token) para que se vea limpio
+        window.history.replaceState(null, '', window.location.pathname);
       }
 
       // Si el usuario cerró sesión, limpiar todo
