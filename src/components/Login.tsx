@@ -6,11 +6,15 @@ export function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Verificar si hay una sesión activa al cargar
+    // Verificar si hay una sesión activa o si estamos volviendo de OAuth
     useEffect(() => {
+        // Si hay un hash con access_token, estamos volviendo de Google
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+            setIsLoading(true);
+        }
+
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                // Si ya hay sesión, no hacer nada (el App.tsx manejará el redirect)
                 console.log('Sesión activa encontrada');
             }
         });
@@ -37,8 +41,6 @@ export function Login() {
                 setError(error.message || 'Error al iniciar sesión con Google');
                 setIsLoading(false);
             }
-            // Si no hay error, el usuario será redirigido a Google
-            // No necesitamos hacer setIsLoading(false) aquí porque la página cambiará
         } catch (err: any) {
             console.error('Error logging in:', err);
             setError(err.message || 'Error al iniciar sesión con Google');
@@ -82,33 +84,6 @@ export function Login() {
                             <span>Continuar con Google</span>
                         </>
                     )}
-                </button>
-
-                <div className="login-divider">
-                    <span className="divider-text" style={{ background: 'rgba(30, 41, 59, 0.8)', padding: '0 8px', borderRadius: '4px' }}>
-                        opciones de prueba
-                    </span>
-                </div>
-
-                <button
-                    onClick={() => {
-                        const testSession = {
-                            user: {
-                                id: '00000000-0000-0000-0000-000000000000', // UUID válido para evitar errores de tipo en DB
-                                email: 'usuario_prueba@ejemplo.com',
-                                user_metadata: {
-                                    full_name: 'Usuario de Prueba',
-                                    avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-                                    role: 'guest'
-                                }
-                            }
-                        };
-                        localStorage.setItem('dd_chatbot_test_session', JSON.stringify(testSession));
-                        window.location.reload();
-                    }}
-                    className="login-btn btn-test"
-                >
-                    <span>🧪 Ingresar sin cuenta (Demo)</span>
                 </button>
 
                 {error && (
