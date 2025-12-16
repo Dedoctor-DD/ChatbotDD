@@ -859,3 +859,40 @@ body {
 .text-white {
   color: #fff;
 }
+
+/* ============================================
+   LOGIN ANIMATIONS
+   ============================================ */
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@keyframes gradient-bg {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.login-container {
+  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0f172a, #111827);
+  background-size: 400% 400%;
+  animation: gradient-bg 15s ease infinite;
+}
