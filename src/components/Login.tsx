@@ -79,6 +79,9 @@ export function Login() {
                                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                                 alt="Google logo"
                                 className="w-5 h-5 shrink-0"
+                                width="20"
+                                height="20"
+                                style={{ width: '20px', height: '20px' }}
                             />
                             <span>Continuar con Google</span>
                         </>
