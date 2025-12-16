@@ -62,6 +62,13 @@ function App() {
 
     // Check active session logic
     const handleSessionCheck = async () => {
+      // DEBUG: Verify Env Vars
+      console.log('--- ENTORNO DEPURACIÓN ---');
+      console.log('URL:', import.meta.env.VITE_SUPABASE_URL);
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+      console.log('KEY (Primeros 10 chars):', key ? key.substring(0, 10) + '...' : 'NO DEFINIDA');
+      console.log('--------------------------');
+
       // In PKCE flow, getSession() handles the code exchange.
       // We must call it even if we see a code/token in the URL.
 
