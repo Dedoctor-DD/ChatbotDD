@@ -72,10 +72,10 @@ function App() {
       setSession(session);
       setIsCheckingSession(false);
 
-      // Si el usuario acaba de hacer login, limpiar mensajes anteriores
+      // Si el usuario acaba de hacer login, limpiar mensajes anteriores y llevar al chat
       if (session && _event === 'SIGNED_IN') {
         setMessages([]);
-        setActiveTab('home');
+        setActiveTab('chat');
       }
 
       // Si el usuario cerró sesión, limpiar todo

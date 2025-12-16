@@ -31,12 +31,14 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail }: 
             className="service-card transport"
           >
             <div className="service-icon transport">
-              <Truck className="w-8 h-8" />
+              <Truck />
             </div>
-            <h3 className="service-title">Solicitar Transporte</h3>
-            <p className="service-description">
-              Solicita un servicio de transporte accesible para tus necesidades
-            </p>
+            <div className="service-content">
+              <h3 className="service-title">Solicitar Transporte</h3>
+              <p className="service-description">
+                Servicio accesible puerta a puerta
+              </p>
+            </div>
           </button>
 
           <button
@@ -44,12 +46,14 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail }: 
             className="service-card workshop"
           >
             <div className="service-icon workshop">
-              <Wrench className="w-8 h-8" />
+              <Wrench />
             </div>
-            <h3 className="service-title">Mantenimiento de Silla</h3>
-            <p className="service-description">
-              Solicita reparación o mantenimiento de tu silla de ruedas
-            </p>
+            <div className="service-content">
+              <h3 className="service-title">Mantenimiento</h3>
+              <p className="service-description">
+                Reparación de silla de ruedas
+              </p>
+            </div>
           </button>
         </div>
       </div>
