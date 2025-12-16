@@ -12,8 +12,8 @@ export async function getGeminiResponse(
     conversationHistory: Array<{ role: string, content: string }> = []
 ): Promise<string> {
     try {
-        // Limitar historial a últimos 2 mensajes para optimizar tokens
-        const recentHistory = conversationHistory.slice(-2);
+        // Enviar más contexto (últimos 15 mensajes) para evitar que el bot olvide datos previos
+        const recentHistory = conversationHistory.slice(-15);
 
         // Obtener sesión actual para enviar token de usuario si existe
         const { data: { session } } = await supabase.auth.getSession();
