@@ -163,9 +163,9 @@ function App() {
     let timeout: any;
     if (isLoading) {
       timeout = setTimeout(() => {
-        console.warn('Loading stuck for 25s, resetting...');
+        console.warn('Loading stuck for 15s, resetting...');
         setIsLoading(false);
-      }, 25000);
+      }, 15000);
     }
     return () => clearTimeout(timeout);
   }, [isLoading]);
@@ -299,8 +299,8 @@ function App() {
     setInput('');
     setIsLoading(true);
 
-    // Log to Supabase (ONLY if not guest or test admin)
-    if (!session.user.id.startsWith('guest-') && !session.user.id.startsWith('admin-')) {
+    // Log to Supabase (Always log)
+    if (session?.user?.id) {
       supabase.from('messages').insert({
         role: 'user',
         content: userMessage.content,
@@ -362,14 +362,16 @@ function App() {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      // Log assistant message (ONLY if not guest or test admin)
-      if (!session.user.id.startsWith('guest-') && !session.user.id.startsWith('admin-')) {
+      // Log assistant message (Always log, as IDs are now valid UUIDs)
+      if (session?.user?.id) {
         supabase.from('messages').insert({
           role: 'assistant',
           content: cleanResponse,
           created_at: new Date().toISOString(),
           user_id: session.user.id,
           session_id: sessionId
+        }).then(({ error }) => {
+          if (error) console.error('Error logging assistant message:', error);
         });
       }
 
