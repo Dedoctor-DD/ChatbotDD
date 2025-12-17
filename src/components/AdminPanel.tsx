@@ -5,44 +5,17 @@ import {
   MapPin, Phone, LayoutDashboard, Menu, AlertCircle, ChevronRight, Edit3, User
 } from 'lucide-react';
 
-interface ServiceRequest {
-  id: string;
-  session_id: string;
-  service_type: 'transport' | 'workshop';
-  status: 'draft' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  collected_data: any;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Profile {
-  id: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  address: string;
-  admin_notes: string;
-  created_at: string;
-}
-
-interface Debt {
-  id: string;
-  description: string;
-  amount: number;
-  status: 'pending' | 'paid' | 'cancelled';
-  due_date: string;
-  created_at: string;
-}
+import type { ServiceRequest, Profile, Debt, Tariff } from '../types';
 
 export function AdminPanel() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending' | 'clients' | 'pricing'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [tariffs, setTariffs] = useState<any[]>([]); // New State
+  const [tariffs, setTariffs] = useState<Tariff[]>([]); // New State
   const [loading, setLoading] = useState(true);
   const [editingTariff, setEditingTariff] = useState<string | null>(null); // Track which row is being edited
-  const [tempTariffValues, setTempTariffValues] = useState<any>({}); // Temp values for editing
+  const [tempTariffValues, setTempTariffValues] = useState<Record<string, Partial<Tariff>>>({}); // Temp values for editing
 
   // Client Management State
   const [selectedClient, setSelectedClient] = useState<Profile | null>(null);
@@ -106,7 +79,7 @@ export function AdminPanel() {
       const { error } = await supabase
         .from('tariffs')
         .update({
-          price: parseInt(updates.price),
+          price: typeof updates.price === 'string' ? parseInt(updates.price) : updates.price,
           description: updates.description,
           updated_at: new Date().toISOString()
         })
@@ -441,7 +414,7 @@ export function AdminPanel() {
                               type="number"
                               className="w-32 pl-6 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                               value={tempTariffValues[t.id]?.price || 0}
-                              onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: e.target.value } })}
+                              onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })}
                             />
                           </div>
                         ) : (

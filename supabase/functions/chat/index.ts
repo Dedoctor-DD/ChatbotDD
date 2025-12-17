@@ -1,4 +1,3 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
@@ -11,29 +10,48 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req: Request) => {
+interface Message {
+    role: 'user' | 'model';
+    content: string;
+}
+
+interface ChatRequest {
+    prompt: string;
+    conversationHistory: Message[];
+}
+
+interface Tariff {
+    category: string;
+    sub_category: string;
+    price: number;
+    description?: string;
+}
+
+Deno.serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
 
     try {
-        const { prompt, conversationHistory } = await req.json()
+        if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured');
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('Supabase credentials not configured');
 
-        if (!GEMINI_API_KEY) {
-            throw new Error('GEMINI_API_KEY not configured')
-        }
+        const { prompt, conversationHistory } = await req.json() as ChatRequest;
 
         // Initialize Supabase Client
-        const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!)
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Fetch Tariffs
-        const { data: tariffs } = await supabase.from('tariffs').select('*')
+        const { data: tariffs, error: tariffError } = await supabase.from('tariffs').select('*');
+        if (tariffError) {
+            console.error('Error fetching tariffs:', tariffError);
+        }
 
-        let tariffContext = ''
+        let tariffContext = '';
         if (tariffs && tariffs.length > 0) {
             tariffContext = '\n\nTARIFAS VIGENTES (Referencia para cotizar):\n' +
-                tariffs.map((t: any) => `- ${t.sub_category} (${t.category}): $${t.price} ${t.description ? '- ' + t.description : ''}`).join('\n')
+                (tariffs as Tariff[]).map(t => `- ${t.sub_category} (${t.category}): $${t.price} ${t.description ? '- ' + t.description : ''}`).join('\n')
         }
 
         // Construir contenido para Gemini API con prompt del sistema
@@ -93,7 +111,7 @@ IMPORTANTE:
                 role: 'model',
                 parts: [{ text: 'Entendido. Soy DD Chatbot y estoy listo para ayudar.' }]
             },
-            ...conversationHistory.map((msg: any) => ({
+            ...conversationHistory.map((msg) => ({
                 role: msg.role === 'user' ? 'user' : 'model',
                 parts: [{ text: msg.content }]
             })),
@@ -101,7 +119,7 @@ IMPORTANTE:
                 role: 'user',
                 parts: [{ text: prompt }]
             }
-        ]
+        ];
 
         // Llamar a Gemini API desde el servidor (API key protegida)
         const response = await fetch(
@@ -111,42 +129,41 @@ IMPORTANTE:
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents })
             }
-        )
+        );
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (!response.ok) {
-            console.error('Gemini API Error:', data)
-
-            // Manejo de errores específicos
+            console.error('Gemini API Error:', data);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            if ((data as any).error?.message?.includes('quota') || (data as any).error?.message?.includes('RESOURCE_EXHAUSTED')) {
+            const errorMsg = (data as any).error?.message || 'Unknown Gemini API error';
+
+            if (errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED')) {
                 return new Response(
                     JSON.stringify({ text: 'Lo siento, hemos alcanzado el límite de la API. Por favor intenta en unos minutos.' }),
                     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-                )
+                );
             }
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            throw new Error((data as any).error?.message || 'Gemini API error')
+            throw new Error(errorMsg);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const text = (data as any).candidates?.[0]?.content?.parts?.[0]?.text ||
-            'Lo siento, no pude generar una respuesta.'
+            'Lo siento, no pude generar una respuesta.';
 
         return new Response(
             JSON.stringify({ text }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        );
+
     } catch (error: any) {
-        console.error('Edge Function Error:', error)
+        console.error('Edge Function Error:', error);
         return new Response(
-            JSON.stringify({ error: error.message || 'Unknown error' }),
+            JSON.stringify({ error: error.message || 'Internal Server Error' }),
             {
                 status: 500,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             }
-        )
+        );
     }
-})
+});

@@ -10,24 +10,11 @@ interface HomePanelProps {
   userId: string;
 }
 
-interface Debt {
-  id: string;
-  description: string;
-  amount: number;
-  status: 'pending' | 'paid' | 'cancelled';
-  due_date: string;
-}
-
-interface RecentRequest {
-  id: string;
-  service_type: 'transport' | 'workshop';
-  status: string;
-  created_at: string;
-}
+import type { Debt, ServiceRequest } from '../types';
 
 export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, userId }: HomePanelProps) {
   const [debts, setDebts] = useState<Debt[]>([]);
-  const [recentRequests, setRecentRequests] = useState<RecentRequest[]>([]);
+  const [recentRequests, setRecentRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +37,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       // Load Recent Requests (Limit 3)
       const { data: reqData } = await supabase
         .from('service_requests')
-        .select('id, service_type, status, created_at')
+        .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(3);

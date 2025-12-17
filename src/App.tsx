@@ -11,17 +11,8 @@ import { AdminPanel } from './components/AdminPanel';
 import { HomePanel } from './components/HomePanel';
 
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-interface ConfirmationData {
-  service_type: 'transport' | 'workshop';
-  data: Record<string, any>;
-}
+import type { Session } from '@supabase/supabase-js';
+import type { Message, ConfirmationData } from './types';
 
 // Helper for safe UUIDs
 function generateUUID() {
@@ -41,7 +32,7 @@ function generateUUID() {
 type TabType = 'home' | 'chat' | 'admin';
 
 function App() {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('chat');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -441,7 +432,7 @@ function App() {
   };
 
   const handleConfirm = async (additionalData?: any) => {
-    if (!confirmationData) return;
+    if (!confirmationData || !session) return;
 
     try {
       // Merge confirmation data with any additional data (e.g. image_url)
