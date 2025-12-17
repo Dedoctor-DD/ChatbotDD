@@ -297,7 +297,7 @@ export function AdminPanel() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all active:scale-95 flex items-center gap-2 pr-4"
+              className="p-3 text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95 flex items-center gap-2 pr-5"
             >
               <Menu className="w-5 h-5" />
               <span className="text-sm font-bold">Menú</span>
@@ -328,37 +328,37 @@ export function AdminPanel() {
             <div className="space-y-6 max-w-7xl mx-auto">
               {/* KPI CARDS */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between transition-transform hover:scale-[1.02]">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Pendientes</p>
-                    <h3 className="text-3xl font-bold text-gray-800">{pendingCount}</h3>
+                    <p className="text-sm text-gray-400 mb-1 font-medium">Pendientes</p>
+                    <h3 className="text-4xl font-extrabold text-gray-800">{pendingCount}</h3>
                   </div>
-                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
-                    <Clock className="w-6 h-6" />
+                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
+                    <Clock className="w-7 h-7" />
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between transition-transform hover:scale-[1.02]">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">En Proceso</p>
-                    <h3 className="text-3xl font-bold text-gray-800">{requests.filter(r => r.status === 'confirmed').length}</h3>
+                    <p className="text-sm text-gray-400 mb-1 font-medium">En Proceso</p>
+                    <h3 className="text-4xl font-extrabold text-gray-800">{requests.filter(r => r.status === 'confirmed').length}</h3>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                    <CheckCircle className="w-6 h-6" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
+                    <CheckCircle className="w-7 h-7" />
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between transition-transform hover:scale-[1.02]">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Clientes</p>
-                    <h3 className="text-3xl font-bold text-gray-800">{profiles.length}</h3>
+                    <p className="text-sm text-gray-400 mb-1 font-medium">Clientes</p>
+                    <h3 className="text-4xl font-extrabold text-gray-800">{profiles.length}</h3>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
-                    <Users className="w-6 h-6" />
+                  <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500">
+                    <Users className="w-7 h-7" />
                   </div>
                 </div>
               </div>
 
               {/* RECENT PENDING REQUESTS TABLE WIDGET */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
                 <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                   <h3 className="font-bold text-gray-800 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-orange-500" />
@@ -399,7 +399,7 @@ export function AdminPanel() {
 
           {/* 2. PRICING VIEW */}
           {activeView === 'pricing' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden max-w-5xl mx-auto">
+            <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200 overflow-hidden max-w-5xl mx-auto">
               {/* Table Header */}
               <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                 <h3 className="font-bold text-gray-700">Gestión de Tarifas</h3>
@@ -589,7 +589,7 @@ export function AdminPanel() {
                 </div>
               ) : (
                 filteredRequests.map((request) => (
-                  <div key={request.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={request.id} className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden hover:shadow-[0_20px_40px_-10px_rgb(0,0,0,0.1)] transition-all">
                     {/* Request Header */}
                     <div className="p-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                       <div className="flex items-center gap-3">
