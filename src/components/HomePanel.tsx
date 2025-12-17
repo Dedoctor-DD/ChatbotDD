@@ -194,6 +194,22 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
                   <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}>
                     {statusLabel}
                   </div>
+                  {/* REPEAT BUTTON (Only for Transport / Completed or Confirmed) */}
+                  {req.service_type === 'transport' && (req.status === 'completed' || req.status === 'confirmed') && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Logic to repeat would go here - for now just go to chat with context?
+                        // Or better, pass a prop up.
+                        // onGoToChatWithContext(req);
+                        onGoToChat(); // Simple redirect for now, user asked for analysis
+                      }}
+                      className="ml-2 p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-full transition-colors"
+                      title="Repetir este viaje"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               );
             })}
