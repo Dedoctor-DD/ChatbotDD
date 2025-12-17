@@ -215,9 +215,12 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
             })}
           </div>
         ) : (
-          <div className="bg-white/5 border border-white/10 rounded-lg p-6 text-center">
-            <p className="text-gray-400 text-sm mb-2">No tienes solicitudes recientes.</p>
-            <p className="text-xs text-gray-500">Usa los botones de arriba para crear una nueva.</p>
+          <div className="bg-gray-50 border border-transparent rounded-[2rem] p-8 text-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <Truck className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-gray-500 font-medium text-sm mb-1">No tienes solicitudes recientes</p>
+            <p className="text-xs text-gray-400">Tus viajes aparecerán aquí</p>
           </div>
         )}
       </div>
@@ -225,10 +228,12 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       <div className="quick-actions-section">
         <button
           onClick={onGoToChat}
-          className="chat-quick-btn"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full p-4 flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:shadow-[0_15px_40px_rgba(37,99,235,0.4)] transition-all active:scale-[0.98] group"
         >
-          <MessageSquare className="w-5 h-5" />
-          <span>Ir al Chat</span>
+          <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform">
+            <MessageSquare className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-bold tracking-wide">Iniciar Conversación</span>
         </button>
       </div>
     </div>
