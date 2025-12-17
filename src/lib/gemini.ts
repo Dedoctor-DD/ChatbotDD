@@ -16,8 +16,15 @@ export async function getGeminiResponse(
         const recentHistory = conversationHistory.slice(-15);
 
         // Obtener sesión actual para enviar token de usuario si existe
+        // Obtener sesión actual para enviar token de usuario si existe
         const { data: { session } } = await supabase.auth.getSession();
-        const authToken = session?.access_token ? `Bearer ${session.access_token}` : `Bearer ${SUPABASE_ANON_KEY}`;
+
+        // FIX: Si es sesión de invitado (token 'mock_token') o no hay sesión, usamos la ANON KEY.
+        // Si mandamos 'Bearer mock_token', Supabase rechazará la llamada (Signature verification failed).
+        const isMockToken = session?.access_token?.startsWith('mock_token');
+        const authToken = (session?.access_token && !isMockToken)
+            ? `Bearer ${session.access_token}`
+            : `Bearer ${SUPABASE_ANON_KEY}`;
 
         // Llamar a Edge Function de Supabase en lugar de Gemini directamente
         const response = await fetch(

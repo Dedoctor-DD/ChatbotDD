@@ -91,7 +91,55 @@ export function Login() {
                     </div>
                 )}
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center space-y-3">
+                    {/* Botones válidos SOLO para desarrollo local */}
+                    {import.meta.env.DEV && (
+                        <>
+                            <button
+                                onClick={() => {
+                                    const mockSession = {
+                                        access_token: 'mock_token',
+                                        user: {
+                                            id: 'guest-user-123',
+                                            email: 'invitado@dedoctor.com',
+                                            user_metadata: {
+                                                full_name: 'Invitado de Prueba',
+                                                avatar_url: null
+                                            }
+                                        }
+                                    };
+                                    localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
+                                    window.location.reload();
+                                }}
+                                className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center justify-center gap-1 mx-auto"
+                            >
+                                👻 Modo Invitado (Local)
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    const mockSession = {
+                                        access_token: 'mock_token_admin',
+                                        user: {
+                                            id: 'admin-user-999',
+                                            email: 'dedoctor.transportes@gmail.com', // Triggers isAdmin
+                                            user_metadata: {
+                                                full_name: 'Administrador (Test)',
+                                                avatar_url: null,
+                                                role: 'admin'
+                                            }
+                                        }
+                                    };
+                                    localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
+                                    window.location.reload();
+                                }}
+                                className="text-xs text-purple-400 hover:text-purple-300 transition-colors flex items-center justify-center gap-1 mx-auto"
+                            >
+                                👮 Modo Admin (Local)
+                            </button>
+                        </>
+                    )}
+
                     <button
                         onClick={() => {
                             localStorage.clear();
@@ -99,7 +147,7 @@ export function Login() {
                             window.location.hash = '';
                             window.location.reload();
                         }}
-                        className="text-xs text-gray-400 hover:text-white transition-colors underline"
+                        className="text-xs text-gray-500 hover:text-gray-400 transition-colors underline"
                     >
                         ¿Problemas de conexión? Borrar datos
                     </button>

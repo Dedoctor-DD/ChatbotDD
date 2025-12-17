@@ -276,16 +276,18 @@ function App() {
     setInput('');
     setIsLoading(true);
 
-    // Log to Supabase
-    supabase.from('messages').insert({
-      role: 'user',
-      content: userMessage.content,
-      created_at: userMessage.timestamp.toISOString(),
-      user_id: session.user.id,
-      session_id: sessionId
-    }).then(({ error }) => {
-      if (error) console.error('Error logging user message:', error);
-    });
+    // Log to Supabase (ONLY if not guest or test admin)
+    if (!session.user.id.startsWith('guest-') && !session.user.id.startsWith('admin-')) {
+      supabase.from('messages').insert({
+        role: 'user',
+        content: userMessage.content,
+        created_at: userMessage.timestamp.toISOString(),
+        user_id: session.user.id,
+        session_id: sessionId
+      }).then(({ error }) => {
+        if (error) console.error('Error logging user message:', error);
+      });
+    }
 
     try {
       const history = messages.slice(-15).map(m => ({ role: m.role, content: m.content }));
@@ -293,14 +295,14 @@ function App() {
       const responseText = await getGeminiResponse(text, history);
 
       // 1. Check for Quick Replies
-      const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\]/s);
+      const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
       let cleanResponse = responseText;
 
       if (quickRepliesMatch) {
         try {
           const options = JSON.parse(quickRepliesMatch[1]);
           setQuickReplies(options);
-          cleanResponse = cleanResponse.replace(/\[QUICK_REPLIES:.*?\]/s, '').trim();
+          cleanResponse = cleanResponse.replace(/\[QUICK_REPLIES:\s*\[.*?\]\s*\]/s, '').trim();
         } catch (e) {
           console.error('Error parsing quick replies:', e);
         }
@@ -309,13 +311,13 @@ function App() {
       }
 
       // 2. Check for Confirmation
-      const confirmMatch = cleanResponse.match(/\[CONFIRM_READY:\s*({.*?})\]/s);
+      const confirmMatch = cleanResponse.match(/\[CONFIRM_READY:\s*({.*?})\s*\]/s);
 
       if (confirmMatch) {
         try {
           const confirmData = JSON.parse(confirmMatch[1]);
           setConfirmationData(confirmData);
-          cleanResponse = cleanResponse.replace(/\[CONFIRM_READY:.*?\]/s, '').trim();
+          cleanResponse = cleanResponse.replace(/\[CONFIRM_READY:\s*{.*?}\s*\]/s, '').trim();
           setQuickReplies([]);
         } catch (e) {
           console.error('Failed to parse confirmation data:', e);
@@ -331,14 +333,16 @@ function App() {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      // Log assistant message
-      supabase.from('messages').insert({
-        role: 'assistant',
-        content: cleanResponse,
-        created_at: new Date().toISOString(),
-        user_id: session.user.id,
-        session_id: sessionId
-      });
+      // Log assistant message (ONLY if not guest or test admin)
+      if (!session.user.id.startsWith('guest-') && !session.user.id.startsWith('admin-')) {
+        supabase.from('messages').insert({
+          role: 'assistant',
+          content: cleanResponse,
+          created_at: new Date().toISOString(),
+          user_id: session.user.id,
+          session_id: sessionId
+        });
+      }
 
     } catch (error) {
       console.error('Error getting response:', error);
