@@ -81,6 +81,7 @@ Formato OBLIGATORIO para finalizar:
 IMPORTANTE:
 - Sé minimalista. Respuestas cortas.
 - Colores mentales: Blanco, Azul, Negro. (Usa emojis sobrios: 📍 📅 🚌).
+- Si el usuario envía '📎 Archivo adjunto', CONFIRMA la recepción (Ej: "👍 Foto recibida").
 - Si faltan datos, pídelos. SI ESTÁN TODOS, CONFIRMA YA.`;
 
         const contents = [

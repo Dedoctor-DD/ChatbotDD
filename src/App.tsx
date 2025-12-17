@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle, MapPin } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
+import { uploadAttachment } from './lib/storage';
 import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
 import { BottomNav } from './components/BottomNav';
@@ -50,6 +51,8 @@ function App() {
   const inputRef = useRef('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // State for Quick Replies
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
@@ -513,6 +516,35 @@ function App() {
     sendMessage(input);
   };
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+
+    // Validate size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('El archivo es demasiado grande (Máx 10MB)');
+      return;
+    }
+
+    if (!session?.user?.id) return;
+
+    setIsUploading(true);
+    try {
+      // Upload to Supabase Storage and DB
+      await uploadAttachment(file, session.user.id, null);
+
+      // Notify in chat
+      const msgText = `📎 Archivo adjunto: ${file.name}`;
+      sendMessage(msgText);
+    } catch (error: any) {
+      console.error('Upload failed:', error);
+      alert(`Error al subir archivo: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   // Mostrar loading mientras se verifica la sesión
   if (isCheckingSession) {
     return (
@@ -727,8 +759,27 @@ function App() {
                     />
                   </div>
 
-                  {/* Action Buttons Group */}
                   <div className="flex items-center gap-2 ml-1">
+
+                    {/* Hidden File Input */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*,application/pdf"
+                      onChange={handleFileSelect}
+                    />
+
+                    {/* Clip / Attachment Button */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading || isLoading}
+                      className={`p-3.5 rounded-full transition-all duration-200 ${isUploading ? 'bg-gray-700/50 cursor-wait' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
+                      title="Adjuntar archivo o foto"
+                    >
+                      {isUploading ? <Loader className="w-6 h-6 animate-spin" /> : <Paperclip className="w-6 h-6" />}
+                    </button>
 
                     <button
                       type="button"
