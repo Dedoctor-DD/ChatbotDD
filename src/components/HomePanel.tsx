@@ -160,33 +160,33 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
             {recentRequests.map(req => {
               // Status Logic mapping
               let statusLabel = 'Pendiente';
-              let statusClass = 'bg-yellow-500/20 text-yellow-400';
+              let statusClass = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
 
               if (req.status === 'confirmed') {
                 statusLabel = 'Confirmado';
-                statusClass = 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+                statusClass = 'bg-blue-100 text-blue-700 border border-blue-200';
               } else if (req.status === 'in_process') {
                 statusLabel = 'En Proceso';
-                statusClass = 'bg-purple-500/20 text-purple-400 border border-purple-500/30 animate-pulse';
+                statusClass = 'bg-purple-100 text-purple-700 border border-purple-200 animate-pulse';
               } else if (req.status === 'completed') {
                 statusLabel = 'Completado';
-                statusClass = 'bg-green-500/20 text-green-400';
+                statusClass = 'bg-green-100 text-green-700 border border-green-200';
               } else if (req.status === 'cancelled') {
                 statusLabel = 'Cancelado';
-                statusClass = 'bg-red-500/20 text-red-400';
+                statusClass = 'bg-red-100 text-red-700 border border-red-200';
               }
 
               return (
-                <div key={req.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer">
+                <div key={req.id} className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition-all cursor-pointer shadow-sm group">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${req.service_type === 'transport' ? 'bg-blue-600/20 text-blue-400' : 'bg-orange-600/20 text-orange-400'}`}>
+                    <div className={`p-3 rounded-xl ${req.service_type === 'transport' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
                       {req.service_type === 'transport' ? <Truck className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
                     </div>
                     <div>
-                      <p className="font-medium text-white text-sm">
+                      <p className="font-bold text-gray-800 text-sm mb-0.5">
                         {req.service_type === 'transport' ? 'Solicitud de Transporte' : 'Solicitud de Taller'}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-500 font-medium">
                         {new Date(req.created_at).toLocaleDateString()} • {new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
@@ -204,7 +204,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
                         // onGoToChatWithContext(req);
                         onGoToChat(); // Simple redirect for now, user asked for analysis
                       }}
-                      className="ml-2 p-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-full transition-colors"
+                      className="ml-2 p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-full transition-colors"
                       title="Repetir este viaje"
                     >
                       <MessageSquare className="w-4 h-4" />
