@@ -1474,6 +1474,8 @@ body {
 .ring-sky-100 { --tw-ring-color: #e0f2fe !important; }
 .ring-slate-100 { --tw-ring-color: #f1f5f9 !important; }
 
+.border-2 { border-width: 2px !important; }
+
 /* Hover Borders */
 .hover\:border-sky-100:hover { border-color: #e0f2fe !important; }
 .hover\:border-sky-200:hover { border-color: #bae6fd !important; }

@@ -761,13 +761,13 @@ export function AdminPanel() {
                        {request.status === 'confirmed' && <p className="text-xs font-bold text-blue-600 mr-auto flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> En espera de finalización</p>}
                        
                       {request.status === 'pending' && (
-                         <button onClick={() => updateStatus(request.id, 'confirmed')} className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl text-sm font-black shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                         <button onClick={() => updateStatus(request.id, 'confirmed')} className="flex-1 md:flex-none bg-sky-50 border-2 border-sky-100 text-sky-600 px-8 py-3 rounded-2xl text-sm font-black shadow-sm hover:bg-sky-100 transition-all flex items-center justify-center gap-2 transform active:scale-95">
                            <CheckCircle className="w-5 h-5" /> Confirmar Solicitud
                          </button>
                       )}
                       
                       {request.status === 'confirmed' && (
-                        <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-2xl text-sm font-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                        <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 md:flex-none bg-green-50 border-2 border-green-100 text-green-600 px-8 py-3 rounded-2xl text-sm font-black shadow-sm hover:bg-green-100 transition-all flex items-center justify-center gap-2 transform active:scale-95">
                            <CheckCircle className="w-5 h-5" /> Marcar Completado
                         </button>
                       )}
