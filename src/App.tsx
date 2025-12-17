@@ -158,6 +158,18 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Watchdog: Reset isLoading if it gets stuck for more than 25 seconds
+  useEffect(() => {
+    let timeout: any;
+    if (isLoading) {
+      timeout = setTimeout(() => {
+        console.warn('Loading stuck for 25s, resetting...');
+        setIsLoading(false);
+      }, 25000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
+
   // Voice Recognition Setup
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -167,8 +179,12 @@ function App() {
       recognitionRef.current.lang = 'es-ES';
       recognitionRef.current.interimResults = true;
 
+      // Ref for auto-send timeout
+      const autoSendTimeoutRef: { current: any } = { current: null };
+
       recognitionRef.current.onstart = () => {
         setIsListening(true);
+        if (autoSendTimeoutRef.current) clearTimeout(autoSendTimeoutRef.current);
       };
 
       recognitionRef.current.onresult = (event: any) => {
@@ -183,9 +199,11 @@ function App() {
         setIsListening(false);
         // Auto-send after silence/end of speech
         if (inputRef.current.trim()) {
-          setTimeout(() => {
-            sendMessage(inputRef.current);
-            setInput(''); // Clear input after sending
+          autoSendTimeoutRef.current = setTimeout(() => {
+            // Check if we already sent or if input was cleared
+            if (inputRef.current.trim()) {
+              sendMessage(inputRef.current);
+            }
           }, 1500); // 1.5s delay to allow reading/breath
         }
       };

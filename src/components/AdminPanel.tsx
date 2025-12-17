@@ -238,54 +238,72 @@ export function AdminPanel() {
   );
 
   return (
-    <div className="flex h-screen bg-gray-100/50 overflow-hidden font-sans text-gray-800">
+    <div className="flex h-screen bg-gray-50/50 overflow-hidden font-sans text-gray-800 relative">
 
-      {/* MOBILE SIDEBAR BACKDROP */}
+      {/* BOTTOM SHEET MENU (Replaces Sidebar) */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/20 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)}></div>
-      )}
+        <>
+          <div className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm transition-opacity" onClick={() => setSidebarOpen(false)}></div>
+          <div className={`
+                    fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] 
+                    flex flex-col max-h-[85vh] transition-transform duration-300 ease-out transform
+                    ${sidebarOpen ? 'translate-y-0' : 'translate-y-full'}
+                `}>
+            <div className="p-2 flex justify-center">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full my-2"></div>
+            </div>
 
-      {/* SIDEBAR */}
-      <aside className={`
-            fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#F8F9FC] border-r border-gray-200 p-4 flex flex-col transition-transform duration-300 ease-in-out
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}>
-        <div className="flex items-center gap-3 px-2 mb-8 mt-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">D</div>
-          <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
-        </div>
+            <div className="px-6 pb-6 pt-2 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">D</div>
+                  Menú Admin
+                </h2>
+                <button onClick={() => setSidebarOpen(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                  <XCircle className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
 
-        <nav className="space-y-1 flex-1">
-          <NavItem view="dashboard" icon={LayoutDashboard} label="Inicio" />
-          <div className="pt-4 pb-2 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Gestión</div>
-          <NavItem view="pending" icon={Clock} label="Pendientes" count={pendingCount} />
-          <NavItem view="transport" icon={Truck} label="Transporte" />
-          <NavItem view="workshop" icon={Wrench} label="Taller" />
-          <NavItem view="clients" icon={Users} label="Clientes" />
-          <div className="pt-4 pb-2 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Configuración</div>
-          <NavItem view="pricing" icon={DollarSign} label="Tarifas" />
-        </nav>
+              <div className="space-y-2">
+                <NavItem view="dashboard" icon={LayoutDashboard} label="Panel Principal" />
+                <div className="my-2 border-t border-gray-100"></div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Solicitudes</p>
+                <NavItem view="pending" icon={Clock} label="Pendientes" count={pendingCount} />
+                <NavItem view="transport" icon={Truck} label="Transporte" />
+                <NavItem view="workshop" icon={Wrench} label="Taller" />
 
-        <div className="pt-4 border-t border-gray-200 mt-4">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">A</div>
-            <div>
-              <p className="text-sm font-bold text-gray-700">Administrador</p>
-              <p className="text-xs text-gray-500">En línea</p>
+                <div className="my-2 border-t border-gray-100"></div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Administración</p>
+                <NavItem view="clients" icon={Users} label="Gestión de Clientes" />
+                <NavItem view="pricing" icon={DollarSign} label="Tarifas y Precios" />
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-gray-100 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shadow-inner">A</div>
+                <div>
+                  <p className="text-sm font-bold text-gray-700">Administrador</p>
+                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">● En línea</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </aside>
+        </>
+      )}
 
       {/* CONTENT AREA */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-gray-50/50">
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-gray-50">
         {/* TOP HEADER */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 shadow-sm z-10">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm z-10 sticky top-0">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-              <Menu className="w-6 h-6" />
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all active:scale-95 flex items-center gap-2 pr-4"
+            >
+              <Menu className="w-5 h-5" />
+              <span className="text-sm font-bold">Menú</span>
             </button>
-            <h2 className="text-lg font-bold text-gray-800">
+            <div className="h-8 w-[1px] bg-gray-200 mx-1 hidden sm:block"></div>
+            <h2 className="text-base sm:text-lg font-bold text-gray-800 truncate max-w-[150px] sm:max-w-none">
               {activeView === 'dashboard' ? 'Panel de Control' :
                 activeView === 'pending' ? 'Solicitudes Pendientes' :
                   activeView === 'transport' ? 'Transporte' :

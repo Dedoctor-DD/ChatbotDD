@@ -26,6 +26,10 @@ export async function getGeminiResponse(
             ? `Bearer ${session.access_token}`
             : `Bearer ${SUPABASE_ANON_KEY}`;
 
+        // Create AbortController for timeout (20 seconds)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+
         // Llamar a Edge Function de Supabase en lugar de Gemini directamente
         const response = await fetch(
             `${SUPABASE_URL}/functions/v1/chat`,
@@ -39,8 +43,10 @@ export async function getGeminiResponse(
                     prompt,
                     conversationHistory: recentHistory
                 }),
+                signal: controller.signal
             }
         );
+        clearTimeout(timeoutId);
 
         const data = await response.json();
 
