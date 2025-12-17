@@ -2,20 +2,19 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   Users, Truck, Wrench, Clock, CheckCircle, XCircle, RefreshCw, DollarSign, Search,
-  MapPin, Phone, LayoutDashboard, Menu, AlertCircle, ChevronRight, Edit3, User
+  MapPin, Phone, LayoutDashboard, AlertCircle, ChevronRight, Edit3, User
 } from 'lucide-react';
 
 import type { ServiceRequest, Profile, Debt, Tariff } from '../types';
 
 export function AdminPanel() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending' | 'clients' | 'pricing'>('dashboard');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [tariffs, setTariffs] = useState<Tariff[]>([]); // New State
+  const [tariffs, setTariffs] = useState<Tariff[]>([]); 
   const [loading, setLoading] = useState(true);
-  const [editingTariff, setEditingTariff] = useState<string | null>(null); // Track which row is being edited
-  const [tempTariffValues, setTempTariffValues] = useState<Record<string, Partial<Tariff>>>({}); // Temp values for editing
+  const [editingTariff, setEditingTariff] = useState<string | null>(null); 
+  const [tempTariffValues, setTempTariffValues] = useState<Record<string, Partial<Tariff>>>({});
 
   // Client Management State
   const [selectedClient, setSelectedClient] = useState<Profile | null>(null);
@@ -33,7 +32,6 @@ export function AdminPanel() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Load Requests
       const { data: reqData, error: reqError } = await supabase
         .from('service_requests')
         .select('*')
@@ -42,7 +40,6 @@ export function AdminPanel() {
       if (reqError) throw reqError;
       setRequests(reqData || []);
 
-      // Load Profiles
       const { data: profData, error: profError } = await supabase
         .from('profiles')
         .select('*')
@@ -51,7 +48,6 @@ export function AdminPanel() {
       if (profError) throw profError;
       setProfiles(profData || []);
 
-      // Load Tariffs
       const { data: tariffData, error: tariffError } = await supabase
         .from('tariffs')
         .select('*')
@@ -109,9 +105,6 @@ export function AdminPanel() {
     });
   };
 
-  // ... (other functions: loadClientDebts, handleClientSelect, updateStatus, handleAddDebt, getStatusIcon, filteredRequests, filteredClients, DashboardBtn) ...
-
-
   const loadClientDebts = async (userId: string) => {
     const { data } = await supabase
       .from('client_debts')
@@ -168,15 +161,7 @@ export function AdminPanel() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'confirmed': return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case 'completed': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'cancelled': return <XCircle className="w-4 h-4 text-red-500" />;
-      case 'pending': return <Clock className="w-4 h-4 text-orange-500" />;
-      default: return <Clock className="w-4 h-4 text-gray-400" />;
-    }
-  };
+
 
   const filteredRequests = activeView === 'transport' ? requests.filter(r => r.service_type === 'transport')
     : activeView === 'workshop' ? requests.filter(r => r.service_type === 'workshop')
@@ -188,109 +173,63 @@ export function AdminPanel() {
     p.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Helper for counts
   const pendingCount = requests.filter(r => r.status === 'draft' || r.status === 'pending').length;
 
-  // Nav Item Component
-  const NavItem = ({ view, icon: Icon, label, count }: any) => (
-    <button
-      onClick={() => { setActiveView(view); setSidebarOpen(false); setSelectedClient(null); }}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeView === view
-        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-        : 'text-gray-600 hover:bg-white hover:text-blue-600'
-        }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span className="flex-1 text-left">{label}</span>
-      {count !== undefined && count > 0 && (
-        <span className={`text-xs px-2 py-0.5 rounded-full ${activeView === view ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600'}`}>
-          {count}
-        </span>
-      )}
-    </button>
-  );
+
 
   return (
-    <div className="flex h-full bg-gray-50/50 overflow-hidden font-sans text-gray-800 relative">
+    <div className="flex flex-col h-full bg-slate-50 font-sans text-gray-800 relative overflow-hidden">
+        
+        {/* ADMIN NAVIGATION TABS (Sticky below Global Header) */}
+        <div className="bg-slate-50/95 backdrop-blur-sm z-30 sticky top-0 pt-2 pb-2 px-4 shadow-sm border-b border-slate-200/50 flex items-center gap-2 overflow-x-auto no-scrollbar snap-x">
+             {/* Refresh Button - Integrated */}
+             <button
+                onClick={loadData}
+                className={`p-2 rounded-xl bg-white text-slate-400 hover:text-sky-500 hover:shadow-sm border border-transparent hover:border-sky-100 transition-all flex-none snap-start ${loading ? 'animate-spin text-sky-500' : ''}`}
+                title="Actualizar"
+             >
+                <RefreshCw className="w-4 h-4" />
+             </button>
 
-      {/* BOTTOM SHEET MENU (Replaces Sidebar) */}
-      {sidebarOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm transition-opacity" onClick={() => setSidebarOpen(false)}></div>
-          <div className={`
-                    fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] 
-                    flex flex-col max-h-[85vh] transition-transform duration-300 ease-out transform
-                    ${sidebarOpen ? 'translate-y-0' : 'translate-y-full'}
-                `}>
-            <div className="p-2 flex justify-center">
-              <div className="w-12 h-1.5 bg-gray-300 rounded-full my-2"></div>
-            </div>
+             <div className="w-px h-6 bg-slate-200 flex-none mx-1"></div>
 
-            <div className="px-6 pb-6 pt-2 overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">D</div>
-                  Menú Admin
-                </h2>
-                <button onClick={() => setSidebarOpen(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-                  <XCircle className="w-6 h-6 text-gray-500" />
-                </button>
-              </div>
+             {/* Navigation Tabs */}
+             <div className="flex items-center gap-1 flex-1">
+                 {[
+                   { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard },
+                   { id: 'pending', label: 'Solicitudes', icon: Clock, count: pendingCount },
+                   { id: 'transport', label: 'Transporte', icon: Truck },
+                   { id: 'workshop', label: 'Taller', icon: Wrench },
+                   { id: 'clients', label: 'Clientes', icon: Users },
+                   { id: 'pricing', label: 'Tarifas', icon: DollarSign }
+                 ].map((tab) => (
+                   <button
+                      key={tab.id}
+                      onClick={() => { setActiveView(tab.id as any); setSelectedClient(null); }}
+                      className={`
+                         relative px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all whitespace-nowrap snap-start select-none
+                         ${activeView === tab.id 
+                           ? 'bg-white text-sky-600 shadow-sm ring-1 ring-sky-100' 
+                           : 'text-slate-400 hover:text-sky-500 hover:bg-white/50'}
+                      `}
+                   >
+                      <tab.icon className={`w-3.5 h-3.5 ${activeView === tab.id ? 'text-sky-500' : 'text-slate-400'}`} />
+                      <span>{tab.label}</span>
+                      {tab.count !== undefined && tab.count > 0 && (
+                        <span className={`
+                          ml-1 text-[10px] font-black px-1.5 py-0.5 rounded-full
+                          ${activeView === tab.id ? 'bg-sky-100 text-sky-600' : 'bg-red-100 text-red-500'}
+                        `}>
+                          {tab.count}
+                        </span>
+                      )}
+                   </button>
+                 ))}
+             </div>
+        </div>
 
-              <div className="space-y-2">
-                <NavItem view="dashboard" icon={LayoutDashboard} label="Panel Principal" />
-                <div className="my-2 border-t border-gray-100"></div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Solicitudes</p>
-                <NavItem view="pending" icon={Clock} label="Pendientes" count={pendingCount} />
-                <NavItem view="transport" icon={Truck} label="Transporte" />
-                <NavItem view="workshop" icon={Wrench} label="Taller" />
-
-                <div className="my-2 border-t border-gray-100"></div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Administración</p>
-                <NavItem view="clients" icon={Users} label="Gestión de Clientes" />
-                <NavItem view="pricing" icon={DollarSign} label="Tarifas y Precios" />
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-gray-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold shadow-inner">A</div>
-                <div>
-                  <p className="text-sm font-bold text-gray-700">Administrador</p>
-                  <p className="text-xs text-green-600 font-medium flex items-center gap-1">● En línea</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* CONTENT AREA */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-gray-50">
-        {/* TOP HEADER */}
-        <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between px-6 lg:px-8 h-[80px] shadow-sm">
-          <div className="flex items-center gap-4">
-            {/* Mobile Toggle */}
-            <button 
-               onClick={() => setSidebarOpen(true)} 
-               className="lg:hidden p-2.5 -ml-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 rounded-full transition-colors"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight">
-              {activeView === 'dashboard' ? 'Panel de Control' :
-                activeView === 'pending' ? 'Solicitudes Pendientes' :
-                  activeView === 'transport' ? 'Transporte' :
-                    activeView === 'workshop' ? 'Taller' :
-                      activeView === 'clients' ? 'Clientes' : 'Tarifas'}
-            </h2>
-          </div>
-          <button
-            onClick={loadData}
-            className={`p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-all ${loading ? 'animate-spin text-blue-500' : ''}`}
-            title="Actualizar datos"
-          >
-            <RefreshCw className="w-5 h-5" />
-          </button>
-        </header>
+        {/* CONTENT AREA */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-32 bg-slate-50/50 scroll-smooth">
 
         {/* SCROLLABLE MAIN CONTENT */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-8 pb-32 make-scroll-smooth">
@@ -298,43 +237,97 @@ export function AdminPanel() {
           {/* 1. DASHBOARD VIEW */}
           {activeView === 'dashboard' && (
             <div className="space-y-6 max-w-7xl mx-auto">
-              {/* KPI CARDS */}
-              {/* KPI CARDS - POLISHED & CENTERED */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Card 1: Pendientes */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
-                  <div className="pl-2">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pendientes</p>
-                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">{pendingCount}</h3>
-                  </div>
-                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                    <Clock className="w-7 h-7" />
-                  </div>
-                </div>
-                
-                {/* Card 2: En Proceso */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
-                  <div className="pl-2">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">En Proceso</p>
-                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">
-                      {requests.filter(r => r.status === 'confirmed' || r.status === 'in_process').length}
-                    </h3>
-                  </div>
-                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-                    <CheckCircle className="w-7 h-7" />
-                  </div>
-                </div>
+              
+              {/* WELCOME BANNER - SOFT STYLE */}
+              <div className="bg-white rounded-[2rem] p-8 border border-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                 <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <h1 className="text-3xl font-black mb-2 text-slate-700 tracking-tight">Panel Administrativo</h1>
+                        <p className="text-slate-400 font-medium max-w-lg text-lg">Bienvenido de nuevo. Tienes <span className="text-sky-500 font-bold">{pendingCount} solicitudes nuevas</span> hoy.</p>
+                    </div>
+                    
+                    <button 
+                       onClick={() => setActiveView('pending')}
+                       className="bg-sky-100 hover:bg-sky-200 text-sky-600 px-6 py-3.5 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-3 transform hover:scale-105"
+                    >
+                       <Clock className="w-5 h-5" />
+                       Gestionar Pendientes
+                    </button>
+                 </div>
+                 {/* Decorative soft circles */}
+                 <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-sky-50/50 rounded-full blur-3xl opacity-60"></div>
+                 <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-indigo-50/50 rounded-full blur-2xl opacity-60"></div>
+              </div>
 
-                {/* Card 3: Clientes */}
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
-                  <div className="pl-2">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Clientes</p>
-                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">{profiles.length}</h3>
-                  </div>
-                  <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
-                    <Users className="w-7 h-7" />
-                  </div>
-                </div>
+              {/* NAVIGATION HUB (Quick Access + KPIs) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                 {/* Transporte Card */}
+                 <div 
+                    onClick={() => setActiveView('transport')}
+                    className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg hover:border-sky-200 transition-all cursor-pointer group relative overflow-hidden"
+                 >
+                    <div className="flex justify-between items-start mb-4">
+                       <div className="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-sky-500 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-sm group-hover:shadow-sky-100">
+                          <Truck className="w-7 h-7" />
+                       </div>
+                       <span className="text-3xl font-black text-slate-700 tracking-tighter">{requests.filter(r => r.service_type === 'transport').length}</span>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-slate-600 group-hover:text-sky-500 transition-colors">Transporte</h3>
+                        <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Rutas y Viajes</p>
+                    </div>
+                 </div>
+
+                 {/* Taller Card */}
+                 <div 
+                    onClick={() => setActiveView('workshop')}
+                    className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer group relative overflow-hidden"
+                 >
+                    <div className="flex justify-between items-start mb-4">
+                       <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm group-hover:shadow-orange-100">
+                          <Wrench className="w-7 h-7" />
+                       </div>
+                       <span className="text-3xl font-black text-slate-700 tracking-tighter">{requests.filter(r => r.service_type === 'workshop').length}</span>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-slate-600 group-hover:text-orange-500 transition-colors">Taller</h3>
+                        <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Mantenimiento</p>
+                    </div>
+                 </div>
+
+                 {/* Clientes Card */}
+                 <div 
+                    onClick={() => setActiveView('clients')}
+                    className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg hover:border-purple-200 transition-all cursor-pointer group relative overflow-hidden"
+                 >
+                    <div className="flex justify-between items-start mb-4">
+                       <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-sm group-hover:shadow-purple-200">
+                          <Users className="w-7 h-7" />
+                       </div>
+                       <span className="text-3xl font-black text-slate-800 tracking-tighter">{profiles.length}</span>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-slate-700 group-hover:text-purple-600 transition-colors">Clientes</h3>
+                        <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Base de Datos</p>
+                    </div>
+                 </div>
+                 
+                 {/* Tarifas Card */}
+                 <div 
+                    onClick={() => setActiveView('pricing')}
+                    className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg hover:border-green-200 transition-all cursor-pointer group relative overflow-hidden"
+                 >
+                    <div className="flex justify-between items-start mb-4">
+                       <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover:scale-110 group-hover:-rotate-3 transition-transform shadow-sm group-hover:shadow-green-200">
+                          <DollarSign className="w-7 h-7" />
+                       </div>
+                       <span className="text-3xl font-black text-slate-800 tracking-tighter">{tariffs.length}</span>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-slate-700 group-hover:text-green-600 transition-colors">Tarifas</h3>
+                        <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Precios</p>
+                    </div>
+                 </div>
               </div>
 
               {/* RECENT PENDING REQUESTS WIDGET */}
@@ -363,25 +356,25 @@ export function AdminPanel() {
                     <div 
                       key={req.id} 
                       onClick={() => setActiveView('pending')}
-                      className="p-5 md:p-6 hover:bg-blue-50/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
+                      className="p-5 md:p-7 hover:bg-blue-50/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-5 cursor-pointer group"
                     >
                       <div className="flex items-center gap-5">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110 ${req.service_type === 'transport' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'}`}>
-                          {req.service_type === 'transport' ? <Truck className="w-7 h-7" /> : <Wrench className="w-7 h-7" />}
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105 ${req.service_type === 'transport' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>
+                          {req.service_type === 'transport' ? <Truck className="w-6 h-6" /> : <Wrench className="w-6 h-6" />}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-800 text-base mb-1 group-hover:text-blue-700 transition-colors">
-                            {req.service_type === 'transport' ? 'Solicitud de Transporte' : 'Solicitud de Taller'}
+                          <p className="font-black text-slate-800 text-lg mb-1 group-hover:text-blue-700 transition-colors">
+                            {req.service_type === 'transport' ? 'Transporte' : 'Taller'}
                           </p>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-                             <Clock className="w-3.5 h-3.5" />
-                             {new Date(req.created_at).toLocaleString()}
+                          <div className="flex items-center gap-2 text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md w-fit">
+                             <Clock className="w-3 h-3" />
+                             {new Date(req.created_at).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-                         <span className="px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold shadow-sm shadow-orange-100">Pendiente</span>
-                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                      <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pl-14 sm:pl-0">
+                         <span className="px-4 py-1.5 bg-orange-50 text-orange-700 border border-orange-100 rounded-full text-[10px] font-black uppercase tracking-widest">Pendiente</span>
+                         <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all shadow-sm">
                             <ChevronRight className="w-5 h-5" />
                          </div>
                       </div>
@@ -389,12 +382,12 @@ export function AdminPanel() {
                   ))}
                   
                   {requests.filter(r => r.status === 'pending').length === 0 && (
-                    <div className="py-16 text-center">
-                      <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                         <CheckCircle className="w-10 h-10 text-green-500" />
+                    <div className="py-20 text-center flex flex-col items-center">
+                      <div className="w-24 h-24 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
+                         <CheckCircle className="w-10 h-10 text-emerald-500/80" />
                       </div>
-                      <p className="text-slate-500 font-medium text-lg">¡Todo limpio!</p>
-                      <p className="text-slate-400 text-sm">No tienes solicitudes pendientes.</p>
+                      <p className="text-slate-800 font-black text-xl mb-1">¡Todo al día!</p>
+                      <p className="text-slate-400 font-medium text-sm">No hay solicitudes pendientes de revisión.</p>
                     </div>
                   )}
                 </div>
@@ -417,20 +410,20 @@ export function AdminPanel() {
 
               <div className="overflow-x-auto block w-full p-2">
                 <table className="w-full text-sm text-left min-w-[700px]">
-                  <thead className="text-slate-400 font-bold uppercase tracking-wider text-xs border-b border-slate-100">
+                  <thead className="text-slate-500 font-black uppercase tracking-wider text-[11px] border-b border-slate-200 bg-slate-100/50">
                     <tr>
-                      <th className="p-6 font-bold text-slate-400">Categoría</th>
-                      <th className="p-6 font-bold text-slate-400">Sub-Categoría</th>
-                      <th className="p-6 font-bold text-slate-400">Descripción</th>
-                      <th className="p-6 font-bold text-slate-400">Precio</th>
-                      <th className="p-6 text-right font-bold text-slate-400">Acciones</th>
+                      <th className="p-6 pl-8 rounded-tl-3xl">Categoría</th>
+                      <th className="p-6">Sub-Categoría</th>
+                      <th className="p-6">Descripción</th>
+                      <th className="p-6">Precio</th>
+                      <th className="p-6 pr-8 text-right rounded-tr-3xl">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
+                  <tbody className="divide-y divide-slate-100">
                     {tariffs.map((t) => (
-                      <tr key={t.id} className="hover:bg-blue-50/30 transition-colors group">
-                        <td className="p-6 font-bold text-slate-700 capitalize">{t.category}</td>
-                        <td className="p-6 text-slate-500 font-medium">{t.sub_category.replace(/_/g, ' ')}</td>
+                      <tr key={t.id} className="hover:bg-blue-50/50 transition-colors group">
+                        <td className="p-6 font-bold text-slate-900 capitalize">{t.category}</td>
+                        <td className="p-6 text-slate-700 font-bold">{t.sub_category.replace(/_/g, ' ')}</td>
                         <td className="p-6 max-w-xs">
                           {editingTariff === t.id ? (
                             <textarea
@@ -582,7 +575,7 @@ export function AdminPanel() {
                 {/* Debt Table */}
                 <div className="overflow-x-auto">
                    <table className="w-full text-sm">
-                     <thead className="bg-slate-50/50 text-slate-400 font-bold uppercase tracking-wider text-xs">
+                     <thead className="bg-slate-50/80 text-slate-600 font-extrabold uppercase tracking-wider text-xs border-b border-slate-200">
                        <tr>
                          <th className="p-5 text-left pl-8">Fecha</th>
                          <th className="p-5 text-left">Descripción</th>
@@ -590,15 +583,15 @@ export function AdminPanel() {
                          <th className="p-5 text-center pr-8">Estado</th>
                        </tr>
                      </thead>
-                     <tbody className="divide-y divide-slate-50">
+                     <tbody className="divide-y divide-slate-100">
                        {clientDebts.length === 0 ? (
                          <tr><td colSpan={4} className="p-12 text-center text-slate-400 font-medium">Sin historial registrado para este cliente.</td></tr>
                        ) : (
                          clientDebts.map(debt => (
                            <tr key={debt.id} className="hover:bg-blue-50/30 transition-colors">
-                             <td className="p-5 text-slate-500 font-medium pl-8">{new Date(debt.created_at).toLocaleDateString()}</td>
-                             <td className="p-5 font-bold text-slate-700">{debt.description}</td>
-                             <td className="p-5 text-right font-black text-slate-800">${debt.amount.toLocaleString()}</td>
+                             <td className="p-5 text-slate-600 font-bold pl-8">{new Date(debt.created_at).toLocaleDateString()}</td>
+                             <td className="p-5 font-bold text-slate-800">{debt.description}</td>
+                             <td className="p-5 text-right font-black text-slate-900">${debt.amount.toLocaleString()}</td>
                              <td className="p-5 text-center pr-8">
                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide border shadow-sm ${debt.status === 'paid' ? 'bg-green-50 text-green-600 border-green-100' : debt.status === 'cancelled' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-yellow-50 text-yellow-600 border-yellow-100'}`}>
                                  {debt.status === 'paid' ? 'PAGADO' : debt.status === 'pending' ? 'PENDIENTE' : 'CANCELADO'}
@@ -644,8 +637,8 @@ export function AdminPanel() {
                         <p className="text-slate-400 text-sm font-medium">{client.email}</p>
                       </div>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-purple-50 group-hover:text-purple-600 transition-all">
-                       <ChevronRight className="w-5 h-5" />
+                    <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-600 transition-all shadow-sm">
+                       <ChevronRight className="w-6 h-6" />
                     </div>
                   </div>
                 ))}
@@ -668,47 +661,75 @@ export function AdminPanel() {
                 filteredRequests.map((request) => (
                   <div key={request.id} className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-all group">
                     {/* Request Header */}
-                    <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${request.service_type === 'transport' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'}`}>
-                          {request.service_type === 'transport' ? <Truck className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
+                    <div className="p-6 md:p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 bg-slate-50/30 text-center md:text-left">
+                      <div className="flex flex-col md:flex-row items-center gap-4">
+                        <div className={`p-4 rounded-2xl shadow-sm border ${request.service_type === 'transport' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-orange-50 text-orange-600 border-orange-100'}`}>
+                          {request.service_type === 'transport' ? <Truck className="w-8 h-8" /> : <Wrench className="w-8 h-8" />}
                         </div>
-                        <div>
-                          <span className="font-bold text-gray-800">{request.service_type === 'transport' ? 'Transporte' : 'Taller'}</span>
-                          <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider">
-                            {new Date(request.created_at).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        <div className="flex flex-col items-center md:items-start">
+                          <h3 className="font-black text-xl text-slate-800 mb-1">
+                            {request.service_type === 'transport' ? 'Transporte' : 'Mantenimiento'}
+                          </h3>
+                          <p className="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-100/50 shadow-sm flex items-center gap-2">
+                             <Clock className="w-3.5 h-3.5 text-slate-400" />
+                             {new Date(request.created_at).toLocaleDateString()} <span className="text-slate-300 mx-1">•</span> {new Date(request.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border
-                                            ${request.status === 'confirmed' ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                          request.status === 'completed' ? 'bg-green-50 text-green-700 border-green-100' :
-                            request.status === 'pending' ? 'bg-orange-50 text-orange-700 border-orange-100' :
-                              request.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-gray-50 text-gray-700 border-gray-100'}`}>
-                        {getStatusIcon(request.status)}
-                        <span className="uppercase tracking-wider text-[10px]">
-                          {request.status === 'confirmed' ? 'CONFIRMADO' :
-                            request.status === 'completed' ? 'COMPLETADO' :
-                              request.status === 'pending' ? 'PENDIENTE' :
-                                request.status === 'cancelled' ? 'CANCELADO' : 'BORRADOR'}
-                        </span>
+                      
+                      <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-center">
+                        <div className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border shadow-sm ${
+                          request.status === 'confirmed' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                          request.status === 'in_process' ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                          request.status === 'completed' ? 'bg-green-100 text-green-700 border-green-200' :
+                          request.status === 'cancelled' ? 'bg-red-100 text-red-700 border-red-200' :
+                          'bg-yellow-101 text-yellow-700 border-yellow-200'
+                        }`}>
+                          {request.status === 'confirmed' ? 'Confirmado' :
+                           request.status === 'in_process' ? 'En Proceso' :
+                           request.status === 'completed' ? 'Completado' :
+                           request.status === 'cancelled' ? 'Cancelado' :
+                           'Pendiente'}
+                        </div>
+                        
+                        {/* Status Actions */}
+                        {request.status === 'pending' && (
+                          <div className="flex gap-2 ml-auto">
+                             <button 
+                               onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'confirmed'); }} 
+                               className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-xl shadow-md shadow-blue-500/20 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all"
+                               title="Confirmar Solicitud"
+                             >
+                               <CheckCircle className="w-5 h-5" />
+                             </button>
+                             <button 
+                               onClick={(e) => { e.stopPropagation(); updateStatus(request.id, 'cancelled'); }} 
+                               className="w-10 h-10 flex items-center justify-center bg-white text-rose-500 border border-rose-100 rounded-xl hover:bg-rose-50 hover:border-rose-200 hover:scale-105 active:scale-95 transition-all"
+                               title="Cancelar Solicitud"
+                             >
+                               <XCircle className="w-5 h-5" />
+                             </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {/* Request Content */}
                     <div className="p-6 md:p-8">
                       {request.collected_data && (
-                        <div className="bg-slate-50 rounded-3xl p-6">
-                           <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                             <div className="w-10 h-1px bg-slate-200"></div> Datos del Servicio
+                        <div className="bg-slate-50/80 rounded-[2rem] p-8 border border-slate-100/50">
+                           <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-center gap-3 opacity-70">
+                             <div className="w-8 h-0.5 bg-slate-300 rounded-full"></div> 
+                             Datos del Servicio
+                             <div className="w-8 h-0.5 bg-slate-300 rounded-full"></div>
                            </h4>
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-sm">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm">
                               {Object.entries(request.collected_data)
                                 .filter(([k]) => k !== 'image_url')
                                 .map(([k, v]) => (
-                                  <div key={k} className="flex flex-col">
-                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">{k.replace(/_/g, ' ')}</span>
-                                    <span className="text-slate-800 font-medium text-base">{String(v)}</span>
+                                  <div key={k} className="flex flex-col items-center text-center">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-3 py-1 bg-white rounded-full border border-slate-100 shadow-sm">{k.replace(/_/g, ' ')}</span>
+                                    <span className="text-slate-700 font-bold text-lg leading-relaxed">{String(v)}</span>
                                   </div>
                                 ))}
                            </div>
@@ -738,10 +759,26 @@ export function AdminPanel() {
                     </div>
 
                     {/* Request Actions */}
-                    <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex gap-3 justify-end">
-                      {request.status === 'pending' && <button onClick={() => updateStatus(request.id, 'confirmed')} className="flex-1 md:flex-none bg-blue-600 text-white hover:bg-blue-700 px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 transition-all flex items-center justify-center gap-2">✔ Confirmar</button>}
-                      {request.status === 'confirmed' && <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 md:flex-none bg-green-600 text-white hover:bg-green-700 px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-green-600/20 transition-all flex items-center justify-center gap-2">✔ Finalizar</button>}
-                      {(request.status !== 'cancelled' && request.status !== 'completed') && <button onClick={() => updateStatus(request.id, 'cancelled')} className="flex-1 md:flex-none bg-white border border-red-200 text-red-600 hover:bg-red-50 px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2">✖ Cancelar</button>}
+                    <div className="px-5 py-4 bg-slate-50/50 border-t border-slate-100 flex gap-3 justify-end items-center">
+                       {request.status === 'confirmed' && <p className="text-xs font-bold text-blue-600 mr-auto flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> En espera de finalización</p>}
+                       
+                      {request.status === 'pending' && (
+                         <button onClick={() => updateStatus(request.id, 'confirmed')} className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl text-sm font-black shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                           <CheckCircle className="w-5 h-5" /> Confirmar Solicitud
+                         </button>
+                      )}
+                      
+                      {request.status === 'confirmed' && (
+                        <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-2xl text-sm font-black shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                           <CheckCircle className="w-5 h-5" /> Marcar Completado
+                        </button>
+                      )}
+
+                      {(request.status !== 'cancelled' && request.status !== 'completed') && (
+                        <button onClick={() => updateStatus(request.id, 'cancelled')} className="md:flex-none bg-white border-2 border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50 px-6 py-3 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 active:scale-95">
+                           Cancelar
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))

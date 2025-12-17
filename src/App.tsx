@@ -44,6 +44,7 @@ function App() {
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
 
   // State for Quick Replies
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
@@ -573,68 +574,79 @@ function App() {
   return (
     <div className="app-container">
       <div className="main-content">
-        {/* Header - Visible */}
-        <div className="top-header">
-          <div className="header-branding">
-            <div className="logo-container">
-              <Sparkles className="icon-md text-white" />
+        {/* Header - Visible only in Chat */}
+        {/* GLOBAL HEADER - Narrow & Sleek (Always Visible) */}
+        <div className="h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-40 sticky top-0 flex-none shadow-sm">
+          
+          {/* Left: Brand & New Chat */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sky-500/20 shadow-md transform hover:scale-105 transition-transform">
+              <Sparkles className="w-4 h-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="app-title">DD Chatbot</h1>
-                {/* NEW CHAT BUTTON */}
-                <button
+            <div className="flex items-center gap-2">
+               <h1 className="text-sm font-black text-slate-700 tracking-tight">DD Chatbot</h1>
+               
+               {/* New Chat Button */}
+               <button
                   onClick={() => {
                     if (window.confirm('¿Iniciar nueva conversación?')) {
                       createNewSession();
                     }
                   }}
-                  className="text-white/80 hover:text-white"
+                  className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-50 hover:bg-sky-50 text-slate-400 hover:text-sky-500 border border-slate-200 hover:border-sky-200 transition-all ml-1"
                   title="Nueva Conversación"
                 >
-                  <PlusCircle className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="status-indicator">
-                <span className="status-dot"></span>
-                En línea
-              </p>
+                  <PlusCircle className="w-3.5 h-3.5" />
+               </button>
             </div>
           </div>
-          <div className="header-user">
+
+          {/* Right: User Profile & Logout */}
+          <div className="flex items-center gap-3">
             {session?.user && (
-              <div className="user-info">
-                {session.user.user_metadata?.avatar_url && (
-                  <img
-                    src={session.user.user_metadata.avatar_url}
-                    alt="Avatar"
-                    className="user-avatar"
-                  />
-                )}
-                <div className="user-details">
-                  <p className="user-name">{userName}</p>
-                  <p className="user-email">{userEmail}</p>
-                </div>
-                <button
-                  onClick={async () => {
-                    localStorage.removeItem('dd_chatbot_test_session'); // Clear test session if any
-                    await supabase.auth.signOut();
-                    setSession(null); // Force update state
-                    window.location.reload();
-                  }}
-                  className="logout-btn"
-                  title="Cerrar sesión"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                  <span className="logout-text">Cerrar sesión</span>
-                </button>
-              </div>
+              <>
+                 {/* User Info (Hidden on very small screens) */}
+                 <div className="hidden sm:flex flex-col items-end mr-1">
+                    <span className="text-xs font-bold text-slate-700">{userName.split(' ')[0]}</span>
+                    <span className="text-[10px] text-slate-400 font-medium truncate max-w-[100px]">{userEmail}</span>
+                 </div>
+                 
+                 {/* Avatar */}
+                 <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
+                    {session.user.user_metadata?.avatar_url ? (
+                       <img src={session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                       <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-xs select-none">
+                          {userName.charAt(0).toUpperCase()}
+                       </div>
+                    )}
+                 </div>
+
+                 {/* Divider */}
+                 <div className="h-4 w-px bg-slate-200 mx-1"></div>
+
+                 {/* Logout Button - Consistent Location */}
+                 <button
+                    onClick={async () => {
+                      if(window.confirm('¿Cerrar sesión?')) {
+                          localStorage.removeItem('dd_chatbot_test_session');
+                          await supabase.auth.signOut();
+                          setSession(null);
+                          window.location.reload();
+                      }
+                    }}
+                    className="p-1.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                    title="Cerrar sesión"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                 </button>
+              </>
             )}
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="content-area">
+        <div className="flex-1 overflow-y-auto relative bg-slate-50 w-full scroll-smooth">
 
 
           {activeTab === 'home' && (
@@ -798,14 +810,22 @@ function App() {
             <AdminPanel />
           )}
         </div>
+        
+        {/* Bottom Navigation */}
+        <BottomNav
+          activeTab={activeTab}
+          onTabChange={(tab) => {
+             if (tab === 'admin' && activeTab === 'admin') {
+                setIsAdminMenuOpen(!isAdminMenuOpen);
+             } else {
+                setActiveTab(tab);
+                setIsAdminMenuOpen(false);
+             }
+          }}
+          isAdmin={isAdmin}
+        />
       </div>
-
-      {/* Bottom Navigation - Fijo en móvil */}
-      <BottomNav
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        isAdmin={isAdmin}
-      />
+      
     </div>
   );
 }

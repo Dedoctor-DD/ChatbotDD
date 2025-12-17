@@ -56,18 +56,20 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
   if (loading) {
     return (
       <div className="home-panel w-full max-w-2xl mx-auto pb-20 flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="home-panel w-full max-w-2xl mx-auto pb-20">
+    <div className="home-panel w-full max-w-2xl mx-auto pb-20 relative">
+
+
       <div className="home-header mb-8 mt-4 px-2">
         <div className="user-greeting flex flex-col md:flex-row items-center gap-6 text-center md:text-left bg-transparent p-0 border-none shadow-none">
-          <div className="user-avatar-large shrink-0 relative w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 p-0.5 rounded-full shadow-lg shadow-blue-500/20">
+          <div className="user-avatar-large shrink-0 relative w-20 h-20 bg-gradient-to-br from-sky-500 to-indigo-600 p-0.5 rounded-full shadow-lg shadow-sky-500/20">
             <div className="w-full h-full bg-white rounded-full flex items-center justify-center border-4 border-white">
-               <User className="w-8 h-8 text-blue-600" />
+               <User className="w-8 h-8 text-sky-600" />
             </div>
             {debts.length > 0 && (
               <div className="absolute top-0 right-0 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center border-2 border-white shadow-sm animate-bounce">
@@ -78,7 +80,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
           <div>
             <h1 className="welcome-title text-3xl font-black text-slate-800 tracking-tight mb-1">¡Hola, {userName.split(' ')[0]}!</h1>
             <p className="welcome-subtitle text-slate-500 font-medium leading-tight">¿Listo para tu próximo servicio?</p>
-            <p className="text-xs text-slate-400 font-medium mt-1 bg-slate-100 px-2 py-0.5 rounded-md inline-block">{userEmail}</p>
+            <p className="text-xs text-slate-400 font-medium mt-1 bg-slate-100/50 px-2 py-0.5 rounded-md inline-block">{userEmail}</p>
           </div>
         </div>
       </div>
@@ -86,7 +88,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       {/* ALERT: DEBTS */}
       {/* ALERT: DEBTS PREMIUM CARD */}
       {totalDebt > 0 && (
-        <div className="mb-6 bg-white rounded-[2rem] p-6 shadow-[0_10px_40px_-10px_rgba(239,68,68,0.15)] border border-red-100 relative overflow-hidden group">
+        <div className="mb-6 bg-white rounded-[2rem] p-6 shadow-xl shadow-red-500/10 border-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
           
           <div className="relative z-10">
@@ -128,14 +130,14 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => onServiceSelect('transport')}
-            className="group bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-lg hover:border-blue-100 hover:translate-y-[-2px] text-left relative overflow-hidden"
+            className="group bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-lg hover:border-sky-100 hover:translate-y-[-2px] text-left relative overflow-hidden"
           >
-            <div className="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-500"></div>
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 relative z-10 shadow-sm group-hover:scale-110 transition-transform duration-300">
+            <div className="absolute right-0 top-0 w-32 h-32 bg-sky-50 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-500"></div>
+            <div className="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center text-sky-600 relative z-10 shadow-sm group-hover:scale-110 transition-transform duration-300">
               <Truck className="w-8 h-8" />
             </div>
             <div className="relative z-10">
-              <h3 className="font-bold text-lg text-slate-800 group-hover:text-blue-700 transition-colors">Transporte</h3>
+              <h3 className="font-bold text-lg text-slate-800 group-hover:text-sky-700 transition-colors">Transporte</h3>
               <p className="text-slate-500 text-sm leading-tight mt-1">
                 Viajes seguros puerta a puerta
               </p>
