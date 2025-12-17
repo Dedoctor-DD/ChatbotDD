@@ -81,23 +81,40 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       </div>
 
       {/* ALERT: DEBTS */}
+      {/* ALERT: DEBTS PREMIUM CARD */}
       {totalDebt > 0 && (
-        <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 text-red-100">
-              <AlertCircle className="w-5 h-5 text-red-400" />
-              <h3 className="font-semibold">Pagos Pendientes</h3>
-            </div>
-            <span className="text-xl font-bold text-white">${totalDebt.toLocaleString()}</span>
-          </div>
-          <p className="text-sm text-gray-300 mb-3">Tienes {debts.length} cargo(s) pendiente(s) en tu cuenta.</p>
-          <div className="space-y-2">
-            {debts.map(debt => (
-              <div key={debt.id} className="flex justify-between items-center text-sm bg-black/20 p-2 rounded">
-                <span className="text-gray-300">{debt.description}</span>
-                <span className="font-mono text-red-300">${debt.amount.toLocaleString()}</span>
+        <div className="mb-6 bg-white rounded-[2rem] p-6 shadow-[0_10px_40px_-10px_rgba(239,68,68,0.15)] border border-red-100 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-red-100 text-red-500 rounded-2xl">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
+                <div>
+                   <h3 className="font-bold text-slate-800 text-lg">Pagos Pendientes</h3>
+                   <p className="text-xs text-slate-500 font-medium">{debts.length} cargo(s) en tu cuenta</p>
+                </div>
               </div>
-            ))}
+              <div className="text-right">
+                <span className="block text-2xl font-black text-slate-800">${totalDebt.toLocaleString()}</span>
+                <span className="text-[10px] text-red-500 font-bold uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded-full inline-block mt-1">Por pagar</span>
+              </div>
+            </div>
+            
+            <div className="space-y-2 mt-2">
+              {debts.map(debt => (
+                <div key={debt.id} className="flex justify-between items-center text-sm bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                  <span className="text-slate-600 font-medium pl-1">{debt.description}</span>
+                  <span className="font-bold text-red-500 bg-white px-3 py-1 rounded-xl shadow-sm border border-red-50">${debt.amount.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+            
+            <button className="w-full mt-4 bg-red-500 text-white py-3 rounded-2xl font-bold text-sm shadow-lg shadow-red-500/25 hover:bg-red-600 active:scale-95 transition-all">
+               Resolver Pagos
+            </button>
           </div>
         </div>
       )}
