@@ -213,8 +213,8 @@ export function AdminPanel() {
                            : 'text-slate-400 hover:text-sky-500 hover:bg-white/50'}
                       `}
                    >
-                      <tab.icon className={`w-3.5 h-3.5 ${activeView === tab.id ? 'text-sky-500' : 'text-slate-400'}`} />
-                      <span>{tab.label}</span>
+                      <tab.icon className={`w-4 h-4 ${activeView === tab.id ? 'text-sky-500' : 'text-slate-400'}`} />
+                      <span className="hidden md:inline">{tab.label}</span>
                       {tab.count !== undefined && tab.count > 0 && (
                         <span className={`
                           ml-1 text-[10px] font-black px-1.5 py-0.5 rounded-full
