@@ -762,7 +762,7 @@ function App() {
                     />
                   </div>
 
-                  <div className="flex items-center gap-2 ml-1">
+                  <div className="chat-input-buttons flex items-center gap-2 ml-1 flex-shrink-0">
 
                     {/* Hidden File Input */}
                     <input

@@ -1442,6 +1442,40 @@ body {
     div[class*="p-4 md:p-6 flex flex-col"] {
         padding: 0.75rem !important; 
     }
+
+    /* CHAT INPUT FIXES (Prevent horizontal scroll) */
+    .chat-input-area {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .input-form {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0.25rem 0.5rem !important;
+        gap: 0.25rem !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .input-form button {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    .chat-input-buttons {
+        gap: 0.25rem !important;
+    }
+
+    .chat-input {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        font-size: 0.9rem !important;
+    }
 }
 .hover\:text-slate-700:hover { color: #334155 !important; }
 .hover\:text-red-500:hover { color: #ef4444 !important; }
