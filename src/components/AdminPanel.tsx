@@ -232,7 +232,7 @@ export function AdminPanel() {
         <main className="flex-1 overflow-y-auto bg-slate-50/50 scroll-smooth pb-32">
 
         {/* SCROLLABLE MAIN CONTENT */}
-        <div className="flex-1 overflow-y-auto p-4 lg:p-8 pb-32 make-scroll-smooth">
+        <div className="w-full pb-32">
 
           {/* 1. DASHBOARD VIEW */}
           {activeView === 'dashboard' && (
