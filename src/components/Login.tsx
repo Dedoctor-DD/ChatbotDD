@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Bot } from 'lucide-react';
+import { Bot, Trash2 } from 'lucide-react';
 
 export function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -142,14 +142,18 @@ export function Login() {
 
                     <button
                         onClick={() => {
-                            localStorage.clear();
-                            sessionStorage.clear();
-                            window.location.hash = '';
-                            window.location.reload();
+                            if (window.confirm('¿Estás seguro de que deseas borrar los datos de sesión y caché?')) {
+                                localStorage.clear();
+                                sessionStorage.clear();
+                                window.location.hash = '';
+                                window.location.reload();
+                            }
                         }}
-                        className="text-xs text-gray-500 hover:text-gray-400 transition-colors underline"
+                        className="mt-4 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 text-xs font-medium transition-all flex items-center justify-center gap-2 mx-auto active:scale-95"
+                        title="Borrar datos de sesión"
                     >
-                        ¿Problemas de conexión? Borrar datos
+                        <Trash2 className="w-3 h-3" />
+                        <span>Reiniciar / Borrar Datos</span>
                     </button>
                 </div>
             </div>
