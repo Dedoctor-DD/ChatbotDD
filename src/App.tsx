@@ -22,6 +22,21 @@ interface ConfirmationData {
   data: Record<string, any>;
 }
 
+// Helper for safe UUIDs
+function generateUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID();
+    } catch (e) {
+      console.warn('crypto.randomUUID failed, using polyfill');
+    }
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 type TabType = 'home' | 'chat' | 'admin';
 
 function App() {
@@ -387,9 +402,9 @@ function App() {
       }
 
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateUUID(),
         role: 'assistant',
-        content: cleanResponse || 'Lo siento, no pude procesar tu solicitud.',
+        content: cleanResponse || (confirmIndex !== -1 ? 'He preparado tu solicitud. Por favor confirma los detalles abajo: 👇' : 'Lo siento, no pude procesar tu solicitud.'),
         timestamp: new Date(),
       };
 
