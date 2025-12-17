@@ -1577,3 +1577,38 @@ h1.text-sm {
 
 /* Ensure images fit */
 img.object-cover { object-fit: cover !important; }
+
+/* ============================================
+   EMERGENCY OVERRIDES (Fix Giant Header)
+   ============================================ */
+/* Force Avatar Size */
+div.w-8.h-8 {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+    min-height: 2rem !important;
+}
+
+/* Force Text Size */
+h1.text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+}
+
+/* Force Icon Size */
+svg.w-4.h-4 {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+
+svg.w-3\.5.h-3\.5 {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+}
+
+/* Prevent image blowout */
+div.rounded-full.overflow-hidden img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+}
