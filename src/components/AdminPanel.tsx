@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import {
-  Users, Truck, Wrench, Clock, CheckCircle, XCircle, RefreshCw, DollarSign, Search,
+  Users, Truck, Wrench, Clock, CheckCircle, XCircle, DollarSign, Search,
   MapPin, Phone, LayoutDashboard, AlertCircle, ChevronRight, Edit3, User
 } from 'lucide-react';
 
@@ -12,7 +12,7 @@ export function AdminPanel() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [tariffs, setTariffs] = useState<Tariff[]>([]); 
-  const [loading, setLoading] = useState(true);
+
   const [editingTariff, setEditingTariff] = useState<string | null>(null); 
   const [tempTariffValues, setTempTariffValues] = useState<Record<string, Partial<Tariff>>>({});
 
@@ -30,7 +30,7 @@ export function AdminPanel() {
   }, []);
 
   const loadData = async () => {
-    setLoading(true);
+
     try {
       const { data: reqData, error: reqError } = await supabase
         .from('service_requests')
@@ -60,7 +60,7 @@ export function AdminPanel() {
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
-      setLoading(false);
+
     }
   };
 
@@ -182,16 +182,7 @@ export function AdminPanel() {
         
         {/* ADMIN NAVIGATION TABS (Sticky below Global Header) */}
         <div className="bg-slate-50/95 backdrop-blur-sm z-30 sticky top-0 py-3 px-4 shadow-sm border-b border-slate-200/50 flex items-center gap-3 overflow-x-auto no-scrollbar snap-x">
-             {/* Refresh Button - Integrated */}
-             <button
-                onClick={loadData}
-                className={`p-2.5 rounded-xl bg-white text-slate-400 hover:text-sky-500 hover:shadow-sm border border-slate-100 hover:border-sky-100 transition-all flex-none snap-start ${loading ? 'animate-spin text-sky-500' : ''}`}
-                title="Actualizar"
-             >
-                <RefreshCw className="w-4 h-4" />
-             </button>
 
-             <div className="w-px h-6 bg-slate-200 flex-none mx-1"></div>
 
              {/* Navigation Tabs */}
              <div className="flex items-center gap-2 flex-1 pr-4">
