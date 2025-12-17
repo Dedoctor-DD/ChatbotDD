@@ -98,9 +98,9 @@ export function Login() {
                             <button
                                 onClick={() => {
                                     const mockSession = {
-                                        access_token: 'mock_token',
+                                        access_token: 'mock_token_' + Date.now(),
                                         user: {
-                                            id: '11111111-1111-1111-1111-111111111111',
+                                            id: crypto.randomUUID(),
                                             email: 'invitado@dedoctor.com',
                                             user_metadata: {
                                                 full_name: 'Invitado de Prueba',
@@ -119,9 +119,9 @@ export function Login() {
                             <button
                                 onClick={() => {
                                     const mockSession = {
-                                        access_token: 'mock_token_admin',
+                                        access_token: 'mock_token_admin_' + Date.now(),
                                         user: {
-                                            id: '22222222-2222-2222-2222-222222222222',
+                                            id: crypto.randomUUID(),
                                             email: 'dedoctor.transportes@gmail.com', // Triggers isAdmin
                                             user_metadata: {
                                                 full_name: 'Administrador (Test)',
