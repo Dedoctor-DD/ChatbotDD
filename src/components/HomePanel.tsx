@@ -228,12 +228,12 @@ export function HomePanel({ onServiceSelect, onGoToChat, userName, userEmail, us
       <div className="quick-actions-section">
         <button
           onClick={onGoToChat}
-          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full p-4 flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:shadow-[0_15px_40px_rgba(37,99,235,0.4)] transition-all active:scale-[0.98] group"
+          className="btn-premium group"
         >
           <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm group-hover:scale-110 transition-transform">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold tracking-wide">Iniciar Conversación</span>
+          <span>Iniciar Conversación</span>
         </button>
       </div>
     </div>
