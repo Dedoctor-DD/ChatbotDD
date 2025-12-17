@@ -1,95 +1,205 @@
-import { CheckCircle2, Edit3, Truck, Wrench } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { CheckCircle2, Edit3, Truck, Wrench, Camera, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface ConfirmationCardProps {
     serviceType: 'transport' | 'workshop';
     data: Record<string, any>;
-    onConfirm: () => void;
+    onConfirm: (additionalData?: any) => void;
     onEdit: () => void;
 }
 
 export function ConfirmationCard({ serviceType, data, onConfirm, onEdit }: ConfirmationCardProps) {
     const isTransport = serviceType === 'transport';
+    const [uploading, setUploading] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Helper to robustly get data (handling various AI capitalizations/key names)
+    const val = (keys: string[]) => {
+        for (const k of keys) {
+            if (data[k]) return data[k];
+            // Try lowercase
+            if (data[k.toLowerCase()]) return data[k.toLowerCase()];
+        }
+        return ''; // Return empty string if missing
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploading(true);
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('request_attachments')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('request_attachments')
+                .getPublicUrl(filePath);
+
+            setImageUrl(publicUrl);
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error al subir la imagen. Por favor intenta nuevamente.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     return (
-        <div className="confirmation-card">
-            <div className="confirmation-header">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden my-4 max-w-sm mx-auto animate-fade-in">
+            {/* Header with Gradient */}
+            <div className={`p-4 text-white flex items-center gap-3 ${isTransport ? 'bg-gradient-to-r from-blue-600 to-blue-500' : 'bg-gradient-to-r from-orange-500 to-red-500'}`}>
                 {isTransport ? (
-                    <Truck className="icon-md" />
+                    <Truck className="w-6 h-6" />
                 ) : (
-                    <Wrench className="icon-md" />
+                    <Wrench className="w-6 h-6" />
                 )}
-                <h3>{isTransport ? 'Solicitud de Transporte' : 'Solicitud de Taller'}</h3>
+                <h3 className="font-semibold text-lg">{isTransport ? 'Confirmar Transporte' : 'Confirmar Taller'}</h3>
             </div>
 
-            <div className="confirmation-body">
+            {/* Body Content */}
+            <div className="p-5 space-y-3 text-sm text-gray-700">
                 {isTransport ? (
                     <>
-                        <div className="data-row">
-                            <span className="data-label">Origen:</span>
-                            <span className="data-value">{data.origen}</span>
+                        <div className="flex justify-between border-b border-gray-100 pb-2">
+                            <span className="font-medium text-gray-500">Origen:</span>
+                            <span className="font-semibold text-gray-900 text-right max-w-[60%] leading-tight">
+                                {val(['origen', 'origin', 'desde']) || '¿?'}
+                            </span>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Destino:</span>
-                            <span className="data-value">{data.destino}</span>
+                        <div className="flex justify-between border-b border-gray-100 pb-2">
+                            <span className="font-medium text-gray-500">Destino:</span>
+                            <span className="font-semibold text-gray-900 text-right max-w-[60%] leading-tight">
+                                {val(['destino', 'destination', 'hacia', 'hasta']) || '¿?'}
+                            </span>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Fecha:</span>
-                            <span className="data-value">{data.fecha}</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <span className="block font-medium text-gray-500 text-xs">Fecha</span>
+                                <span className="block font-semibold">{val(['fecha', 'date', 'dia']) || '¿?'}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="block font-medium text-gray-500 text-xs">Hora</span>
+                                <span className="block font-semibold">{val(['hora', 'time']) || '¿?'}</span>
+                            </div>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Hora:</span>
-                            <span className="data-value">{data.hora}</span>
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <span className="block font-medium text-gray-500 text-xs">Pasajeros</span>
+                                <span className="block font-semibold">{val(['pasajeros', 'passengers', 'cantidad_pasajeros']) || '1'}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="block font-medium text-gray-500 text-xs">Sillas</span>
+                                <span className="block font-semibold">{val(['cantidad_sillas', 'sillas', 'wheelchairs']) || '1'}</span>
+                            </div>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Sillas:</span>
-                            <span className="data-value">{data.cantidad_sillas || 1}</span>
-                        </div>
-                        {data.observaciones && (
-                            <div className="data-row">
-                                <span className="data-label">Observaciones:</span>
-                                <span className="data-value">{data.observaciones}</span>
+                        {val(['observaciones', 'notes', 'comentarios']) && (
+                            <div className="pt-2 border-t border-gray-100 mt-2">
+                                <span className="block font-medium text-gray-500 text-xs mb-1">Observaciones:</span>
+                                <p className="text-gray-600 italic text-xs">{val(['observaciones', 'notes', 'comentarios'])}</p>
                             </div>
                         )}
                     </>
                 ) : (
                     <>
-                        <div className="data-row">
-                            <span className="data-label">Problema:</span>
-                            <span className="data-value">{data.tipo_problema}</span>
+                        <div className="flex flex-col border-b border-gray-100 pb-2">
+                            <span className="font-medium text-gray-500 text-xs uppercase tracking-wide">Problema / Falla</span>
+                            <span className="font-semibold text-gray-900 mt-1 leading-snug">
+                                {val(['tipo_problema', 'problema', 'falla', 'issue', 'problem']) || 'No especificado'}
+                            </span>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Modelo:</span>
-                            <span className="data-value">{data.modelo_silla}</span>
+                        <div className="flex justify-between border-b border-gray-100 pb-2">
+                            <span className="font-medium text-gray-500">Modelo Silla:</span>
+                            <span className="font-semibold text-gray-900 text-right">
+                                {val(['modelo_silla', 'modelo', 'model', 'marca']) || 'No especificado'}
+                            </span>
                         </div>
-                        <div className="data-row">
-                            <span className="data-label">Teléfono:</span>
-                            <span className="data-value">{data.telefono}</span>
+                        <div className="flex justify-between border-b border-gray-100 pb-2">
+                            <span className="font-medium text-gray-500">Teléfono:</span>
+                            <span className="font-semibold text-gray-900">
+                                {val(['telefono', 'phone', 'celular', 'contacto']) || 'No indicado'}
+                            </span>
                         </div>
-                        {data.observaciones && (
-                            <div className="data-row">
-                                <span className="data-label">Observaciones:</span>
-                                <span className="data-value">{data.observaciones}</span>
+                        <div className="flex flex-col">
+                            <span className="font-medium text-gray-500 text-xs uppercase tracking-wide">Dirección Retiro</span>
+                            <span className="font-semibold text-gray-900 mt-1 leading-snug">
+                                {val(['direccion', 'address', 'ubicacion']) || 'No especificada'}
+                            </span>
+                        </div>
+                        {val(['observaciones', 'notes', 'comentarios']) && (
+                            <div className="pt-2 border-t border-gray-100 mt-2">
+                                <span className="block font-medium text-gray-500 text-xs mb-1">Observaciones:</span>
+                                <p className="text-gray-600 italic text-xs">{val(['observaciones', 'notes', 'comentarios'])}</p>
                             </div>
                         )}
                     </>
                 )}
+
+                {/* Image Preview */}
+                {imageUrl && (
+                    <div className="relative mt-2 rounded-xl overflow-hidden border border-gray-200 shadow-sm group">
+                        <img
+                            src={imageUrl}
+                            alt="Adjunto"
+                            className="w-full h-32 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button
+                                onClick={() => setImageUrl(null)}
+                                className="text-white bg-red-500/80 p-1 rounded-full hover:bg-red-600"
+                            >
+                                <CheckCircle2 className="w-5 h-5 rotate-45" /> {/* Using generic icon as X */}
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className="confirmation-actions">
+            {/* Actions Footer */}
+            <div className="bg-gray-50 p-3 flex gap-2 justify-end">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
+
                 <button
-                    onClick={() => alert('¡Próximamente podrás subir fotos aquí! Estamos habilitando el almacenamiento seguro.')}
-                    className="btn-secondary text-xs"
-                    title="Próximamente"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className={`flex-1 py-3 px-3 bg-white border border-gray-300 rounded-xl text-gray-600 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95 duration-200 ${uploading ? 'opacity-50 cursor-wait' : ''}`}
                 >
-                    📷 Adjuntar Foto
+                    {uploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                        <Camera className="w-4 h-4" />
+                    )}
+                    <span>{imageUrl ? 'Cambiar Foto' : 'Adjuntar'}</span>
                 </button>
-                <button onClick={onEdit} className="btn-secondary">
-                    <Edit3 className="icon-sm" />
-                    Editar
+                <button
+                    onClick={onEdit}
+                    disabled={uploading}
+                    className="py-3 px-4 bg-white border border-gray-300 rounded-xl text-gray-700 text-xs font-bold hover:bg-gray-100 transition-colors shadow-sm active:scale-95 duration-200"
+                >
+                    <Edit3 className="w-4 h-4" />
                 </button>
-                <button onClick={onConfirm} className="btn-primary">
-                    <CheckCircle2 className="icon-sm" />
-                    Confirmar Solicitud
+                <button
+                    onClick={() => onConfirm(imageUrl ? { image_url: imageUrl } : undefined)}
+                    disabled={uploading}
+                    className="py-3 px-6 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-500 transition-colors shadow-lg shadow-green-600/20 flex items-center gap-2 active:scale-95 duration-200"
+                >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Confirmar
                 </button>
             </div>
         </div>

@@ -100,7 +100,7 @@ export function Login() {
                                     const mockSession = {
                                         access_token: 'mock_token',
                                         user: {
-                                            id: 'guest-user-123',
+                                            id: '11111111-1111-1111-1111-111111111111',
                                             email: 'invitado@dedoctor.com',
                                             user_metadata: {
                                                 full_name: 'Invitado de Prueba',
@@ -121,7 +121,7 @@ export function Login() {
                                     const mockSession = {
                                         access_token: 'mock_token_admin',
                                         user: {
-                                            id: 'admin-user-999',
+                                            id: '22222222-2222-2222-2222-222222222222',
                                             email: 'dedoctor.transportes@gmail.com', // Triggers isAdmin
                                             user_metadata: {
                                                 full_name: 'Administrador (Test)',

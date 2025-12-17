@@ -1,6 +1,9 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')
 const MODEL_NAME = 'gemini-2.0-flash-exp'
 
 const corsHeaders = {
@@ -18,7 +21,19 @@ serve(async (req: Request) => {
         const { prompt, conversationHistory } = await req.json()
 
         if (!GEMINI_API_KEY) {
-            throw new Error('GEMINI_API_KEY not configured in Supabase secrets')
+            throw new Error('GEMINI_API_KEY not configured')
+        }
+
+        // Initialize Supabase Client
+        const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!)
+
+        // Fetch Tariffs
+        const { data: tariffs } = await supabase.from('tariffs').select('*')
+
+        let tariffContext = ''
+        if (tariffs && tariffs.length > 0) {
+            tariffContext = '\n\nTARIFAS VIGENTES (Referencia para cotizar):\n' +
+                tariffs.map((t: any) => `- ${t.sub_category} (${t.category}): $${t.price} ${t.description ? '- ' + t.description : ''}`).join('\n')
         }
 
         // Construir contenido para Gemini API con prompt del sistema
@@ -30,39 +45,45 @@ Ayudar a los usuarios a agendar servicios de 'Transporte' o 'Mantenimiento/Talle
 Nunca preguntes todo de golpe. Haz 1 o 2 preguntas por turno.
 
 INTERFAZ MEJORADA (USO DE BOTONES):
-Siempre que hagas una pregunta con opciones claras, DEBES incluir al final de tu respuesta (en línea nueva) un bloque oculto con sugerencias para el usuario.
+Siempre que hagas una pregunta con opciones claras, DEBES incluir al final de tu respuesta (en línea nueva) un bloque oculto con sugerencias.
 Formato: [QUICK_REPLIES: ["Opción 1", "Opción 2"]]
 
-Ejemplos:
-- "¿Es solo ida o ida y vuelta?" -> [QUICK_REPLIES: ["Solo ida", "Ida y vuelta"]]
-- "¿Para cuándo lo necesitas?" -> [QUICK_REPLIES: ["Para hoy", "Para mañana", "Elegir fecha"]]
-- "¿Confirmas estos datos?" -> [QUICK_REPLIES: ["Sí, confirmar", "Corregir"]]
+UBICACIÓN (GPS):
+Cuando preguntes por la dirección de recogida o de visita, PUEDES pedir la ubicación actual.
+Si lo haces, AGREGA la etiqueta [REQUEST_LOCATION] al final de tu respuesta.
+Ejemplo: "¿Dónde te encuentras? Puedes escribir la dirección o compartir tu ubicación." [REQUEST_LOCATION]
+
+${tariffContext}
 
 REQUISITOS - TRANSPORTE (FLUJO LÓGICO):
-1. TIPO DE VIAJE: ¿Solo ida o Ida y Vuelta? (PREGUNTA ESTO PRIMERO SI NO SE SABE)
-2. ORIGEN: Dirección exacta de recogida.
+1. TIPO DE VIAJE: ¿Solo ida o Ida y Vuelta?
+2. ORIGEN: Dirección exacta. (Usa [REQUEST_LOCATION] si es apropiado)
 3. DESTINO: Dirección de destino.
 4. FECHA: ¿Cuándo?
-5. HORA DE IDA: ¿A qué hora te buscamos?
-6. HORA DE REGRESO: (Solo si es Ida y Vuelta)
-7. PASAJEROS: ¿Cuántas personas y cuántas sillas de ruedas?
-8. ASISTENCIA: (Opcional) ¿Hay escaleras o requieren ayuda extra?
+5. HORA: ¿A qué hora?
+6. PASAJEROS: Cantidad y si usan silla de ruedas.
 
-REQUISITOS - TALLER/MANTENIMIENTO:
-- Tipo de problema/falla (OBLIGATORIO)
-- Dirección de retiro/visita (OBLIGATORIO)
-- Teléfono de contacto (OBLIGATORIO)
-- Modelo de la silla (OPCIONAL - Si no lo saben, no te detengas, continúa)
+REQUISITOS - TALLER:
+- Problema
+- Dirección (Usa [REQUEST_LOCATION])
+- Teléfono
 
 PROTOCOLO DE CONFIRMACIÓN:
-Cuando tengas los datos obligatorios, genera un resumen y activa la confirmación:
-[CONFIRM_READY: {"service_type": "transport"|"workshop", "data": {"key": "value", ...}}]
+Cuando tengas los datos obligatorios, genera un resumen y activa la confirmación usando ESTAS CLAVES EXACTAS en el JSON:
+
+Para Transporte:
+- "origen", "destino", "fecha", "hora", "pasajeros" (número), "cantidad_sillas", "observaciones".
+
+Para Taller:
+- "tipo_problema", "modelo_silla", "telefono", "direccion", "observaciones".
+
+Formato:
+[CONFIRM_READY: {"service_type": "transport"|"workshop", "data": {...}}]
 
 IMPORTANTE:
-- Si es TRANSPORTE, asegúrate de saber si es ida y vuelta.
-- Usa [QUICK_REPLIES] agresivamente para guiar al usuario (ej: fechas, tipo de viaje).
-- Sé eficiente: si el usuario dice "Mañana a las 10am de casa al hospital", ya tienes Fecha, Hora, Origen, Destino. Solo pregunta lo que falte.
-- Usa Emojis para ser amigable.`;
+- Usa [QUICK_REPLIES] agresivamente.
+- Si el usuario comparte un link de Google Maps, extráelo como la dirección.
+- Eres capaz de dar precios estimados basándote en la tabla TARIFAS VIGENTES.`;
 
         const contents = [
             {

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle, MapPin } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { ConfirmationCard } from './components/ConfirmationCard';
@@ -181,8 +181,13 @@ function App() {
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        // Do NOT auto-send. Let user review and add more if needed.
-        // User must click send manually.
+        // Auto-send after silence/end of speech
+        if (inputRef.current.trim()) {
+          setTimeout(() => {
+            sendMessage(inputRef.current);
+            setInput(''); // Clear input after sending
+          }, 1500); // 1.5s delay to allow reading/breath
+        }
       };
     }
   }, []);
@@ -324,6 +329,12 @@ function App() {
         }
       }
 
+      // 3. Check for Location Request
+      if (cleanResponse.includes('[REQUEST_LOCATION]')) {
+        setShowLocationBtn(true);
+        cleanResponse = cleanResponse.replace('[REQUEST_LOCATION]', '').trim();
+      }
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -358,16 +369,19 @@ function App() {
     setQuickReplies([]);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (additionalData?: any) => {
     if (!confirmationData) return;
 
     try {
+      // Merge confirmation data with any additional data (e.g. image_url)
+      const finalData = { ...confirmationData.data, ...(additionalData || {}) };
+
       const { error } = await supabase.from('service_requests').insert({
         session_id: sessionId,
         user_id: session.user.id,
         service_type: confirmationData.service_type,
-        status: 'confirmed',
-        collected_data: confirmationData.data
+        status: 'pending', // Change to pending
+        collected_data: finalData
       });
 
       if (error) throw error;
@@ -375,7 +389,7 @@ function App() {
       const successMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: '✅ ¡Solicitud confirmada! Hemos registrado tu pedido. Nos pondremos en contacto contigo pronto.',
+        content: '✅ ¡Solicitud recibida! Tu pedido ha sido enviado y está pendiente de confirmación por el administrador.',
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, successMessage]);
@@ -386,8 +400,13 @@ function App() {
     }
   };
 
+  const [showLocationBtn, setShowLocationBtn] = useState(false);
+
+  // ... (existing code)
+
   const handleEdit = () => {
     setConfirmationData(null);
+    setShowLocationBtn(false);
     const editMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
@@ -397,8 +416,32 @@ function App() {
     setMessages((prev) => [...prev, editMessage]);
   };
 
+  const handleLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Tu navegador no soporta geolocalización');
+      return;
+    }
+
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        const locationMsg = `📍 Mi ubicación actual: ${link}`;
+        sendMessage(locationMsg);
+        setShowLocationBtn(false); // Hide after sending
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        alert('No se pudo obtener la ubicación. Por favor verifica tus permisos.');
+        setIsLoading(false);
+      }
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowLocationBtn(false); // Hide if user types manually instead
     sendMessage(input);
   };
 
@@ -583,11 +626,24 @@ function App() {
                       <button
                         key={index}
                         onClick={() => handleQuickReply(reply)}
-                        className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-200 text-sm px-4 py-2 rounded-full whitespace-nowrap transition-colors border border-blue-500/30"
+                        className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-200 text-base px-6 py-3 rounded-full whitespace-nowrap transition-colors border border-blue-500/30 font-medium active:scale-95 duration-200"
                       >
                         {reply}
                       </button>
                     ))}
+                  </div>
+                )}
+
+                {/* LOCATION REQUEST BUTTON */}
+                {showLocationBtn && !confirmationData && (
+                  <div className="flex justify-center mb-3 animate-bounce">
+                    <button
+                      onClick={handleLocation}
+                      className="bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-green-500/30 flex items-center gap-2 hover:bg-green-500 transition-colors active:scale-95"
+                    >
+                      <MapPin className="w-5 h-5" />
+                      Compartir Ubicación Actual (GPS)
+                    </button>
                   </div>
                 )}
 
@@ -598,52 +654,29 @@ function App() {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
-                      className="chat-input pr-10"
+                      className="chat-input pr-10 text-lg py-3"
                       disabled={isLoading}
                     />
                   </div>
 
                   {/* Action Buttons Group */}
-                  <div className="flex items-center gap-1.5 ml-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!navigator.geolocation) {
-                          alert('Geolocalización no soportada');
-                          return;
-                        }
-
-                        navigator.geolocation.getCurrentPosition((pos) => {
-                          const { latitude, longitude } = pos.coords;
-                          const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                          const msg = `📍 Mi ubicación actual: ${mapsLink}`;
-                          sendMessage(msg);
-                        }, (err) => {
-                          console.error(err);
-                          alert('No se pudo obtener la ubicación.');
-                        }, { enableHighAccuracy: true });
-                      }}
-                      className="p-2.5 rounded-full bg-gray-700/50 text-gray-300 hover:bg-green-600/20 hover:text-green-400 transition-colors"
-                      title="📍 Enviar mi ubicación actual"
-                    >
-                      <Sparkles className="w-5 h-5" />
-                    </button>
+                  <div className="flex items-center gap-2 ml-1">
 
                     <button
                       type="button"
                       onClick={toggleMic}
-                      className={`p-2.5 rounded-full transition-all duration-200 ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
+                      className={`p-3.5 rounded-full transition-all duration-200 ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
                       title="Dictar voz"
                     >
-                      {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                      {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
                     </button>
 
                     <button
                       type="submit"
                       disabled={!input.trim() || isLoading}
-                      className={`p-2.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
+                      className={`p-3.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
                     >
-                      <Send className="w-5 h-5" />
+                      <Send className="w-6 h-6" />
                     </button>
                   </div>
                 </form>
