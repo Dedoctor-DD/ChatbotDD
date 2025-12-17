@@ -317,7 +317,7 @@ function App() {
 
       const responseText = await getGeminiResponse(text, history);
 
-      // 1. Check for Quick Replies
+      // 1. Check for Quick Replies (Regex is usually safe for arrays, but let's make it robust)
       const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
       let cleanResponse = responseText;
 
@@ -325,7 +325,7 @@ function App() {
         try {
           const options = JSON.parse(quickRepliesMatch[1]);
           setQuickReplies(options);
-          cleanResponse = cleanResponse.replace(/\[QUICK_REPLIES:\s*\[.*?\]\s*\]/s, '').trim();
+          cleanResponse = cleanResponse.replace(quickRepliesMatch[0], '').trim();
         } catch (e) {
           console.error('Error parsing quick replies:', e);
         }
@@ -333,17 +333,50 @@ function App() {
         setQuickReplies([]);
       }
 
-      // 2. Check for Confirmation
-      const confirmMatch = cleanResponse.match(/\[CONFIRM_READY:\s*({.*?})\s*\]/s);
+      // 2. Check for Confirmation (Robust Parsing for Nested JSON)
+      const confirmMarker = '[CONFIRM_READY:';
+      const confirmIndex = cleanResponse.indexOf(confirmMarker);
 
-      if (confirmMatch) {
-        try {
-          const confirmData = JSON.parse(confirmMatch[1]);
-          setConfirmationData(confirmData);
-          cleanResponse = cleanResponse.replace(/\[CONFIRM_READY:\s*{.*?}\s*\]/s, '').trim();
-          setQuickReplies([]);
-        } catch (e) {
-          console.error('Failed to parse confirmation data:', e);
+      if (confirmIndex !== -1) {
+        // Find the start of the JSON object
+        const jsonStart = cleanResponse.indexOf('{', confirmIndex);
+        if (jsonStart !== -1) {
+          let braceCount = 0;
+          let jsonEnd = -1;
+
+          // Iterate to find the matching closing brace
+          for (let i = jsonStart; i < cleanResponse.length; i++) {
+            if (cleanResponse[i] === '{') braceCount++;
+            else if (cleanResponse[i] === '}') {
+              braceCount--;
+              if (braceCount === 0) {
+                jsonEnd = i + 1; // Include the closing brace
+                break;
+              }
+            }
+          }
+
+          if (jsonEnd !== -1) {
+            const jsonStr = cleanResponse.substring(jsonStart, jsonEnd);
+            try {
+              const confirmData = JSON.parse(jsonStr);
+              setConfirmationData(confirmData);
+
+              // Remove the entire block from [CONFIRM_READY: ... ]
+              // We need to find the closing ']' of the tag, which should be after jsonEnd
+              const tagEnd = cleanResponse.indexOf(']', jsonEnd);
+              if (tagEnd !== -1) {
+                cleanResponse = (cleanResponse.substring(0, confirmIndex) + cleanResponse.substring(tagEnd + 1)).trim();
+              } else {
+                // Fallback: just remove up to jsonEnd
+                cleanResponse = (cleanResponse.substring(0, confirmIndex) + cleanResponse.substring(jsonEnd)).trim();
+              }
+
+              setQuickReplies([]); // Clear quick replies if confirming
+            } catch (e) {
+              console.error('Failed to parse confirmation data JSON:', e);
+            }
+          }
         }
       }
 
