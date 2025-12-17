@@ -299,35 +299,40 @@ export function AdminPanel() {
           {activeView === 'dashboard' && (
             <div className="space-y-6 max-w-7xl mx-auto">
               {/* KPI CARDS */}
-              {/* KPI CARDS - PREMIUM SOFT STYLE */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between transition-all hover:translate-y-[-2px] hover:shadow-md">
-                  <div>
-                    <p className="text-sm text-slate-400 mb-2 font-semibold uppercase tracking-wider">Pendientes</p>
-                    <h3 className="text-5xl font-black text-slate-800 tracking-tight">{pendingCount}</h3>
+              {/* KPI CARDS - POLISHED & CENTERED */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Card 1: Pendientes */}
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
+                  <div className="pl-2">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pendientes</p>
+                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">{pendingCount}</h3>
                   </div>
-                  <div className="w-16 h-16 bg-orange-50 rounded-[1.5rem] flex items-center justify-center text-orange-500 shadow-sm">
-                    <Clock className="w-8 h-8" />
+                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                    <Clock className="w-7 h-7" />
                   </div>
                 </div>
                 
-                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between transition-all hover:translate-y-[-2px] hover:shadow-md">
-                  <div>
-                    <p className="text-sm text-slate-400 mb-2 font-semibold uppercase tracking-wider">En Proceso</p>
-                    <h3 className="text-5xl font-black text-slate-800 tracking-tight">{requests.filter(r => r.status === 'confirmed' || r.status === 'in_process').length}</h3>
+                {/* Card 2: En Proceso */}
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
+                  <div className="pl-2">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">En Proceso</p>
+                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">
+                      {requests.filter(r => r.status === 'confirmed' || r.status === 'in_process').length}
+                    </h3>
                   </div>
-                  <div className="w-16 h-16 bg-blue-50 rounded-[1.5rem] flex items-center justify-center text-blue-500 shadow-sm">
-                    <CheckCircle className="w-8 h-8" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <CheckCircle className="w-7 h-7" />
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center justify-between transition-all hover:translate-y-[-2px] hover:shadow-md">
-                  <div>
-                    <p className="text-sm text-slate-400 mb-2 font-semibold uppercase tracking-wider">Clientes</p>
-                    <h3 className="text-5xl font-black text-slate-800 tracking-tight">{profiles.length}</h3>
+                {/* Card 3: Clientes */}
+                <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-all">
+                  <div className="pl-2">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Clientes</p>
+                    <h3 className="text-4xl font-black text-slate-800 tracking-tight ml-[-2px]">{profiles.length}</h3>
                   </div>
-                  <div className="w-16 h-16 bg-purple-50 rounded-[1.5rem] flex items-center justify-center text-purple-500 shadow-sm">
-                    <Users className="w-8 h-8" />
+                  <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                    <Users className="w-7 h-7" />
                   </div>
                 </div>
               </div>
@@ -397,66 +402,72 @@ export function AdminPanel() {
             </div>
           )}
 
-          {/* 2. PRICING VIEW */}
+          {/* 2. PRICING VIEW - POLISHED */}
           {activeView === 'pricing' && (
-            <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200 overflow-hidden max-w-5xl mx-auto">
-              {/* Table Header */}
-              <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                <h3 className="font-bold text-gray-700">Gestión de Tarifas</h3>
-                <span className="text-xs text-gray-400">Precios actualizados en tiempo real</span>
+            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden max-w-5xl mx-auto">
+              <div className="p-6 md:p-8 border-b border-slate-50 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h3 className="font-bold text-xl text-slate-800">Gestión de Tarifas</h3>
+                  <p className="text-sm text-slate-400 mt-1">Precios actualizados en tiempo real</p>
+                </div>
+                <div className="bg-slate-100 px-4 py-2 rounded-full text-xs font-bold text-slate-500 uppercase tracking-wide">
+                  {tariffs.length} Tarifas Activas
+                </div>
               </div>
-              {/* Table Content (Same as before) */}
-              <div className="overflow-x-auto block w-full">
-                <table className="w-full text-sm text-left min-w-[600px]">
-                  <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
+
+              <div className="overflow-x-auto block w-full p-2">
+                <table className="w-full text-sm text-left min-w-[700px]">
+                  <thead className="text-slate-400 font-bold uppercase tracking-wider text-xs border-b border-slate-100">
                     <tr>
-                      <th className="p-4">Categoría</th>
-                      <th className="p-4">Sub-Categoría</th>
-                      <th className="p-4">Descripción</th>
-                      <th className="p-4">Precio</th>
-                      <th className="p-4 text-right">Acciones</th>
+                      <th className="p-6 font-bold text-slate-400">Categoría</th>
+                      <th className="p-6 font-bold text-slate-400">Sub-Categoría</th>
+                      <th className="p-6 font-bold text-slate-400">Descripción</th>
+                      <th className="p-6 font-bold text-slate-400">Precio</th>
+                      <th className="p-6 text-right font-bold text-slate-400">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-slate-50">
                     {tariffs.map((t) => (
-                      <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="p-4 font-medium text-gray-900 capitalize">{t.category}</td>
-                        <td className="p-4 text-gray-600">{t.sub_category.replace(/_/g, ' ')}</td>
-                        <td className="p-4 max-w-xs">
+                      <tr key={t.id} className="hover:bg-blue-50/30 transition-colors group">
+                        <td className="p-6 font-bold text-slate-700 capitalize">{t.category}</td>
+                        <td className="p-6 text-slate-500 font-medium">{t.sub_category.replace(/_/g, ' ')}</td>
+                        <td className="p-6 max-w-xs">
                           {editingTariff === t.id ? (
                             <textarea
-                              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                              className="w-full p-3 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all resize-none shadow-inner"
                               value={tempTariffValues[t.id]?.description || ''}
                               onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], description: e.target.value } })}
                               rows={2}
                             />
                           ) : (
-                            <span className="text-gray-500 block truncate" title={t.description}>{t.description || '-'}</span>
+                            <span className="text-slate-500 block truncate font-medium" title={t.description}>{t.description || '-'}</span>
                           )}
                         </td>
-                        <td className="p-4 font-bold text-gray-900">
+                        <td className="p-6">
                           {editingTariff === t.id ? (
                             <div className="relative">
-                              <span className="absolute left-3 top-2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-3 text-slate-400 font-bold">$</span>
                               <input
                                 type="number"
-                                className="w-32 pl-6 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                                className="w-36 pl-8 p-2.5 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none font-bold text-slate-800 shadow-inner"
                                 value={tempTariffValues[t.id]?.price || 0}
                                 onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })}
                               />
                             </div>
                           ) : (
-                            <span className="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">${t.price.toLocaleString()}</span>
+                            <span className="text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100 font-bold shadow-sm inline-block min-w-[80px] text-center">
+                              ${t.price.toLocaleString()}
+                            </span>
                           )}
                         </td>
-                        <td className="p-4 text-right">
+                        <td className="p-6 text-right">
                           {editingTariff === t.id ? (
                             <div className="flex justify-end gap-2">
-                              <button onClick={() => handleUpdateTariff(t.id)} className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"><CheckCircle className="w-5 h-5" /></button>
-                              <button onClick={() => setEditingTariff(null)} className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"><XCircle className="w-5 h-5" /></button>
+                              <button onClick={() => handleUpdateTariff(t.id)} className="p-2.5 bg-emerald-500 text-white rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all active:scale-95"><CheckCircle className="w-5 h-5" /></button>
+                              <button onClick={() => setEditingTariff(null)} className="p-2.5 bg-white border border-red-100 text-red-500 rounded-xl hover:bg-red-50 transition-all active:scale-95"><XCircle className="w-5 h-5" /></button>
                             </div>
                           ) : (
-                            <button onClick={() => startEditingTariff(t)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit3 className="w-5 h-5" /></button>
+                            <button onClick={() => startEditingTariff(t)} className="p-2.5 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"><Edit3 className="w-5 h-5" /></button>
                           )}
                         </td>
                       </tr>
@@ -467,133 +478,197 @@ export function AdminPanel() {
             </div>
           )}
 
-          {/* 3. CLIENT DETAIL VIEW (Nested) */}
+          {/* 3. CLIENT DETAIL VIEW - POLISHED */}
           {selectedClient && (
             <div className="max-w-5xl mx-auto space-y-6">
-              <button onClick={() => setSelectedClient(null)} className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors">
-                ← Volver a Lista
+              <button 
+                onClick={() => setSelectedClient(null)} 
+                className="group flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors bg-white px-5 py-2.5 rounded-full shadow-sm border border-slate-100 w-fit hover:shadow-md active:scale-95"
+              >
+                <div className="p-1 bg-slate-100 rounded-full group-hover:bg-blue-100 transition-colors">
+                   <ChevronRight className="w-3 h-3 rotate-180" />
+                </div>
+                <span className="font-bold text-sm">Volver a Clientes</span>
               </button>
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedClient.full_name || 'Sin Nombre'}</h3>
-                    <div className="space-y-1 text-gray-500">
-                      <p className="flex items-center gap-2"><div className="w-4 h-4"><Users className="w-4 h-4" /></div> {selectedClient.email}</p>
-                      <p className="flex items-center gap-2"><div className="w-4 h-4"><Phone className="w-4 h-4" /></div> {selectedClient.phone || 'Sin teléfono'}</p>
-                      <p className="flex items-center gap-2"><div className="w-4 h-4"><MapPin className="w-4 h-4" /></div> {selectedClient.address || 'Sin dirección'}</p>
+              
+              <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                  <Users className="w-64 h-64 text-slate-900" />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                  <div className="flex items-start gap-6">
+                     <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                        {selectedClient.full_name?.charAt(0) || <User className="w-10 h-10" />}
+                     </div>
+                     <div>
+                      <h3 className="text-3xl font-black text-slate-800 mb-2 tracking-tight">{selectedClient.full_name || 'Sin Nombre'}</h3>
+                      <div className="space-y-2">
+                        <p className="flex items-center gap-3 text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-lg w-fit">
+                          <span className="w-5 h-5 flex items-center justify-center bg-white rounded-md shadow-sm text-blue-500"><Users className="w-3 h-3" /></span> 
+                          {selectedClient.email}
+                        </p>
+                        <p className="flex items-center gap-3 text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-lg w-fit">
+                          <span className="w-5 h-5 flex items-center justify-center bg-white rounded-md shadow-sm text-green-500"><Phone className="w-3 h-3" /></span> 
+                          {selectedClient.phone || 'Sin teléfono'}
+                        </p>
+                        <p className="flex items-center gap-3 text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-lg w-fit">
+                           <span className="w-5 h-5 flex items-center justify-center bg-white rounded-md shadow-sm text-purple-500"><MapPin className="w-3 h-3" /></span>
+                           {selectedClient.address || 'Sin dirección'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs text-gray-400 font-mono bg-gray-100 px-2 py-1 rounded">ID: {selectedClient.id.substring(0, 8)}</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1.5 rounded-full">
+                       ID: {selectedClient.id.substring(0, 8)}
+                    </span>
                   </div>
                 </div>
               </div>
+              
               {/* Debt Section */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                  <h3 className="font-bold text-lg text-gray-800">Historial Financiero</h3>
-                  <button onClick={() => setShowDebtForm(!showDebtForm)} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 shadow-lg shadow-red-500/30">
-                    <DollarSign className="w-4 h-4" /> Nueva Deuda
+              <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                  <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+                     <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                        <DollarSign className="w-4 h-4" />
+                     </div>
+                     Historial Financiero
+                  </h3>
+                  <button onClick={() => setShowDebtForm(!showDebtForm)} className="bg-slate-900 text-white px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 font-bold text-sm">
+                    {showDebtForm ? 'Cancelar' : 'Nueva Deuda'}
                   </button>
                 </div>
 
                 {showDebtForm && (
-                  <div className="bg-gray-50 p-6 border-b border-gray-100">
-                    <h4 className="font-medium mb-3 text-gray-700">Registrar Nueva Deuda</h4>
-                    <form onSubmit={handleAddDebt} className="flex flex-col gap-3">
-                      <input type="text" placeholder="Descripción" className="p-3 border rounded-xl" value={newDebt.description} onChange={e => setNewDebt({ ...newDebt, description: e.target.value })} required />
-                      <div className="flex gap-3">
-                        <input type="number" placeholder="Monto" className="p-3 border rounded-xl flex-1" value={newDebt.amount} onChange={e => setNewDebt({ ...newDebt, amount: e.target.value })} required />
-                        <input type="date" className="p-3 border rounded-xl flex-1" value={newDebt.due_date} onChange={e => setNewDebt({ ...newDebt, due_date: e.target.value })} />
+                  <div className="bg-slate-50/50 p-6 border-b border-slate-100 animate-in slide-in-from-top-4 fade-in duration-200">
+                    <h4 className="font-bold text-slate-700 mb-4 text-sm uppercase tracking-wide">Registrar Cargo</h4>
+                    <form onSubmit={handleAddDebt} className="flex flex-col gap-4">
+                      <input 
+                         type="text" 
+                         placeholder="Descripción del cargo..." 
+                         className="p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none w-full bg-white font-medium" 
+                         value={newDebt.description} 
+                         onChange={e => setNewDebt({ ...newDebt, description: e.target.value })} 
+                         required 
+                      />
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="relative flex-1">
+                           <span className="absolute left-4 top-4 text-slate-400 font-bold">$</span>
+                           <input 
+                              type="number" 
+                              placeholder="Monto" 
+                              className="w-full pl-8 p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none bg-white font-bold" 
+                              value={newDebt.amount} 
+                              onChange={e => setNewDebt({ ...newDebt, amount: e.target.value })} 
+                              required 
+                           />
+                        </div>
+                        <input 
+                           type="date" 
+                           className="flex-1 p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none bg-white font-medium text-slate-600" 
+                           value={newDebt.due_date} 
+                           onChange={e => setNewDebt({ ...newDebt, due_date: e.target.value })} 
+                        />
                       </div>
-                      <div className="flex justify-end gap-2 mt-2">
-                        <button type="button" onClick={() => setShowDebtForm(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-200 rounded-lg">Cancelar</button>
-                        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Guardar</button>
+                      <div className="flex justify-end gap-3 mt-2">
+                        <button type="button" onClick={() => setShowDebtForm(false)} className="px-6 py-3 text-slate-500 hover:bg-slate-100 rounded-2xl font-bold transition-colors">Cancelar</button>
+                        <button type="submit" className="bg-red-500 text-white px-8 py-3 rounded-2xl hover:bg-red-600 font-bold shadow-lg shadow-red-500/25 transition-transform active:scale-95">Guardar Cargo</button>
                       </div>
                     </form>
                   </div>
                 )}
 
                 {/* Debt Table */}
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 text-gray-500 font-medium">
-                    <tr>
-                      <th className="p-4 text-left">Fecha</th>
-                      <th className="p-4 text-left">Descripción</th>
-                      <th className="p-4 text-right">Monto</th>
-                      <th className="p-4 text-center">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {clientDebts.length === 0 ? (
-                      <tr><td colSpan={4} className="p-8 text-center text-gray-400">Sin historial registrado.</td></tr>
-                    ) : (
-                      clientDebts.map(debt => (
-                        <tr key={debt.id} className="hover:bg-gray-50/50">
-                          <td className="p-4 text-gray-600">{new Date(debt.created_at).toLocaleDateString()}</td>
-                          <td className="p-4 font-medium text-gray-900">{debt.description}</td>
-                          <td className="p-4 text-right font-bold text-gray-900">${debt.amount.toLocaleString()}</td>
-                          <td className="p-4 text-center">
-                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${debt.status === 'paid' ? 'bg-green-100 text-green-700' : debt.status === 'cancelled' ? 'bg-gray-100 text-gray-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                              {debt.status === 'paid' ? 'PAGADO' : debt.status === 'pending' ? 'PENDIENTE' : 'CANCELADO'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                   <table className="w-full text-sm">
+                     <thead className="bg-slate-50/50 text-slate-400 font-bold uppercase tracking-wider text-xs">
+                       <tr>
+                         <th className="p-5 text-left pl-8">Fecha</th>
+                         <th className="p-5 text-left">Descripción</th>
+                         <th className="p-5 text-right">Monto</th>
+                         <th className="p-5 text-center pr-8">Estado</th>
+                       </tr>
+                     </thead>
+                     <tbody className="divide-y divide-slate-50">
+                       {clientDebts.length === 0 ? (
+                         <tr><td colSpan={4} className="p-12 text-center text-slate-400 font-medium">Sin historial registrado para este cliente.</td></tr>
+                       ) : (
+                         clientDebts.map(debt => (
+                           <tr key={debt.id} className="hover:bg-blue-50/30 transition-colors">
+                             <td className="p-5 text-slate-500 font-medium pl-8">{new Date(debt.created_at).toLocaleDateString()}</td>
+                             <td className="p-5 font-bold text-slate-700">{debt.description}</td>
+                             <td className="p-5 text-right font-black text-slate-800">${debt.amount.toLocaleString()}</td>
+                             <td className="p-5 text-center pr-8">
+                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide border shadow-sm ${debt.status === 'paid' ? 'bg-green-50 text-green-600 border-green-100' : debt.status === 'cancelled' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-yellow-50 text-yellow-600 border-yellow-100'}`}>
+                                 {debt.status === 'paid' ? 'PAGADO' : debt.status === 'pending' ? 'PENDIENTE' : 'CANCELADO'}
+                               </span>
+                             </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
               </div>
             </div>
           )}
 
-          {/* 4. CLIENT LIST VIEW */}
+          {/* 4. CLIENT LIST VIEW - POLISHED */}
           {activeView === 'clients' && !selectedClient && (
             <div className="max-w-5xl mx-auto">
-              <div className="mb-6 relative">
-                <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+              <div className="mb-8 relative">
+                <Search className="absolute left-5 top-4 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Buscar clientes..."
-                  className="w-full pl-12 p-3.5 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none shadow-sm transition-all"
+                  placeholder="Buscar clientes por nombre o email..."
+                  className="w-full pl-14 p-4 border border-slate-200 rounded-full focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none shadow-sm transition-all hover:shadow-md bg-white font-medium text-slate-700"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                 />
               </div>
               <div className="grid gap-4">
                 {filteredClients.map(client => (
-                  <div key={client.id} onClick={() => handleClientSelect(client)} className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer flex justify-between items-center group">
+                  <div 
+                    key={client.id} 
+                    onClick={() => handleClientSelect(client)} 
+                    className="p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-lg hover:border-purple-100 hover:translate-y-[-2px] transition-all cursor-pointer flex justify-between items-center group relative overflow-hidden"
+                  >
+                    <div className="absolute left-0 top-0 h-full w-1 bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 font-bold text-lg group-hover:bg-purple-100 transition-colors">
+                      <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 font-bold text-lg group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
                         {client.full_name?.charAt(0) || <User className="w-6 h-6" />}
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-800 text-lg">{client.full_name || 'Sin Nombre'}</h3>
-                        <p className="text-gray-500 text-sm">{client.email}</p>
+                        <h3 className="font-bold text-slate-800 text-lg">{client.full_name || 'Sin Nombre'}</h3>
+                        <p className="text-slate-400 text-sm font-medium">{client.email}</p>
                       </div>
                     </div>
-                    <ChevronRight className="text-gray-300 group-hover:text-purple-500 transition-colors" />
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-purple-50 group-hover:text-purple-600 transition-all">
+                       <ChevronRight className="w-5 h-5" />
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 5. REQUEST LISTS (Shared for Transport, Workshop, Pending) */}
+          {/* 5. REQUEST LISTS (Shared for Transport, Workshop, Pending) - POLISHED */}
           {(activeView === 'transport' || activeView === 'workshop' || activeView === 'pending') && (
-            <div className="grid gap-4 max-w-5xl mx-auto">
+            <div className="grid gap-6 max-w-5xl mx-auto">
               {filteredRequests.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 border-dashed">
-                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <LayoutDashboard className="w-8 h-8 text-gray-300" />
+                <div className="text-center py-24 bg-white rounded-[2.5rem] border border-slate-100 border-dashed">
+                  <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <LayoutDashboard className="w-10 h-10 text-slate-300" />
                   </div>
-                  <p className="text-gray-500 font-medium">No hay solicitudes en esta sección.</p>
+                  <p className="text-slate-500 font-bold text-lg">No hay solicitudes aquí.</p>
+                  <p className="text-slate-400 text-sm">Esperando nuevos servicios...</p>
                 </div>
               ) : (
                 filteredRequests.map((request) => (
-                  <div key={request.id} className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden hover:shadow-[0_20px_40px_-10px_rgb(0,0,0,0.1)] transition-all">
+                  <div key={request.id} className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-all group">
                     {/* Request Header */}
-                    <div className="p-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                    <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${request.service_type === 'transport' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'}`}>
                           {request.service_type === 'transport' ? <Truck className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
@@ -621,17 +696,22 @@ export function AdminPanel() {
                     </div>
 
                     {/* Request Content */}
-                    <div className="p-5">
+                    <div className="p-6 md:p-8">
                       {request.collected_data && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                          {Object.entries(request.collected_data)
-                            .filter(([k]) => k !== 'image_url')
-                            .map(([k, v]) => (
-                              <div key={k} className="flex flex-col border-b border-gray-100 pb-2 last:border-0 last:pb-0">
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{k.replace(/_/g, ' ')}</span>
-                                <span className="text-gray-800 font-medium">{String(v)}</span>
-                              </div>
-                            ))}
+                        <div className="bg-slate-50 rounded-3xl p-6">
+                           <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                             <div className="w-10 h-1px bg-slate-200"></div> Datos del Servicio
+                           </h4>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-sm">
+                              {Object.entries(request.collected_data)
+                                .filter(([k]) => k !== 'image_url')
+                                .map(([k, v]) => (
+                                  <div key={k} className="flex flex-col">
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">{k.replace(/_/g, ' ')}</span>
+                                    <span className="text-slate-800 font-medium text-base">{String(v)}</span>
+                                  </div>
+                                ))}
+                           </div>
                         </div>
                       )}
 
