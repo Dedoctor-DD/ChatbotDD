@@ -1152,29 +1152,26 @@ body {
 .login-card {
   width: 100%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(15, 23, 42, 0.9); /* Dark Slate matches logo bg */
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-xl);
   padding: 3.5rem 2rem;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
   z-index: 10;
 }
 
 .login-logo-box {
-  width: 120px; /* Larger to avoid clipping */
-  height: 120px;
-  background: #000; /* Match logo background */
-  border-radius: 24px;
-  margin: 0 auto 2.5rem;
+  width: 140px; 
+  height: 140px;
+  background: transparent; 
+  margin: 0 auto 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-  transform: none; /* Removed rotation to prevent clipping */
   transition: transform 0.3s ease;
-  overflow: hidden;
+  overflow: visible; /* Show everything */
 }
 
 .login-logo-box:hover {
@@ -1185,18 +1182,19 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.3)); /* Glow effect */
 }
 
 .login-title {
   font-size: 2.25rem;
   font-weight: 900;
-  color: var(--text-primary);
+  color: white; /* Changed to white */
   letter-spacing: -0.04em;
   margin-bottom: 0.75rem;
 }
 
 .login-subtitle {
-  color: var(--text-secondary);
+  color: #94a3b8; /* Lighter muted color */
   font-size: 1rem;
   margin-bottom: 2.5rem;
 }
