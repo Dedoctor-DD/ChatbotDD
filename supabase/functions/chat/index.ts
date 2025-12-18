@@ -74,9 +74,10 @@ TARIFAS DE REFERENCIA:
 ${tariffContext}
 
 BLOQUE DE CONFIRMACIÓN (CRÍTICO):
-Solo cuando tengas Origen, Destino, Fecha, Hora y Pasajeros (para transporte) O Falla, Dirección y Teléfono (para taller), genera este bloque exacto al FINAL de tu mensaje (No lo expliques, solo inclúyelo):
+Solo cuando tengas todos los datos necesarios, genera este bloque exacto al FINAL de tu mensaje (No lo expliques). Ajusta los campos según el servicio:
 
-[CONFIRM_READY: {"service_type": "transport"|"workshop", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "...", "tipo_problema": "...", "modelo_silla": "...", "telefono": "...", "direccion": "..."}}]
+- Para TRANSPORTE: [CONFIRM_READY: {"service_type": "transport", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "Cifra basada en tarifas"}}]
+- Para TALLER: [CONFIRM_READY: {"service_type": "workshop", "data": {"tipo_problema": "...", "modelo_silla": "...", "direccion": "...", "telefono": "...", "precio_estimado": "Cifra basada en tarifas"}}]
 
 BOTONES DE APOYO:
 Sugiere opciones usando: [QUICK_REPLIES: ["Transporte 🚌", "Taller 🔧"]]

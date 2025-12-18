@@ -4,6 +4,7 @@ import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle, MapPin, Paperclip, 
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { uploadAttachment } from './lib/storage';
+import { generateUUID } from './lib/utils';
 import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
 import { BottomNav } from './components/BottomNav';
@@ -14,20 +15,6 @@ import { HomePanel } from './components/HomePanel';
 import type { Session } from '@supabase/supabase-js';
 import type { Message, ConfirmationData } from './types';
 
-// Helper for safe UUIDs
-function generateUUID() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    try {
-      return crypto.randomUUID();
-    } catch (e) {
-      console.warn('crypto.randomUUID failed, using polyfill');
-    }
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
 
 type TabType = 'home' | 'chat' | 'admin';
 
@@ -57,6 +44,8 @@ function App() {
     return saved || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   });
 
+  const [pendingAttachmentIds, setPendingAttachmentIds] = useState<string[]>([]);
+
   // Persist session ID
   useEffect(() => {
     localStorage.setItem('dd_current_session_id', sessionId);
@@ -71,8 +60,7 @@ function App() {
   };
 
   // Determinar si el usuario es admin (basado en email)
-  const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com' ||
-    session?.user?.user_metadata?.role === 'admin';
+  const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com';
 
   useEffect(() => {
     inputRef.current = input;
@@ -439,15 +427,35 @@ function App() {
       // Merge confirmation data with any additional data (e.g. image_url)
       const finalData = { ...confirmationData.data, ...(additionalData || {}) };
 
-      const { error } = await supabase.from('service_requests').insert({
-        session_id: sessionId,
-        user_id: session.user.id,
-        service_type: confirmationData.service_type,
-        status: 'pending', // Change to pending
-        collected_data: finalData
-      });
+      const { data: newRequest, error } = await supabase
+        .from('service_requests')
+        .insert({
+          session_id: sessionId,
+          user_id: session.user.id,
+          service_type: confirmationData.service_type,
+          status: 'pending',
+          collected_data: finalData
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Link any pending attachments to this new request
+      const allAttachmentIds = [...pendingAttachmentIds];
+      if (additionalData?.attachment_id) {
+        allAttachmentIds.push(additionalData.attachment_id);
+      }
+
+      if (allAttachmentIds.length > 0) {
+        const { error: linkError } = await supabase
+          .from('request_attachments')
+          .update({ request_id: newRequest.id })
+          .in('id', allAttachmentIds);
+
+        if (linkError) console.error('Error linking attachments:', linkError);
+      }
+
 
       const successMessage: Message = {
         id: Date.now().toString(),
@@ -457,6 +465,7 @@ function App() {
       };
       setMessages((prev) => [...prev, successMessage]);
       setConfirmationData(null);
+      setPendingAttachmentIds([]); // Clear after linking
     } catch (error) {
       console.error('Error confirming request:', error);
       alert('Hubo un error al confirmar la solicitud. Por favor intenta nuevamente.');
@@ -523,7 +532,10 @@ function App() {
     setIsUploading(true);
     try {
       // Upload to Supabase Storage and DB
-      await uploadAttachment(file, session.user.id, null);
+      const result = await uploadAttachment(file, session.user.id, null);
+      
+      // Save ID to link it later to a request
+      setPendingAttachmentIds(prev => [...prev, result.id]);
 
       // Notify in chat
       const msgText = `📎 Archivo adjunto: ${file.name}`;
@@ -710,10 +722,11 @@ function App() {
               </div>
 
               {/* Confirmation Card */}
-              {confirmationData && (
+              {confirmationData && session && (
                 <ConfirmationCard
                   serviceType={confirmationData.service_type}
                   data={confirmationData.data}
+                  userId={session.user.id}
                   onConfirm={handleConfirm}
                   onEdit={handleEdit}
                 />

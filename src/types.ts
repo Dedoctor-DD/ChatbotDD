@@ -48,3 +48,14 @@ export interface ConfirmationData {
     service_type: 'transport' | 'workshop';
     data: Record<string, any>;
 }
+
+export interface Attachment {
+    id: string;
+    request_id: string | null;
+    user_id: string;
+    file_name: string;
+    file_path: string;
+    file_type: string;
+    file_size: number;
+    created_at: string;
+}

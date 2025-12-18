@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Bot, Trash2 } from 'lucide-react';
+import { generateUUID } from '../lib/utils';
 
 export function Login() {
     const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +101,7 @@ export function Login() {
                                     const mockSession = {
                                         access_token: 'mock_token_' + Date.now(),
                                         user: {
-                                            id: crypto.randomUUID(),
+                                            id: generateUUID(),
                                             email: 'invitado@dedoctor.com',
                                             user_metadata: {
                                                 full_name: 'Invitado de Prueba',
@@ -121,7 +122,7 @@ export function Login() {
                                     const mockSession = {
                                         access_token: 'mock_token_admin_' + Date.now(),
                                         user: {
-                                            id: crypto.randomUUID(),
+                                            id: generateUUID(),
                                             email: 'dedoctor.transportes@gmail.com', // Triggers isAdmin
                                             user_metadata: {
                                                 full_name: 'Administrador (Test)',

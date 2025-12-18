@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   Users, Truck, Wrench, Clock, CheckCircle, XCircle, DollarSign, Search,
-  MapPin, Phone, LayoutDashboard, AlertCircle, ChevronRight, Edit3, User
+  MapPin, Phone, LayoutDashboard, AlertCircle, ChevronRight, Edit3, User, Camera
 } from 'lucide-react';
 
-import type { ServiceRequest, Profile, Debt, Tariff } from '../types';
+import type { ServiceRequest, Profile, Debt, Tariff, Attachment } from '../types';
 
 export function AdminPanel() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending' | 'clients' | 'pricing'>('dashboard');
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [tariffs, setTariffs] = useState<Tariff[]>([]); 
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   const [editingTariff, setEditingTariff] = useState<string | null>(null); 
   const [tempTariffValues, setTempTariffValues] = useState<Record<string, Partial<Tariff>>>({});
@@ -56,6 +57,13 @@ export function AdminPanel() {
 
       if (tariffError) throw tariffError;
       setTariffs(tariffData || []);
+
+      const { data: attachData, error: attachError } = await supabase
+        .from('request_attachments')
+        .select('*');
+      
+      if (attachError) throw attachError;
+      setAttachments(attachData || []);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -120,7 +128,7 @@ export function AdminPanel() {
     await loadClientDebts(client.id);
   };
 
-  const updateStatus = async (id: string, newStatus: 'confirmed' | 'completed' | 'cancelled') => {
+  const updateStatus = async (id: string, newStatus: 'confirmed' | 'in_process' | 'completed' | 'cancelled') => {
     try {
       const { error } = await supabase
         .from('service_requests')
@@ -163,9 +171,9 @@ export function AdminPanel() {
 
 
 
-  const filteredRequests = activeView === 'transport' ? requests.filter(r => r.service_type === 'transport')
-    : activeView === 'workshop' ? requests.filter(r => r.service_type === 'workshop')
-      : activeView === 'pending' ? requests.filter(r => r.status === 'confirmed' || r.status === 'draft' || r.status === 'pending')
+  const filteredRequests = activeView === 'transport' ? requests.filter(r => r.service_type === 'transport' && r.status !== 'draft' && r.status !== 'pending')
+    : activeView === 'workshop' ? requests.filter(r => r.service_type === 'workshop' && r.status !== 'draft' && r.status !== 'pending')
+      : activeView === 'pending' ? requests.filter(r => r.status === 'draft' || r.status === 'pending')
         : requests;
 
   const filteredClients = profiles.filter(p =>
@@ -723,7 +731,7 @@ export function AdminPanel() {
                            </h4>
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm">
                               {Object.entries(request.collected_data)
-                                .filter(([k]) => k !== 'image_url')
+                               .filter(([k]) => k !== 'image_url' && k !== 'attachment_id')
                                 .map(([k, v]) => (
                                   <div key={k} className="flex flex-col items-center text-center">
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-3 py-1 bg-white rounded-full border border-slate-100 shadow-sm">{k.replace(/_/g, ' ')}</span>
@@ -734,11 +742,51 @@ export function AdminPanel() {
                         </div>
                       )}
 
-                      {/* Image Attachment Display */}
-                      {request.collected_data?.image_url && (
+                      {/* Attachments Section (from Database) */}
+                      {attachments.filter(a => a.request_id === request.id).length > 0 && (
+                        <div className="mt-5 pt-5 border-t border-slate-100">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                             <Camera className="w-3.5 h-3.5" /> Archivos y Fotos Adjuntas
+                          </p>
+                          <div className="flex flex-wrap gap-3">
+                            {attachments.filter(a => a.request_id === request.id).map(file => {
+                               const { data: { publicUrl } } = supabase.storage
+                                 .from('request_attachments')
+                                 .getPublicUrl(file.file_path);
+                               
+                               const isImage = file.file_type?.startsWith('image/');
+
+                               return (
+                                 <a
+                                   key={file.id}
+                                   href={publicUrl}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   className="group relative overflow-hidden rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:translate-y-[-2px] transition-all bg-white"
+                                 >
+                                   {isImage ? (
+                                      <img src={publicUrl} alt={file.file_name} className="w-40 h-28 object-cover" />
+                                   ) : (
+                                      <div className="w-40 h-28 flex flex-col items-center justify-center p-4">
+                                        <AlertCircle className="w-8 h-8 text-blue-500 mb-2" />
+                                        <span className="text-[10px] font-bold text-slate-600 text-center truncate w-full">{file.file_name}</span>
+                                      </div>
+                                   )}
+                                   <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Ver Archivo</span>
+                                   </div>
+                                 </a>
+                               );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Legacy Image Attachment Display (Fallback) */}
+                      {(request.collected_data?.image_url && attachments.filter(a => a.request_id === request.id).length === 0) && (
                         <div className="mt-5 pt-5 border-t border-gray-100">
                           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            📷 Evidencia Adjunta
+                            📷 Evidencia Adjunta (Legacy)
                           </p>
                           <a
                             href={request.collected_data.image_url}
@@ -767,6 +815,12 @@ export function AdminPanel() {
                       )}
                       
                       {request.status === 'confirmed' && (
+                        <button onClick={() => updateStatus(request.id, 'in_process')} className="flex-1 md:flex-none bg-purple-50 border-2 border-purple-100 text-purple-600 px-8 py-3 rounded-2xl text-sm font-black shadow-sm hover:bg-purple-100 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                           <Clock className="w-5 h-5" /> Iniciar Servicio
+                        </button>
+                      )}
+                      
+                      {(request.status === 'confirmed' || request.status === 'in_process') && (
                         <button onClick={() => updateStatus(request.id, 'completed')} className="flex-1 md:flex-none bg-green-50 border-2 border-green-100 text-green-600 px-8 py-3 rounded-2xl text-sm font-black shadow-sm hover:bg-green-100 transition-all flex items-center justify-center gap-2 transform active:scale-95">
                            <CheckCircle className="w-5 h-5" /> Marcar Completado
                         </button>
