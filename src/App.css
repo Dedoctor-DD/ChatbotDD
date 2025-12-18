@@ -1133,7 +1133,7 @@ body {
 }
 
 /* ============================================
-   LOGIN & AUTH (Premium Theme)
+   LOGIN & AUTH (Black & Blue Premium Theme)
    ============================================ */
 .login-wrapper {
   min-height: 100dvh;
@@ -1141,10 +1141,10 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: var(--sky-50);
+  background: #0f172a; /* Darker Slate */
   background-image: 
-    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.2) 0px, transparent 50%);
   position: relative;
   overflow: hidden;
 }
@@ -1152,32 +1152,39 @@ body {
 .login-card {
   width: 100%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 1);
   border-radius: var(--radius-xl);
-  padding: 3rem 2rem;
+  padding: 3.5rem 2rem;
   text-align: center;
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   z-index: 10;
 }
 
 .login-logo-box {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(135deg, var(--sky-500), var(--indigo-500));
-  border-radius: 20px;
-  margin: 0 auto 2rem;
+  width: 120px; /* Larger to avoid clipping */
+  height: 120px;
+  background: #000; /* Match logo background */
+  border-radius: 24px;
+  margin: 0 auto 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
-  transform: rotate(-4deg);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  transform: none; /* Removed rotation to prevent clipping */
   transition: transform 0.3s ease;
+  overflow: hidden;
 }
 
 .login-logo-box:hover {
-  transform: rotate(0deg) scale(1.05);
+  transform: scale(1.05);
+}
+
+.login-logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .login-title {

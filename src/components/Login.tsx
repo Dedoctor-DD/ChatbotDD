@@ -69,8 +69,8 @@ export function Login() {
             <div className="login-bg-glow glow-indigo"></div>
 
             <div className="login-card z-20">
-                <div className="login-logo-box p-0 overflow-hidden bg-transparent shadow-none">
-                    <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
+                <div className="login-logo-box">
+                    <img src="/logo.jpg" alt="Logo" />
                 </div>
 
                 <h2 className="login-title">DD Chatbot</h2>
