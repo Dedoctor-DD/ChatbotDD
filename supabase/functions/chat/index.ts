@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')
 const MODEL_NAME = 'gemini-2.0-flash-exp'
 
@@ -28,7 +29,6 @@ interface Tariff {
 }
 
 Deno.serve(async (req) => {
-    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -39,70 +39,76 @@ Deno.serve(async (req) => {
 
         const { prompt, conversationHistory } = await req.json() as ChatRequest;
 
-        // Initialize Supabase Client
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase Client with Service Role (to bypass RLS for profile fetching if needed, or just use auth header)
+        // Actually, better use the user's token for safety if we just want their profile.
+        // But for "smart" context, service role helps fetch everything once.
+        const authHeader = req.headers.get('Authorization')
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            global: { headers: { Authorization: authHeader || '' } }
+        });
 
-        // Fetch Tariffs
-        const { data: tariffs, error: tariffError } = await supabase.from('tariffs').select('*');
-        if (tariffError) {
-            console.error('Error fetching tariffs:', tariffError);
+        // 1. Get User Session/ID
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // 2. Fetch Profile
+        let userContext = '';
+        if (user) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name, phone, address')
+                .eq('id', user.id)
+                .single();
+
+            if (profile) {
+                userContext = `\n\nDATOS DEL USUARIO (Usa esto para autocompletar si es necesario):\n` +
+                    `- Nombre: ${profile.full_name}\n` +
+                    `- Teléfono: ${profile.phone || 'No registrado'}\n` +
+                    `- Dirección: ${profile.address || 'No registrado'}`;
+            }
         }
 
+        // 3. Fetch Tariffs
+        const { data: tariffs } = await supabase.from('tariffs').select('*');
         let tariffContext = '';
         if (tariffs && tariffs.length > 0) {
             tariffContext = '\n\nTARIFAS VIGENTES (Referencia para cotizar):\n' +
                 (tariffs as Tariff[]).map(t => `- ${t.sub_category} (${t.category}): $${t.price} ${t.description ? '- ' + t.description : ''}`).join('\n')
         }
 
-        // Construir contenido para Gemini API con prompt del sistema
         const systemPrompt = `Eres DD Chatbot, el asistente virtual amigable y experto de Dedoctor (Transporte y Taller para Sillas de Ruedas).
 📍 Operas en Iquique y Alto Hospicio, Chile. Moneda: CLP.
 
 TONO DE VOZ:
-- Extremadamente CORDIAL y EMPÁTICO. No eres una máquina, eres un asesor servicial.
-- Usa frases como: "¡Con gusto!", "Entiendo perfectamente", "Excelente elección", "Muchas gracias por esperar".
-- Usa emojis de forma natural (✨, 🚌, 🔧, ✅).
+- Extremadamente CORDIAL y EMPÁTICO.
+- Usa emojis (✨, 🚌, 🔧, ✅).
 
 REGLAS DE ORO:
-1. PIDE DATOS UNO POR UNO. No hagas un cuestionario largo.
-2. Si el usuario selecciona "Transporte", pregúntale: ¿Desde dónde necesitas el traslado? (Origen).
-3. Una vez te dé el origen, pregúntale: ¿Hacia dónde te diriges? (Destino).
-4. Luego pide Fecha y Hora. Finalmente, pregunta cuántos pasajeros acompañan al usuario de silla de ruedas.
-5. Para "Taller/Mantenimiento": Pregunta la falla, luego la dirección y un teléfono de contacto.
+1. PIDE DATOS UNO POR UNO.
+2. PERSONALIZACIÓN: Si el usuario ya tiene teléfono o dirección en su perfil, NO se los vuelvas a preguntar bruscamente. Puedes decir: "¿Deseas usar la dirección registrada (${userContext?.match(/Dirección: (.*)/)?.[1]}) o prefieres otra?".
+3. TRANSPORTE: Pide Origen, Destino, Fecha/Hora y Pasajeros.
+4. TALLER/MANTENIMIENTO: Pregunta el problema.
 
-TARIFAS DE REFERENCIA:
+${userContext}
 ${tariffContext}
 
 BLOQUE DE CONFIRMACIÓN (CRÍTICO):
-Solo cuando tengas todos los datos necesarios, genera este bloque exacto al FINAL de tu mensaje (No lo expliques). Ajusta los campos según el servicio:
+Genera este bloque exacto al FINAL de tu mensaje cuando tengas todo. Usa los datos del perfil si el usuario no indicó cambios.
 
-- Para TRANSPORTE: [CONFIRM_READY: {"service_type": "transport", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "Cifra basada en tarifas"}}]
-- Para TALLER: [CONFIRM_READY: {"service_type": "workshop", "data": {"tipo_problema": "...", "modelo_silla": "...", "direccion": "...", "telefono": "...", "precio_estimado": "Cifra basada en tarifas"}}]
+- Para TRANSPORTE: [CONFIRM_READY: {"service_type": "transport", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "Cifra basados en tarifas"}}]
+- Para TALLER: [CONFIRM_READY: {"service_type": "workshop", "data": {"tipo_problema": "...", "modelo_silla": "...", "direccion": "...", "telefono": "...", "precio_estimado": "Cifra basados en tarifas"}}]
 
-BOTONES DE APOYO:
-Sugiere opciones usando: [QUICK_REPLIES: ["Transporte 🚌", "Taller 🔧"]]
-Si el usuario manda fotos, responde: "¡Gracias! Recibí la foto. La adjuntaré a tu solicitud."`;
+BOTONES DE APOYO: [QUICK_REPLIES: ["Transporte 🚌", "Taller 🔧"]]`;
 
         const contents = [
-            {
-                role: 'user',
-                parts: [{ text: systemPrompt }]
-            },
-            {
-                role: 'model',
-                parts: [{ text: 'Entendido. Soy DD Chatbot y estoy listo para ayudar.' }]
-            },
+            { role: 'user', parts: [{ text: systemPrompt }] },
+            { role: 'model', parts: [{ text: 'Entendido. Estoy listo con el contexto del usuario.' }] },
             ...conversationHistory.map((msg) => ({
                 role: msg.role === 'user' ? 'user' : 'model',
                 parts: [{ text: msg.content }]
             })),
-            {
-                role: 'user',
-                parts: [{ text: prompt }]
-            }
+            { role: 'user', parts: [{ text: prompt }] }
         ];
 
-        // Llamar a Gemini API desde el servidor (API key protegida)
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`,
             {
@@ -113,38 +119,17 @@ Si el usuario manda fotos, responde: "¡Gracias! Recibí la foto. La adjuntaré 
         );
 
         const data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || 'Gemini API Error');
 
-        if (!response.ok) {
-            console.error('Gemini API Error:', data);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const errorMsg = (data as any).error?.message || 'Unknown Gemini API error';
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Lo siento, no pude generar una respuesta.';
 
-            if (errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED')) {
-                return new Response(
-                    JSON.stringify({ text: 'Lo siento, hemos alcanzado el límite de la API. Por favor intenta en unos minutos.' }),
-                    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-                );
-            }
-            throw new Error(errorMsg);
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const text = (data as any).candidates?.[0]?.content?.parts?.[0]?.text ||
-            'Lo siento, no pude generar una respuesta.';
-
-        return new Response(
-            JSON.stringify({ text }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ text }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
     } catch (error: any) {
         console.error('Edge Function Error:', error);
-        return new Response(
-            JSON.stringify({ error: error.message || 'Internal Server Error' }),
-            {
-                status: 500,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            }
-        );
+        return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
     }
 });

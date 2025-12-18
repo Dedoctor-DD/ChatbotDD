@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Sparkles, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader } from 'lucide-react';
+import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { uploadAttachment } from './lib/storage';
@@ -13,7 +13,7 @@ import { HomePanel } from './components/HomePanel';
 
 
 import type { Session } from '@supabase/supabase-js';
-import type { Message, ConfirmationData } from './types';
+import type { Message, ConfirmationData, Profile } from './types';
 
 
 type TabType = 'home' | 'chat' | 'admin';
@@ -65,6 +65,24 @@ function App() {
   useEffect(() => {
     inputRef.current = input;
   }, [input]);
+
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchUserProfile();
+    }
+  }, [session]);
+
+  const fetchUserProfile = async () => {
+    if (!session?.user?.id) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+    if (data) setUserProfile(data);
+  };
 
   useEffect(() => {
     // Check for test session first
@@ -443,15 +461,25 @@ function App() {
 
       // Link any pending attachments to this new request
       const allAttachmentIds = [...pendingAttachmentIds];
+      
+      // Handle single attachment from legacy or simple uploads
       if (additionalData?.attachment_id) {
         allAttachmentIds.push(additionalData.attachment_id);
       }
+      
+      // Handle multiple attachments from the new ConfirmationCard
+      if (additionalData?.attachment_ids && Array.isArray(additionalData.attachment_ids)) {
+        allAttachmentIds.push(...additionalData.attachment_ids);
+      }
 
-      if (allAttachmentIds.length > 0) {
+      // Remove duplicates just in case
+      const uniqueAttachmentIds = Array.from(new Set(allAttachmentIds));
+
+      if (uniqueAttachmentIds.length > 0) {
         const { error: linkError } = await supabase
           .from('request_attachments')
           .update({ request_id: newRequest.id })
-          .in('id', allAttachmentIds);
+          .in('id', uniqueAttachmentIds);
 
         if (linkError) console.error('Error linking attachments:', linkError);
       }
@@ -592,8 +620,8 @@ function App() {
           
           {/* Left: Brand & New Chat */}
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sky-500/20 shadow-md transform hover:scale-105 transition-transform">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-sm border border-slate-100 transform hover:scale-105 transition-transform">
+               <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex items-center gap-2">
                <h1 className="text-sm font-black text-slate-700 tracking-tight">DD Chatbot</h1>
@@ -625,11 +653,11 @@ function App() {
                  
                  {/* Avatar */}
                  <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
-                    {session.user.user_metadata?.avatar_url ? (
-                       <img src={session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                    {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
+                       <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                        <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-xs select-none">
-                          {userName.charAt(0).toUpperCase()}
+                          {(userProfile?.full_name || userName).charAt(0).toUpperCase()}
                        </div>
                     )}
                  </div>
