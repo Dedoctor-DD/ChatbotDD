@@ -1461,20 +1461,41 @@ body {
     }
 
     .input-form button {
-        padding-left: 0.75rem !important;
-        padding-right: 0.75rem !important;
-        width: auto !important;
-        min-width: 0 !important;
+        padding: 0 !important; 
+        width: 32px !important;    /* Más chico */
+        height: 32px !important;   /* Más chico */
+        min-width: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 50% !important; /* Círculos perfectos */
+    }
+
+    .input-form button svg {
+        width: 16px !important;
+        height: 16px !important;
     }
 
     .chat-input-buttons {
-        gap: 0.25rem !important;
+        gap: 0.15rem !important; /* Mínimo espacio */
+        margin-left: 0.15rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .btn-send-chat {
+        flex-shrink: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
     }
 
     .chat-input {
         padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-        font-size: 0.9rem !important;
+        padding-right: 0.25rem !important;
+        font-size: 0.8rem !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        flex: 1 !important;
+        width: 10px !important; /* Force flex growth */
     }
 }
 .hover\:text-slate-700:hover { color: #334155 !important; }

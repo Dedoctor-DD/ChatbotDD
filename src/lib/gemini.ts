@@ -28,7 +28,7 @@ export async function getGeminiResponse(
 
         // Create AbortController for timeout (20 seconds)
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const timeoutId = setTimeout(() => controller.abort(), 40000);
 
         // Llamar a Edge Function de Supabase en lugar de Gemini directamente
         const response = await fetch(

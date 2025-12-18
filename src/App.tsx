@@ -144,7 +144,7 @@ function App() {
 
       // Successfully signed in
       if (session && _event === 'SIGNED_IN') {
-        setMessages([]);
+        // No borramos mensajes aquí para permitir que loadHistory los restaure sin parpadeo si es la misma sesión
         setActiveTab('home'); // Send to Home Dashboard first
         // Clean URL
         window.history.replaceState(null, '', window.location.pathname);
@@ -239,9 +239,9 @@ function App() {
           .from('messages')
           .select('*')
           .eq('user_id', session.user.id)
-          .eq('session_id', sessionId) // Only load active session
+          // .eq('session_id', sessionId) // Mostramos historial completo para mejor experiencia
           .order('created_at', { ascending: false }) // Traemos los más recientes primero
-          .limit(50);
+          .limit(100);
 
         if (error) {
           console.error('Error loading history:', error);
@@ -796,7 +796,7 @@ function App() {
                     <button
                       type="submit"
                       disabled={!input.trim() || isLoading}
-                      className={`p-3.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
+                      className={`btn-send-chat p-3.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
                     >
                       <Send className="w-6 h-6" />
                     </button>
