@@ -1805,6 +1805,19 @@ body {
    ALLIANCE DESIGN SYSTEM CLASSES
    ============================================ */
 
+body.bg-gradient-soft {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #fcfcfd;
+  color: #1e293b;
+  overflow-x: hidden;
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
 .bg-gradient-soft {
   background: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.03) 0%, transparent 40%),
               radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 40%);
