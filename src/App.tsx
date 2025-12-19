@@ -10,6 +10,7 @@ import { Login } from './components/Login';
 import { BottomNav } from './components/BottomNav';
 import { AdminPanel } from './components/AdminPanel';
 import { HomePanel } from './components/HomePanel';
+import { LandingPage } from './components/LandingPage';
 
 
 import type { Session } from '@supabase/supabase-js';
@@ -37,6 +38,7 @@ function App() {
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
 
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   // Session ID management for individual chats
   const [sessionId, setSessionId] = useState(() => {
@@ -600,9 +602,12 @@ function App() {
     );
   }
 
-  // Mostrar Login si no hay sesión
+  // Mostrar Landing Page o Login si no hay sesión
   if (!session) {
-    return <Login />;
+    if (showLogin) {
+      return <Login onBack={() => setShowLogin(false)} />;
+    }
+    return <LandingPage onLoginClick={() => setShowLogin(true)} />;
   }
 
   const userName = session.user.user_metadata?.full_name ||

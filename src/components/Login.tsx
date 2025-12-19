@@ -10,7 +10,11 @@ interface Partner {
     website_url: string;
 }
 
-export function Login() {
+interface LoginProps {
+    onBack?: () => void;
+}
+
+export function Login({ onBack }: LoginProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [partners, setPartners] = useState<Partner[]>([]);
@@ -73,7 +77,7 @@ export function Login() {
                     <img src="/logo.jpg" alt="Logo" />
                 </div>
 
-                <h2 className="login-title">DD Chatbot</h2>
+                <h2 className="login-title">Dedoctor DD</h2>
                 <p className="login-subtitle">
                     Tu asistente virtual inteligente para transportes y mantenimiento.
                 </p>
@@ -99,6 +103,15 @@ export function Login() {
                         </>
                     )}
                 </button>
+
+                {onBack && (
+                    <button 
+                        onClick={onBack}
+                        className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                        ← Volver al Inicio
+                    </button>
+                )}
 
                 {error && (
                     <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
