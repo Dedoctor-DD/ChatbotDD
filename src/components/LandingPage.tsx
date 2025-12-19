@@ -5,20 +5,14 @@ import {
   ShieldCheck, 
   ChevronDown, 
   Phone, 
-  MessageCircle, 
   MapPin, 
-  Send,
   Zap,
   Star,
   ArrowRight,
   CheckCircle2,
   Mail,
-  Instagram,
-  Facebook,
-  Twitter,
-  Activity,
-  History as LucideHistory,
-  Loader2
+  Loader2,
+  MessageCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -135,18 +129,18 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         <div className="absolute top-0 -left-20 w-96 h-96 bg-sky-400/10 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute bottom-0 -right-20 w-96 h-96 bg-indigo-400/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 text-[10px] font-black rounded-full uppercase tracking-[0.2em] mb-8 border border-sky-100 shadow-sm">
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="text-center mb-10 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-6 py-2 bg-sky-50 text-sky-600 text-[10px] font-black rounded-full uppercase tracking-[0.3em] mb-10 border border-sky-100 shadow-sm mx-auto">
               <Star className="w-3 h-3 fill-sky-600" />
               Líderes en Movilidad Reducida
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-8xl font-extrabold text-slate-900 mb-10 leading-[1] tracking-tight text-balance">
-              Recupera tu libertad con <br className="hidden lg:block" /> 
-              <span className="hero-gradient-text animate-gradient pb-2">expertos en asistencia.</span>
+            <h1 className="text-5xl lg:text-8xl font-black text-slate-900 mb-12 leading-[1.05] tracking-tight text-balance">
+              Movilidad sin <br />
+              <span className="hero-gradient-text animate-gradient pb-2">limitaciones.</span>
             </h1>
-            <p className="text-lg lg:text-2xl text-slate-500 max-w-4xl mx-auto mb-14 font-medium leading-relaxed">
-              Ofrecemos un servicio 360° para tu movilidad: desde traslados adaptados con máxima seguridad hasta el soporte técnico especializado que necesitas.
+            <p className="text-xl lg:text-2xl text-slate-500 mb-16 font-medium leading-relaxed balance max-w-2xl mx-auto">
+              Soluciones integrales de transporte y soporte técnico diseñadas para devolverte la libertad que mereces.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-6">
@@ -238,104 +232,40 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </section>
       )}
 
-      {/* Sección Transporte */}
-      <section id="transporte" className="py-20 lg:py-32 bg-slate-50 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-20">
-            <div className="w-full lg:w-1/2">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-sky-500/10 rounded-[48px] blur-2xl group-hover:bg-sky-500/15 transition-all duration-700"></div>
-                <div className="relative rounded-[40px] overflow-hidden shadow-3xl">
-                  <img src="https://images.unsplash.com/photo-1596720426673-e47744bd20cc?auto=format&fit=crop&q=80&w=1200"
-                       alt="Transporte Especializado"
-                       className="w-full object-cover aspect-[4/3] transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </div>
-                <div className="absolute -bottom-10 -right-6 lg:-right-10 bg-white/90 backdrop-blur-xl p-8 rounded-[32px] shadow-2xl z-20 hidden md:block border border-white/40 shadow-sky-900/10 hover-lift">
-                  <div className="flex items-center gap-5">
-                    <div className="bg-emerald-100 text-emerald-600 p-4 rounded-2xl text-2xl animate-pulse">
-                      <ShieldCheck className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Certificado</p>
-                      <p className="font-black text-slate-800 text-lg">Normas de Calidad</p>
-                    </div>
-                  </div>
-                </div>
+      {/* Sección Servicios (Transporte & Taller) */}
+      <section id="transporte" className="py-32 bg-slate-50/50 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="inline-block px-4 py-1.5 bg-sky-100 text-sky-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 shadow-sm border border-sky-200/40">Servicios Especializados</div>
+          <h2 className="text-4xl lg:text-6xl font-black text-slate-900 mb-20 leading-[1.1] tracking-tight max-w-3xl mx-auto">Innovación en cada <br /> asistencia.</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Tarjeta Transporte */}
+            <div className="bg-white p-12 lg:p-20 rounded-[48px] border border-slate-100 shadow-2xl shadow-slate-200/40 text-center hover-lift group">
+              <div className="w-24 h-24 bg-sky-50 text-sky-600 rounded-3xl flex items-center justify-center mx-auto mb-10 group-hover:bg-sky-600 group-hover:text-white transition-all transform group-hover:rotate-6">
+                <Accessibility className="w-12 h-12" />
               </div>
-            </div>
-            <div className="w-full lg:w-1/2">
-              <div className="inline-block px-4 py-1.5 bg-sky-100 text-sky-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 shadow-sm border border-sky-200/40">Movilidad Adaptada</div>
-              <h2 className="text-3xl lg:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tight">Traslados diseñados para <br className="hidden md:block" /> tu comodidad absoluta.</h2>
-              <p className="text-slate-500 text-xl mb-12 font-medium leading-relaxed">
-                No somos solo un transporte; somos tu equipo de asistencia móvil. Nuestras unidades cuentan con tecnología de punta para garantizar viajes suaves y seguros.
+              <h3 className="text-3xl font-black text-slate-900 mb-6 uppercase tracking-tight">Traslado Adaptado</h3>
+              <p className="text-slate-500 text-lg font-medium leading-relaxed mb-10 max-w-md mx-auto">
+                Vehículos equipados con tecnología de punta y personal capacitado para traslados seguros y cómodos.
               </p>
-              <div className="grid gap-8">
-                <div className="flex gap-6 items-start group hover-lift p-2 rounded-3xl transition-all">
-                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:bg-sky-600 group-hover:text-white rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">01</div>
-                  <div>
-                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Seguridad Quirúrgica</h4>
-                    <p className="text-slate-500 font-medium text-sm leading-relaxed">Equipamiento médico a bordo y fijaciones de alta resistencia para sillas eléctricas.</p>
-                  </div>
-                </div>
-                <div className="flex gap-6 items-start group hover-lift p-2 rounded-3xl transition-all">
-                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:bg-sky-600 group-hover:text-white rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">02</div>
-                  <div>
-                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Personal Humano</h4>
-                    <p className="text-slate-500 font-medium text-sm leading-relaxed">Conductores formados en trato empático y técnicas de movilización asistida.</p>
-                  </div>
-                </div>
+              <div className="flex flex-wrap justify-center gap-4">
+                <span className="px-5 py-2 bg-slate-50 rounded-full text-[11px] font-black text-slate-500 uppercase tracking-widest border border-slate-100 italic">24/7 Disponible</span>
+                <span className="px-5 py-2 bg-slate-50 rounded-full text-[11px] font-black text-slate-500 uppercase tracking-widest border border-slate-100 italic">Seguridad Certificada</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Sección Taller */}
-      <section id="taller" className="py-20 lg:py-32 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-sky-500/5 blur-[120px] pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-24">
-            <div className="w-full lg:w-1/2">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-sky-500/20 rounded-[48px] blur-3xl group-hover:blur-[40px] transition-all duration-700"></div>
-                <div className="relative rounded-[40px] overflow-hidden shadow-3xl border border-white/10">
-                  <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1200"
-                       alt="Taller de Sillas"
-                       className="w-full object-cover aspect-[16/10] sm:aspect-[4/3] brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 relative z-10" />
-                  <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-slate-900 to-transparent">
-                     <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-sky-400">Servicio Activo 24/7</span>
-                     </div>
-                  </div>
-                </div>
+            {/* Tarjeta Taller */}
+            <div id="taller" className="bg-slate-900 p-12 lg:p-20 rounded-[48px] shadow-2xl shadow-slate-900/10 text-center hover-lift group">
+              <div className="w-24 h-24 bg-white/10 text-sky-400 rounded-3xl flex items-center justify-center mx-auto mb-10 group-hover:bg-sky-500 group-hover:text-white transition-all transform group-hover:-rotate-6">
+                <Wrench className="w-12 h-12" />
               </div>
-            </div>
-            <div className="w-full lg:w-1/2">
-              <div className="inline-block px-4 py-1.5 bg-sky-500/10 text-sky-400 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 border border-sky-500/20">Servicio Técnico</div>
-              <h2 className="text-3xl lg:text-6xl font-black mb-10 leading-[1.1] tracking-tight uppercase">Tu silla como nueva, <br /> en tiempo récord.</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <div className="p-10 bg-white/5 backdrop-blur-md rounded-[40px] border border-white/10 hover:border-sky-500/50 transition-all group hover-lift">
-                  <div className="w-16 h-16 bg-sky-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500 transition-colors">
-                    <Activity className="w-8 h-8 text-sky-400 group-hover:text-white" />
-                  </div>
-                  <h4 className="text-xl font-black mb-3 text-white tracking-tight">Diagnóstico Digital</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-medium">Evaluación técnica profunda de motores, baterías y sistemas electrónicos con escaneo especializado.</p>
-                </div>
-                <div className="p-10 bg-white/5 backdrop-blur-md rounded-[40px] border border-white/10 hover:border-sky-500/50 transition-all group hover-lift">
-                  <div className="w-16 h-16 bg-sky-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500 transition-colors">
-                    <LucideHistory className="w-8 h-8 text-sky-400 group-hover:text-white" />
-                  </div>
-                  <h4 className="text-xl font-black mb-3 text-white tracking-tight">Repuestos Originales</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-medium">Contamos con stock propio de componentes certificados para restaurar el rendimiento de fábrica.</p>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-sky-600/20 to-transparent border-l-4 border-sky-600 p-8 rounded-2xl">
-                <p className="text-sky-100 font-semibold italic text-lg leading-relaxed">"Nuestra prioridad es que no pierdas ni un solo día de movilidad. El soporte técnico debe ser tan rápido como seguro."</p>
-                <p className="mt-6 font-black text-xs uppercase tracking-[0.2em] text-sky-400">— Equipo de Ingeniería DedoctorDD</p>
+              <h3 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">Servicio Técnico</h3>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed mb-10 max-w-md mx-auto">
+                Mantenimiento preventivo y correctivo para sillas de ruedas eléctricas y manuales con repuestos originales.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <span className="px-5 py-2 bg-white/5 rounded-full text-[11px] font-black text-sky-400 uppercase tracking-widest border border-white/5 italic">Diagnóstico Digital</span>
+                <span className="px-5 py-2 bg-white/5 rounded-full text-[11px] font-black text-sky-400 uppercase tracking-widest border border-white/5 italic">Stock Inmediato</span>
               </div>
             </div>
           </div>
@@ -410,172 +340,159 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       </section>
 
       {/* Contacto Final */}
-      <section id="contacto" className="py-20 lg:py-32 px-6 relative overflow-hidden bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-slate-900 rounded-[32px] md:rounded-[64px] shadow-3xl overflow-hidden flex flex-col lg:flex-row shadow-sky-600/10">
-            <div className="w-full lg:w-[45%] bg-sky-600 p-8 md:p-16 lg:p-24 text-white flex flex-col justify-between relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                <div className="relative z-10">
-                     <h3 className="text-3xl lg:text-6xl font-black mb-12 leading-tight tracking-tight uppercase">Estamos a solo un <br /> clic.</h3>
-                    <div className="space-y-10">
-                        <div className="flex items-center gap-8 group">
-                            <div className="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center group-hover:bg-white group-hover:text-sky-600 transition-all shadow-xl">
-                                <Phone className="w-6 h-6" />
-                            </div>
-                            <span className="text-xl font-black tracking-tight uppercase">+1 234 567 890</span>
-                        </div>
-                        <div className="flex items-center gap-8 group">
-                            <div className="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all shadow-xl">
-                                <MessageCircle className="w-6 h-6" />
-                            </div>
-                            <span className="text-xl font-black tracking-tight uppercase">+1 234 567 891</span>
-                        </div>
-                        <div className="flex items-center gap-8 group">
-                            <div className="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center group-hover:bg-white group-hover:text-sky-600 transition-all shadow-xl">
-                                <MapPin className="w-6 h-6" />
-                            </div>
-                            <span className="text-xl font-black tracking-tight uppercase">Av. Central 500, Sector I</span>
-                        </div>
+      <section id="contacto" className="py-32 px-6 relative overflow-hidden bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-slate-900 rounded-[48px] shadow-3xl overflow-hidden shadow-sky-600/10">
+            <div className="p-12 lg:p-24 text-center">
+                <div className="inline-block px-4 py-1.5 bg-sky-500/20 text-sky-400 text-[10px] font-black rounded-lg uppercase tracking-widest mb-10 border border-sky-500/20">Puente Directo</div>
+                <h3 className="text-4xl lg:text-7xl font-black mb-12 leading-tight tracking-tight uppercase text-white">Estamos <br /> a un clic.</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+                  <div className="p-8 rounded-[32px] bg-white/5 border border-white/10 flex flex-col items-center">
+                    <div className="w-16 h-16 bg-sky-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+                      <Phone className="w-8 h-8" />
                     </div>
-                </div>
-                <div className="mt-16 relative z-10 pt-16 border-t border-white/10">
-                   <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Seguinos en redes sociales</p>
-                </div>
-            </div>
-
-            <div className="w-full lg:w-[55%] bg-white p-8 md:p-16 lg:p-24">
-                {formStatus === 'success' ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center animate-fade-in">
-                    <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-[32px] flex items-center justify-center mb-8 shadow-xl shadow-emerald-500/10">
-                      <CheckCircle2 className="w-12 h-12" />
-                    </div>
-                    <h4 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tight">¡Solicitud Enviada!</h4>
-                    <p className="text-slate-500 font-medium max-w-xs mx-auto">Nuestro equipo técnico te contactará en breve para coordinar los detalles.</p>
-                    <button 
-                      onClick={() => setFormStatus('idle')}
-                      className="mt-10 text-sky-600 font-black text-xs uppercase tracking-widest hover:text-sky-700"
-                    >
-                      Enviar otra consulta
-                    </button>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-2">Llamada Directa</p>
+                    <p className="text-2xl font-black text-white">+56 9 1234 5678</p>
                   </div>
-                ) : (
-                  <form className="space-y-8" onSubmit={handleSubmit}>
-                      <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Nombre Completo</label>
-                              <input 
-                                required
-                                type="text" 
-                                value={formData.full_name}
-                                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                                className="w-full bg-slate-50 border border-slate-100 rounded-[20px] px-8 py-5 outline-none focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-800 font-bold" 
-                                placeholder="Juan Pérez" 
-                              />
-                          </div>
-                          <div className="space-y-3">
-                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Teléfono Móvil</label>
-                              <input 
-                                required
-                                type="tel" 
-                                value={formData.phone}
-                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                className="w-full bg-slate-50 border border-slate-100 rounded-[20px] px-8 py-5 outline-none focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-800 font-bold" 
-                                placeholder="+54 9..." 
-                              />
-                          </div>
-                      </div>
-                      <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Servicio Requerido</label>
-                          <select 
-                            value={formData.service_type}
-                            onChange={(e) => setFormData({...formData, service_type: e.target.value})}
-                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] px-8 py-5 outline-none focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-800 font-bold appearance-none"
-                          >
-                              <option>Traslado en transporte adaptado</option>
-                              <option>Reparación técnica en taller</option>
-                              <option>Mantenimiento preventivo</option>
-                              <option>Consulta general técnicos</option>
-                          </select>
-                      </div>
-                      <div className="space-y-3">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">¿Cómo podemos ayudarte?</label>
-                          <textarea 
-                            value={formData.message}
-                            onChange={(e) => setFormData({...formData, message: e.target.value})}
-                            rows={4} 
-                            className="w-full bg-slate-50 border border-slate-100 rounded-[32px] px-8 py-6 outline-none focus:ring-4 focus:ring-sky-500/5 focus:border-sky-500/20 transition-all text-slate-800 font-bold resize-none" 
-                            placeholder="Escribe tu mensaje aquí..."
-                          ></textarea>
-                      </div>
-                      
-                      {formStatus === 'error' && (
-                        <p className="text-rose-500 text-xs font-bold text-center">Ocurrió un error. Inténtalo de nuevo.</p>
-                      )}
+                  <div className="p-8 rounded-[32px] bg-white/5 border border-white/10 flex flex-col items-center">
+                    <div className="w-16 h-16 bg-sky-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-xl">
+                      <Mail className="w-8 h-8" />
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-2">Correo Electrónico</p>
+                    <p className="text-xl font-black text-white">soporte@dedoctordd.cl</p>
+                  </div>
+                </div>
 
-                      <button 
-                        disabled={formStatus === 'loading'}
-                        className="w-full bg-sky-600 text-white font-black py-6 rounded-[32px] text-lg uppercase tracking-widest shadow-2xl shadow-sky-600/30 hover:bg-sky-700 hover:-translate-y-2 transition-all active:translate-y-0 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3"
-                      >
-                          {formStatus === 'loading' ? 'Enviando...' : (
-                            <>Solicitar Presupuesto <Send className="w-5 h-5" /></>
-                          )}
-                      </button>
-                  </form>
-                )}
+                <div className="bg-white rounded-[40px] p-8 lg:p-16 text-left shadow-2xl">
+                    {formStatus === 'success' ? (
+                      <div className="h-full flex flex-col items-center justify-center text-center py-10 animate-fade-in">
+                        <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-[32px] flex items-center justify-center mb-8 shadow-xl shadow-emerald-500/10">
+                          <CheckCircle2 className="w-12 h-12" />
+                        </div>
+                        <h4 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">¡Recibido con éxito!</h4>
+                        <p className="text-slate-500 font-medium mb-10">Un asesor técnico se pondrá en contacto contigo en los próximos minutos.</p>
+                        <button onClick={() => setFormStatus('idle')} className="text-sky-600 font-black text-sm uppercase tracking-widest hover:text-sky-700 transition-colors">Enviar otro mensaje</button>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">Nombre Completo</label>
+                            <input 
+                              type="text" 
+                              name="full_name"
+                              required
+                              placeholder="Juan Pérez"
+                              className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-[24px] focus:outline-none focus:border-sky-500 focus:bg-white transition-all shadow-sm placeholder:text-slate-300 font-medium"
+                              onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                              value={formData.full_name}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">Teléfono Móvil</label>
+                            <input 
+                              type="tel" 
+                              name="phone"
+                              required
+                              placeholder="+56 9 ..."
+                              className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-[24px] focus:outline-none focus:border-sky-500 focus:bg-white transition-all shadow-sm placeholder:text-slate-300 font-medium"
+                              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                              value={formData.phone}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">Servicio de Interés</label>
+                          <select 
+                            name="service_type"
+                            className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-[24px] focus:outline-none focus:border-sky-500 focus:bg-white transition-all shadow-sm font-medium appearance-none"
+                            onChange={(e) => setFormData({...formData, service_type: e.target.value})}
+                          >
+                            <option>Traslado en transporte adaptado</option>
+                            <option>Reparación de silla eléctrica</option>
+                            <option>Mantenimiento preventivo</option>
+                            <option>Otros requerimientos</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-1">Detalle del Requerimiento</label>
+                          <textarea 
+                            name="message"
+                            required
+                            rows={4}
+                            placeholder="Ej: Necesito traslado mañana a las 10:00 AM..."
+                            className="w-full px-8 py-5 bg-slate-50 border-2 border-slate-100 rounded-[24px] focus:outline-none focus:border-sky-500 focus:bg-white transition-all shadow-sm resize-none placeholder:text-slate-300 font-medium"
+                            onChange={(e) => setFormData({...formData, message: e.target.value})}
+                            value={formData.message}
+                          ></textarea>
+                        </div>
+                        <button 
+                          disabled={formStatus === 'loading'}
+                          type="submit"
+                          className="w-full bg-sky-600 text-white py-6 rounded-[28px] font-black text-lg uppercase tracking-widest shadow-2xl shadow-sky-600/30 hover:bg-sky-700 hover:translate-y-[-4px] active:translate-y-0 active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                        >
+                          {formStatus === 'loading' ? <Loader2 className="animate-spin w-6 h-6" /> : 'Enviar Solicitud Ahora'}
+                        </button>
+                      </form>
+                    )}
+                </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 pt-20 lg:pt-32 pb-16 px-6 relative overflow-hidden">
+      <footer className="bg-slate-900 pt-32 pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-20 mb-24">
-                <div className="col-span-1 lg:col-span-1">
-                    <div className="flex items-center gap-3 text-white mb-10 translate-x-[-10px]">
-                        <div className="bg-sky-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-600/20">
-                           <img src="/logo.jpg" alt="Logo" className="w-8 h-8 object-contain rounded-md" />
-                        </div>
-                        <span className="font-black text-2xl uppercase tracking-tighter">Dedoctor<span className="text-sky-500">DD</span></span>
+            <div className="flex flex-col items-center text-center mb-24">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="bg-sky-600 text-white p-3 rounded-2xl shadow-xl shadow-sky-600/20">
+                        <Accessibility className="w-8 h-8" />
                     </div>
-                    <p className="text-slate-500 font-medium text-sm leading-relaxed italic pr-4">
-                      "Dedicados a transformar la calidad de vida de las personas con movilidad reducida a través de excelencia técnica y calidez humana."
-                    </p>
+                    <span className="font-black text-4xl text-white uppercase tracking-tighter">Dedoctor<span className="text-sky-600">DD</span></span>
                 </div>
+                <p className="text-slate-400 font-medium text-lg leading-relaxed max-w-2xl italic">
+                  "Innovación y calidez humana al servicio de tu movilidad."
+                </p>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center mb-24">
                 <div>
                     <h5 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-10">Servicios</h5>
-                    <ul className="text-slate-400 text-[11px] font-black uppercase tracking-widest space-y-6">
-                        <li className="hover:text-sky-400 transition-colors pointer-events-none opacity-50">Traslados Médicos</li>
-                        <li className="hover:text-sky-400 transition-colors pointer-events-none opacity-50">Eventos Sociales</li>
-                        <li className="hover:text-sky-400 transition-colors pointer-events-none opacity-50">Taller Electrónico</li>
-                        <li className="hover:text-sky-400 transition-colors pointer-events-none opacity-50">Repuestos Oficiales</li>
+                    <ul className="text-slate-500 text-[10px] font-black uppercase tracking-widest space-y-6">
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Traslados</li>
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Soporte</li>
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Consultas</li>
+                    </ul>
+                </div>
+                <div>
+                  <h5 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-10">Compañía</h5>
+                  <ul className="text-slate-500 text-[10px] font-black uppercase tracking-widest space-y-6">
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer" onClick={onLoginClick}>Admin</li>
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Garantía</li>
                     </ul>
                 </div>
                 <div>
                   <h5 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-10">Soporte</h5>
-                  <ul className="text-slate-400 text-[11px] font-black uppercase tracking-widest space-y-6">
-                        <li className="hover:text-sky-400 transition-colors cursor-pointer" onClick={onLoginClick}>Acceso Clientes</li>
-                        <li className="hover:text-sky-400 transition-colors cursor-pointer" onClick={onLoginClick}>Estado de Servicio</li>
-                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Seguimiento GPS</li>
-                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Garantía Técnica</li>
+                  <ul className="text-slate-500 text-[10px] font-black uppercase tracking-widest space-y-6">
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Contacto</li>
+                        <li className="hover:text-sky-400 transition-colors cursor-pointer">Legal</li>
                     </ul>
                 </div>
                 <div>
                   <h5 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-10">Newsletter</h5>
-                  <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-6">Recibe consejos y actualizaciones</p>
-                  <div className="flex gap-2">
-                      <input type="email" placeholder="EMAIL" className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-[10px] font-black outline-none w-full focus:border-sky-500 transition-all uppercase" />
-                      <button className="bg-sky-600 p-3 rounded-xl text-white hover:bg-sky-700 shadow-lg shadow-sky-600/20"><Send className="w-4 h-4" /></button>
+                  <div className="flex flex-col gap-4">
+                      <input type="email" placeholder="TU EMAIL" className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-[10px] font-black outline-none w-full focus:border-sky-500 transition-all text-center uppercase" />
+                      <button className="bg-sky-600 py-4 rounded-2xl text-white hover:bg-sky-700 shadow-lg shadow-sky-600/20 font-black text-[10px] uppercase tracking-widest">Suscribirse</button>
                   </div>
                 </div>
             </div>
-            <div className="border-t border-white/5 pt-16 flex flex-col md:flex-row justify-between items-center gap-10">
-                <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest">© 2024 DedoctorDD. Todos los derechos reservados.</p>
-                <div className="flex gap-8 text-slate-500">
-                    <div className="hover:text-sky-500 cursor-pointer transition-colors"><Star className="w-5 h-5" /></div>
-                    <div className="hover:text-sky-500 cursor-pointer transition-colors"><Star className="w-5 h-5 flex rotate-45" /></div>
-                    <div className="hover:text-sky-500 cursor-pointer transition-colors"><Star className="w-5 h-5 flex rotate-90" /></div>
-                </div>
+
+            <div className="border-t border-white/5 pt-16 text-center">
+                <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest">
+                  © {new Date().getFullYear()} DedoctorDD. Elevando el estándar de movilidad.
+                </p>
             </div>
         </div>
       </footer>
