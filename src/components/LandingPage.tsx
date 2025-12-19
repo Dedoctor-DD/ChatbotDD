@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { 
   Accessibility, 
   Wrench, 
@@ -11,7 +11,16 @@ import {
   Mail,
   Loader2,
   MessageCircle,
-  Sparkles
+  Sparkles,
+  Link as LinkIcon,
+  HelpingHand,
+  CalendarCheck,
+  Truck,
+  Cpu,
+  RefreshCw,
+  Instagram,
+  Linkedin,
+  Menu
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -26,17 +35,37 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   const [formData, setFormData] = useState({
     full_name: '',
     phone: '',
-    service_type: 'Traslado en transporte adaptado',
+    service_type: 'Traslado DeDoctor',
     message: ''
   });
 
+  const revealRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 40);
     };
     window.addEventListener('scroll', handleScroll);
     loadPartners();
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    // Reveal Animation Observer
+    const observerOptions = { threshold: 0.15 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    revealRefs.current.forEach(el => {
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
   }, []);
 
   const loadPartners = async () => {
@@ -74,7 +103,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
       if (error) throw error;
       setFormStatus('success');
-      setFormData({ full_name: '', phone: '', service_type: 'Traslado en transporte adaptado', message: '' });
+      setFormData({ full_name: '', phone: '', service_type: 'Traslado DeDoctor', message: '' });
       setTimeout(() => setFormStatus('idle'), 5000);
     } catch (error) {
       console.error('Error submitting lead:', error);
@@ -82,275 +111,291 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
     }
   };
 
+  const addToReveal = (el: HTMLDivElement | null) => {
+    if (el && !revealRefs.current.includes(el)) {
+      revealRefs.current.push(el);
+    }
+  };
+
   return (
-    <div className="bg-white text-slate-900 font-sans selection:bg-sky-100 selection:text-sky-900">
+    <div className="bg-gradient-soft min-h-screen text-slate-800 font-sans selection:bg-blue-100 selection:text-blue-900">
       
-      {/* Navegación */}
-      <nav className={`fixed w-full z-[100] transition-all duration-500 ${isScrolled ? 'glass-nav py-4 shadow-sm' : 'bg-transparent py-6'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="bg-sky-600 text-white p-2.5 rounded-2xl group-hover:rotate-12 transition-transform shadow-xl shadow-sky-200 ring-4 ring-white">
-              <Accessibility className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-black text-xl tracking-tight text-slate-900 uppercase">Dedoctor<span className="text-sky-600">DD</span></span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Movilidad & Soporte</span>
+      {/* Header / Nav */}
+      <nav className={`fixed w-full z-[100] transition-all duration-500 py-6 px-4 md:px-12 ${isScrolled ? 'top-0' : ''}`}>
+        <div className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <span className="font-extrabold text-xl tracking-tighter text-slate-900 uppercase">DeDoctor <span className="text-blue-600">& MMc</span></span>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em]">Grupo de Movilidad Integral</span>
             </div>
           </div>
           
-          <div className="hidden lg:flex items-center gap-10 font-black text-[11px] uppercase tracking-widest text-slate-500">
-            <a href="#transporte" className="hover:text-sky-600 transition-colors">Servicios</a>
-            <a href="#proceso" className="hover:text-sky-600 transition-colors">Proceso</a>
-            <a href="#contacto" className="hover:text-sky-600 transition-colors">Contacto</a>
+          <div className="hidden lg:flex items-center gap-10 font-bold text-[11px] uppercase tracking-widest text-slate-500">
+            <a href="#transporte" className="hover:text-blue-600 transition-colors">Transportes DeDoctor</a>
+            <a href="#taller" className="hover:text-blue-600 transition-colors">Taller MMc</a>
+            <button 
+              onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-200"
+            >
+              Presupuesto Especializado
+            </button>
             <button 
               onClick={onLoginClick}
-              className="bg-slate-900 text-white px-8 py-3 rounded-2xl hover:bg-sky-600 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+              className="text-slate-400 hover:text-blue-600 transition-colors"
             >
               Acceso
             </button>
           </div>
 
-          <button onClick={onLoginClick} className="lg:hidden bg-sky-600 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest">
-            Login
+          <button className="lg:hidden text-slate-900 p-2">
+            <Menu className="w-6 h-6" />
           </button>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-24 lg:pt-56 lg:pb-40 px-6 overflow-hidden bg-white">
-        <div className="absolute inset-0 bg-mesh opacity-30 pointer-events-none"></div>
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-200/40 rounded-full blur-[120px] animate-pulse-soft"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-200/30 rounded-full blur-[100px] animate-float"></div>
-        
-        <div className="max-w-5xl mx-auto relative z-10 text-center">
-          <div className="animate-reveal">
-            <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/50 backdrop-blur-md text-sky-600 text-[10px] font-black rounded-full uppercase tracking-[0.3em] mb-10 border border-white/80 shadow-sm mx-auto">
-              <Sparkles className="w-3 h-3 text-sky-500 animate-pulse" />
-              Líderes en Tecnología de Movilidad
+      <section className="relative pt-48 pb-24 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+            <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-4 py-2 rounded-full mb-10 border border-blue-100">
+                <LinkIcon className="w-3 h-3" />
+                <span className="text-[10px] font-extrabold uppercase tracking-widest">Alianza Estratégica en Movilidad</span>
             </div>
-            <h1 className="text-5xl lg:text-9xl font-black text-slate-900 mb-12 leading-[0.95] tracking-tighter text-balance uppercase italic">
-              Movilidad sin <br />
-              <span className="hero-gradient-text animate-gradient pb-4">fronteras.</span>
+            
+            <h1 className="hero-title text-6xl md:text-8xl lg:text-9xl font-black text-slate-900 mb-10">
+                Te movemos. <br /> <span className="text-blue-600">Te cuidamos.</span>
             </h1>
-            <p className="text-xl lg:text-3xl text-slate-500 mb-16 font-medium leading-relaxed balance max-w-3xl mx-auto opacity-0 animate-reveal reveal-delay-1" style={{animationFillMode: 'forwards'}}>
-              La intersección entre <span className="text-slate-900 font-bold">asistencia humana</span> y <span className="text-sky-600 font-bold">excelencia técnica</span>.
+            
+            <p className="text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto mb-16 font-medium leading-relaxed">
+                Unimos la excelencia logística de <span className="text-slate-900 font-bold underline decoration-blue-500 decoration-4">Transportes DeDoctor</span> con la precisión técnica del <span className="text-slate-900 font-bold underline decoration-slate-400 decoration-4">Taller MMc</span>.
             </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-6 opacity-0 animate-reveal reveal-delay-2" style={{opacity: 0, animationFillMode: 'forwards'}}>
-              <button
-                onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group relative overflow-hidden bg-slate-900 text-white px-12 py-6 rounded-[24px] font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-slate-900/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-sky-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <span className="relative z-10 flex items-center justify-center gap-3">
-                  Solicitar Ahora <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </button>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <button 
+                  onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="bg-blue-600 text-white px-12 py-6 rounded-3xl font-extrabold text-lg shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1.5 transition-all flex items-center justify-center gap-3"
+                >
+                    Solicitar Asistencia <ArrowRight className="w-5 h-5" />
+                </button>
+                <a href="#alianza" className="bg-white text-slate-900 border border-slate-200 px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all">
+                    Nuestra Alianza
+                </a>
             </div>
-          </div>
-
-          {/* Stats Bento Reveal */}
-          <div className="relative mt-32 animate-reveal reveal-delay-3" style={{opacity: 0, animationFillMode: 'forwards'}}>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                <div className="glass-premium p-10 rounded-[40px] border border-white/80 group hover:translate-y-[-8px] transition-all">
-                    <div className="text-4xl font-black text-slate-900 mb-2 tracking-tighter uppercase italic">15m</div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Respuesta</p>
-                </div>
-                <div className="glass-premium p-10 rounded-[40px] border border-white/80 group hover:translate-y-[-8px] transition-all">
-                    <div className="text-4xl font-black text-sky-600 mb-2 tracking-tighter uppercase italic">+2k</div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Servicios</p>
-                </div>
-                <div className="glass-premium p-10 rounded-[40px] border border-white/80 group hover:translate-y-[-8px] transition-all">
-                    <div className="text-4xl font-black text-slate-900 mb-2 tracking-tighter uppercase italic">100%</div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Garantía</p>
-                </div>
-                <div className="glass-premium p-10 rounded-[40px] border border-white/80 group hover:translate-y-[-8px] transition-all">
-                    <div className="text-4xl font-black text-indigo-600 mb-2 tracking-tighter uppercase italic">24/7</div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Soporte</p>
-                </div>
-            </div>
-          </div>
-          
-          {/* Partners Scroll */}
-          {partners.length > 0 && (
-            <div className="mt-40 border-t border-slate-100 pt-20 animate-reveal reveal-delay-3 opacity-0" style={{animationFillMode: 'forwards'}}>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[.4em] mb-12 text-center">Empresas con las que colaboramos</p>
-              <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-24 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
-                {partners.map((p, i) => (
-                  <img key={i} src={p.logo_url} alt={p.name} className="h-8 lg:h-12 w-auto object-contain transition-transform hover:scale-110" />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* Bento Grid Services */}
-      <section id="transporte" className="py-40 bg-slate-50/30 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-24">
-            <div className="inline-block px-4 py-1.5 bg-sky-100 text-sky-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 shadow-sm border border-sky-200/40">Nuestra Expertise</div>
-            <h2 className="text-4xl lg:text-7xl font-black text-slate-900 mb-6 leading-tight tracking-tighter uppercase italic">Ecosistema de <br /> Asistencia.</h2>
-            <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto">Cubrimos cada aspecto de tu movilidad con estándares de ingeniería avanzada.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white rounded-[56px] p-4 border border-slate-100 group hover-lift transition-all shadow-xl shadow-slate-200/20">
-                <div className="bento-inner min-h-[400px]">
-                    <div className="absolute top-10 right-10 bg-sky-50 p-6 rounded-3xl text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-all transform group-hover:rotate-12">
-                        <Accessibility className="w-12 h-12" />
-                    </div>
-                    <div className="relative z-10 w-full mb-10">
-                        <p className="text-[10px] font-black text-sky-600 uppercase tracking-[.3em] mb-4">Servicio 01</p>
-                        <h3 className="text-4xl lg:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight italic">Logística <br /> Adaptada.</h3>
-                        <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-md">Flota propia con rampas hidráulicas y conductores certificados en RCP y movilización asistida.</p>
-                    </div>
-                </div>
+      {/* Stats Branding Section */}
+      <section id="alianza" className="py-16 px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
+                <div className="text-blue-600 mb-6 group-hover:scale-110 transition-transform"><HelpingHand className="w-8 h-8" /></div>
+                <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Compromiso DeDoctor</h4>
+                <p className="text-slate-500 text-sm leading-relaxed font-medium">Protocolos de transporte centrados en la dignidad humana y seguridad máxima.</p>
             </div>
-
-            <div className="bg-slate-900 rounded-[56px] p-4 group hover-lift transition-all overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-600/20 to-transparent"></div>
-                <div className="bento-inner min-h-[400px] relative z-10">
-                    <div className="absolute top-10 right-10 bg-white/10 p-6 rounded-3xl text-sky-400 group-hover:bg-sky-400 group-hover:text-slate-900 transition-all transform group-hover:-rotate-12">
-                        <Wrench className="w-12 h-12" />
-                    </div>
-                    <div className="w-full mb-10">
-                        <p className="text-[10px] font-black text-sky-400 uppercase tracking-[.3em] mb-4">Servicio 02</p>
-                        <h3 className="text-4xl font-black text-white mb-6 uppercase tracking-tight italic">Ingeniería <br /> de Soporte.</h3>
-                        <p className="text-slate-400 text-base font-medium leading-relaxed">Diagnóstico digital y reparación express con garantía certificada por escrito.</p>
-                    </div>
-                </div>
+            <div className="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl shadow-blue-900/10">
+                <div className="text-blue-400 mb-6"><Cpu className="w-8 h-8" /></div>
+                <h4 className="font-black text-2xl mb-4 tracking-tighter leading-none">Ingeniería MMc</h4>
+                <p className="text-slate-400 text-sm leading-relaxed font-medium text-balance">Especialistas en electrónica avanzada y mantenimiento estructural de alto rendimiento.</p>
             </div>
-
-            <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8 mt-4">
-                <div className="bg-white rounded-[48px] p-10 flex items-center justify-between group hover:bg-sky-600 transition-colors duration-500 border border-slate-100">
-                    <div>
-                        <h4 className="text-3xl font-black text-slate-900 group-hover:text-white mb-1 transition-colors uppercase italic tracking-tighter">Seguridad</h4>
-                        <p className="text-slate-400 group-hover:text-white/80 text-[10px] font-black uppercase tracking-widest transition-colors">Norma ISO 9001</p>
-                    </div>
-                    <ShieldCheck className="w-12 h-12 text-sky-600 group-hover:text-white transition-colors" />
-                </div>
-                <div className="bg-white rounded-[48px] p-10 flex items-center justify-between group hover:bg-indigo-600 transition-colors duration-500 border border-slate-100">
-                    <div>
-                        <h4 className="text-3xl font-black text-slate-900 group-hover:text-white mb-1 transition-colors uppercase italic tracking-tighter">Rapidez</h4>
-                        <p className="text-slate-400 group-hover:text-white/80 text-[10px] font-black uppercase tracking-widest transition-colors">Gestión Digital</p>
-                    </div>
-                    <Zap className="w-12 h-12 text-indigo-600 group-hover:text-white transition-colors" />
-                </div>
-                <div className="bg-white rounded-[48px] p-10 flex items-center justify-between group hover:bg-slate-900 transition-colors duration-500 border border-slate-100">
-                    <div>
-                        <h4 className="text-3xl font-black text-slate-900 group-hover:text-white mb-1 transition-colors uppercase italic tracking-tighter">Cobertura</h4>
-                        <p className="text-slate-400 group-hover:text-white/60 text-[10px] font-black uppercase tracking-widest transition-colors">Región Metropolitana</p>
-                    </div>
-                    <MapPin className="w-12 h-12 text-slate-400 group-hover:text-white transition-colors" />
-                </div>
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
+                <div className="text-blue-600 mb-6 group-hover:scale-110 transition-transform"><RefreshCw className="w-8 h-8" /></div>
+                <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Servicio Integral</h4>
+                <p className="text-slate-500 text-sm leading-relaxed font-medium">Si tu silla falla durante un viaje, nuestro equipo MMc la repara de inmediato.</p>
             </div>
-          </div>
         </div>
       </section>
 
-      {/* Proceso */}
-      <section id="proceso" className="py-40 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-            <h2 className="text-4xl lg:text-7xl font-black text-slate-900 mb-24 tracking-tighter uppercase italic">Cómo funciona.</h2>
-            <div className="grid md:grid-cols-3 gap-20">
-                <div className="group">
-                    <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-10 text-3xl font-black text-slate-800 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-inner">01</div>
-                    <h4 className="text-2xl font-black mb-4 uppercase tracking-tight group-hover:text-sky-600 transition-colors">Solicitud</h4>
-                    <p className="text-slate-500 font-medium">Contáctanos vía plataforma o WhatsApp. Respuesta en menos de 5 min.</p>
+      {/* Sección Empresa 1: Transportes DeDoctor */}
+      <section id="transporte" className="py-32 px-6">
+        <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-center gap-20">
+                <div className="w-full lg:w-1/2 reveal" ref={addToReveal}>
+                    <div className="abstract-visual aspect-[4/5] rounded-[4rem] flex flex-col items-center justify-center p-12 text-center group">
+                        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-blue-600 shadow-2xl group-hover:rotate-6 transition-transform">
+                            <Truck className="w-12 h-12" />
+                        </div>
+                        <h4 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter">Unidad de Traslado</h4>
+                        <div className="w-full space-y-3 px-10">
+                            <div className="h-2 w-full bg-blue-200 rounded-full"></div>
+                            <div className="h-2 w-3/4 bg-blue-200 rounded-full mx-auto"></div>
+                        </div>
+                        <p className="mt-8 text-xs font-bold text-blue-500 uppercase tracking-widest">Transportes DeDoctor</p>
+                    </div>
                 </div>
-                <div className="group">
-                    <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-10 text-3xl font-black text-slate-800 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-inner">02</div>
-                    <h4 className="text-2xl font-black mb-4 uppercase tracking-tight group-hover:text-sky-600 transition-colors">Acción</h4>
-                    <p className="text-slate-500 font-medium">Coordinamos el traslado o el retiro técnico con seguimiento en vivo.</p>
-                </div>
-                <div className="group">
-                    <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-10 text-3xl font-black text-slate-800 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-inner">03</div>
-                    <h4 className="text-2xl font-black mb-4 uppercase tracking-tight group-hover:text-sky-600 transition-colors">Entrega</h4>
-                    <p className="text-slate-500 font-medium">Viaje seguro o equipo reparado con certificado de calidad.</p>
+                
+                <div className="w-full lg:w-1/2">
+                    <span className="brand-badge bg-blue-100 text-blue-700 mb-6 inline-block">División Logística</span>
+                    <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tighter">
+                        Transportes <br /> <span className="text-blue-600 italic">DeDoctor.</span>
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 gap-10">
+                        <div className="flex gap-6">
+                            <div className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                                <HelpingHand className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-xl text-slate-900 mb-2">Asistencia Personalizada</h4>
+                                <p className="text-slate-500 leading-relaxed font-medium">No somos solo conductores. Somos asistentes capacitados que garantizan tu seguridad desde la puerta de tu hogar.</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-6">
+                            <div className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                                <CalendarCheck className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-xl text-slate-900 mb-2">Puntualidad Absoluta</h4>
+                                <p className="text-slate-500 leading-relaxed font-medium">Entendemos el valor de tus citas médicas. Nuestra logística DeDoctor está optimizada para la cero demora.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
       </section>
 
-      {/* Contacto Refined */}
-      <section id="contacto" className="py-40 px-6 bg-slate-50/50">
+      {/* Sección Empresa 2: Taller MMc */}
+      <section id="taller" className="py-32 px-6">
+        <div className="max-w-7xl mx-auto bg-slate-900 rounded-[5rem] overflow-hidden p-12 lg:p-24 relative shadow-2xl">
+            {/* Patrón de fondo sutil */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3b82f6 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+            
+            <div className="flex flex-col lg:flex-row-reverse items-center gap-20 relative z-10">
+                <div className="w-full lg:w-1/2 reveal" ref={addToReveal}>
+                    <div className="abstract-visual aspect-square rounded-[4rem] bg-slate-800 flex flex-col items-center justify-center p-12 border border-slate-700/50 group">
+                        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-2xl group-hover:rotate-12 transition-transform">
+                            <Wrench className="w-12 h-12" />
+                        </div>
+                        <h4 className="text-4xl font-black text-white mb-4 tracking-tighter">Laboratorio Técnico</h4>
+                        <div className="flex gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+                            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            <div className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                        <p className="mt-8 text-xs font-bold text-slate-400 uppercase tracking-widest italic">Taller MMc</p>
+                    </div>
+                </div>
+                
+                <div className="w-full lg:w-1/2 text-white">
+                    <span className="brand-badge bg-slate-800 text-blue-400 mb-6 inline-block">División Técnica</span>
+                    <h2 className="text-5xl md:text-6xl font-black mb-10 leading-[1.1] tracking-tighter">
+                        Taller de Sillas <br /> <span className="text-blue-500">MMc.</span>
+                    </h2>
+                    
+                    <div className="space-y-12">
+                        <div className="flex gap-8 group">
+                            <div className="w-12 h-12 shrink-0 border-b-2 border-blue-500 flex items-center justify-center text-blue-400 text-3xl font-black">
+                                01
+                            </div>
+                            <div>
+                                <h4 className="font-black text-2xl mb-3">Sillas Eléctricas</h4>
+                                <p className="text-slate-400 font-medium leading-relaxed">Expertos en marcas internacionales. Reparamos joystick, módulos de potencia y pack de baterías con celdas de alta capacidad.</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-8 group">
+                            <div className="w-12 h-12 shrink-0 border-b-2 border-slate-600 flex items-center justify-center text-slate-400 text-3xl font-black group-hover:border-blue-500 transition-colors">
+                                02
+                            </div>
+                            <div>
+                                <h4 className="font-black text-2xl mb-3">Stock Permanente</h4>
+                                <p className="text-slate-400 font-medium leading-relaxed">No esperes repuestos. Tenemos el inventario de MMc más grande de la zona para neumáticos, cámaras y frenos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      {/* Formulario Unificado Premium */}
+      <section id="contacto" className="py-32 px-6">
         <div className="max-w-5xl mx-auto">
-            <div className="bg-slate-900 rounded-[64px] overflow-hidden shadow-3xl shadow-sky-600/5 transition-all hover:shadow-sky-600/10 p-12 lg:p-24">
-                <div className="text-center mb-20">
-                    <div className="inline-block px-4 py-1.5 bg-sky-500/20 text-sky-400 text-[10px] font-black rounded-lg uppercase tracking-widest mb-10 border border-sky-500/20">Puente Directo</div>
-                    <h2 className="text-5xl lg:text-8xl font-black text-white mb-10 tracking-tighter uppercase italic text-balance">Estamos <br /> a un clic.</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-                    <div className="dark-glass p-10 rounded-[40px] flex items-center gap-8 group hover:bg-white/10 transition-all">
-                        <div className="w-16 h-16 bg-sky-600 text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform">
-                            <Phone className="w-8 h-8" />
-                        </div>
-                        <div className="text-left">
-                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-2">Llamar Ahora</p>
-                            <p className="text-2xl font-black text-white">+56 9 1234 5678</p>
+            <div className="text-center mb-16">
+                <h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-4">¿Cómo podemos asistirte hoy?</h3>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Atención unificada DeDoctor & MMc</p>
+            </div>
+            
+            <div className="bg-white rounded-[4rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-slate-100 flex flex-col md:flex-row">
+                <div className="md:w-1/3 bg-slate-900 p-12 lg:p-16 text-white flex flex-col justify-between relative overflow-hidden">
+                    <div className="relative z-10">
+                        <h4 className="text-3xl font-black mb-8 leading-none">Contacto Directo.</h4>
+                        <div className="space-y-10">
+                            <div>
+                                <p className="text-[10px] uppercase font-bold text-blue-400 tracking-widest mb-2">Transportes DeDoctor</p>
+                                <p className="font-bold text-lg">+56 9 1234 5678</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase font-bold text-blue-400 tracking-widest mb-2">Taller MMc</p>
+                                <p className="font-bold text-lg">+56 9 8765 4321</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-2">Email Central</p>
+                                <p className="font-bold text-sm">grupo@dedoctor-mmc.com</p>
+                            </div>
                         </div>
                     </div>
-                    <div className="dark-glass p-10 rounded-[40px] flex items-center gap-8 group hover:bg-white/10 transition-all">
-                        <div className="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform">
-                            <Mail className="w-8 h-8" />
-                        </div>
-                        <div className="text-left">
-                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-2">Escribenos</p>
-                            <p className="text-xl font-black text-white">soporte@dedoctordd.cl</p>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="bg-white rounded-[48px] p-8 lg:p-20 shadow-2xl">
+                <div className="md:w-2/3 p-12 lg:p-16 bg-white">
                     {formStatus === 'success' ? (
-                      <div className="text-center py-20 animate-reveal">
-                        <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-[32px] flex items-center justify-center mb-8 mx-auto shadow-xl">
-                          <CheckCircle2 className="w-12 h-12" />
-                        </div>
-                        <h4 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">¡Enviado!</h4>
-                        <p className="text-slate-500 font-medium mb-10 max-w-sm mx-auto">Te contactaremos en minutos para brindarte asistencia inmediata.</p>
-                        <button onClick={() => setFormStatus('idle')} className="text-sky-600 font-black text-sm uppercase tracking-widest hover:text-sky-700">Nueva consulta</button>
+                      <div className="h-full flex flex-col items-center justify-center text-center py-10">
+                        <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-6" />
+                        <h4 className="text-3xl font-black text-slate-900 mb-4 tracking-tight uppercase">¡Recibido!</h4>
+                        <p className="text-slate-500 font-medium">Un especialista se pondrá en contacto pronto.</p>
+                        <button onClick={() => setFormStatus('idle')} className="mt-8 text-blue-600 font-bold uppercase text-xs tracking-widest">Enviar otro</button>
                       </div>
                     ) : (
-                      <form onSubmit={handleSubmit} className="space-y-10">
-                        <div className="grid md:grid-cols-2 gap-10">
-                          <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre</label>
-                            <input 
-                              type="text" required placeholder="Juan Pérez"
-                              className="w-full bg-slate-50 border-2 border-slate-100 rounded-[24px] px-8 py-5 outline-none focus:border-sky-500 transition-all font-bold placeholder:text-slate-300"
-                              onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                              value={formData.full_name}
-                            />
+                      <form className="grid grid-cols-1 sm:grid-cols-2 gap-8" onSubmit={handleSubmit}>
+                          <div className="flex flex-col gap-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Nombre Completo</label>
+                              <input 
+                                type="text" required 
+                                className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm" 
+                                placeholder="Tu nombre"
+                                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                                value={formData.full_name}
+                              />
                           </div>
-                          <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
-                            <input 
-                              type="tel" required placeholder="+56 9..."
-                              className="w-full bg-slate-50 border-2 border-slate-100 rounded-[24px] px-8 py-5 outline-none focus:border-sky-500 transition-all font-bold placeholder:text-slate-300"
-                              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                              value={formData.phone}
-                            />
+                          <div className="flex flex-col gap-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Celular / WhatsApp</label>
+                              <input 
+                                type="tel" required 
+                                className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm" 
+                                placeholder="+56 9..."
+                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                value={formData.phone}
+                              />
                           </div>
-                        </div>
-                        <div className="space-y-4">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mensaje</label>
-                          <textarea 
-                            rows={4} required placeholder="¿En qué podemos ayudarte?"
-                            className="w-full bg-slate-50 border-2 border-slate-100 rounded-[24px] px-8 py-5 outline-none focus:border-sky-500 transition-all font-bold resize-none"
-                            onChange={(e) => setFormData({...formData, message: e.target.value})}
-                            value={formData.message}
-                          ></textarea>
-                        </div>
-                        <button 
-                          disabled={formStatus === 'loading'}
-                          type="submit"
-                          className="w-full bg-slate-900 text-white py-8 rounded-[32px] font-black text-lg uppercase tracking-[0.3em] hover:bg-sky-600 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl flex items-center justify-center gap-6"
-                        >
-                          {formStatus === 'loading' ? <Loader2 className="animate-spin" /> : 'Solicitar Asistencia Ahora'}
-                        </button>
+                          <div className="sm:col-span-2 flex flex-col gap-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Requerimiento Especial</label>
+                              <div className="flex flex-wrap gap-3">
+                                  {['Traslado DeDoctor', 'Servicio Taller MMc', 'Consulta Grupal'].map((type) => (
+                                    <button 
+                                      key={type}
+                                      type="button" 
+                                      onClick={() => setFormData({...formData, service_type: type})}
+                                      className={`px-5 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all ${formData.service_type === type ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                                    >
+                                      {type}
+                                    </button>
+                                  ))}
+                              </div>
+                          </div>
+                          <div className="sm:col-span-2 flex flex-col gap-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Detalles del Pedido</label>
+                              <textarea 
+                                rows={4} required 
+                                className="w-full bg-slate-50 border-none rounded-3xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm resize-none" 
+                                placeholder="¿En qué podemos ayudarte?"
+                                onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                value={formData.message}
+                              ></textarea>
+                          </div>
+                          <button 
+                            disabled={formStatus === 'loading'}
+                            className="sm:col-span-2 bg-blue-600 text-white font-black py-6 rounded-3xl hover:bg-blue-700 hover:-translate-y-1 transition-all shadow-2xl shadow-blue-200 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4"
+                          >
+                              {formStatus === 'loading' ? <Loader2 className="animate-spin w-5 h-5" /> : 'Solicitar Atención Prioritaria'}
+                          </button>
                       </form>
                     )}
                 </div>
@@ -358,30 +403,51 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Footer Final */}
-      <footer className="bg-white py-32 px-6 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto flex flex-col items-center">
-            <div className="flex items-center gap-4 mb-20 text-center flex-col md:flex-row">
-                <div className="bg-slate-900 text-white p-3 rounded-2xl">
-                    <Accessibility className="w-8 h-8" />
+      {/* Partners Section (Keeping your dynamic logic) */}
+      {partners.length > 0 && (
+        <section className="py-20 bg-white border-y border-slate-50 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-12 text-center">Colaboraciones Estratégicas</p>
+            <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+              {partners.map((partner, i) => (
+                <img key={i} src={partner.logo_url} alt={partner.name} className="h-8 lg:h-12 w-auto object-contain transition-transform hover:scale-110" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Footer Unificado */}
+      <footer className="py-20 px-6 border-t border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-12">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                            <LinkIcon className="w-4 h-4" />
+                        </div>
+                        <span className="font-black text-lg tracking-tighter uppercase">DeDoctor <span className="text-blue-600">& MMc</span></span>
+                    </div>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Red de Movilidad Integral Especializada</p>
                 </div>
-                <span className="font-black text-5xl uppercase tracking-tighter italic">Dedoctor<span className="text-sky-600">DD</span></span>
+                
+                <div className="flex gap-12 text-slate-500 font-bold text-xs uppercase tracking-widest">
+                    <button onClick={onLoginClick} className="hover:text-blue-600 transition-colors">Admin</button>
+                    <a href="#" className="hover:text-blue-600 transition-colors">Soporte</a>
+                    <a href="#" className="hover:text-blue-600 transition-colors">Privacidad</a>
+                </div>
+                
+                <div className="flex gap-4">
+                    <a href="#" className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-white transition-all shadow-sm"><Instagram className="w-5 h-5" /></a>
+                    <a href="#" className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-white transition-all shadow-sm"><Linkedin className="w-5 h-5" /></a>
+                    <a href="https://wa.me/123456789" className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500 hover:bg-green-100 transition-all shadow-sm"><MessageCircle className="w-5 h-5" /></a>
+                </div>
             </div>
-            <div className="flex flex-wrap justify-center gap-12 text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-20">
-                <a href="#" className="hover:text-slate-900 transition-colors">Términos</a>
-                <a href="#" className="hover:text-slate-900 transition-colors">Privacidad</a>
-                <a href="#" className="hover:text-slate-900 transition-colors">Cookies</a>
-                <a href="#" className="hover:text-slate-900 transition-colors" onClick={onLoginClick}>Admin</a>
+            <div className="text-center mt-20 pt-10 border-t border-slate-50 text-slate-300 text-[9px] font-bold uppercase tracking-[0.4em]">
+                © {new Date().getFullYear()} Grupo DeDoctor & MMc • Excelencia en Movilidad Habilitada
             </div>
-            <p className="text-slate-300 text-[10px] font-black uppercase tracking-widest">© {new Date().getFullYear()} DedoctorDD. Elevando el estándar de movilidad.</p>
         </div>
       </footer>
-
-      {/* Floating WhatsApp */}
-      <a href="https://wa.me/123456789" className="fixed bottom-12 right-12 z-[200] group flex items-center gap-4 bg-emerald-600 text-white p-6 rounded-full md:rounded-[32px] shadow-3xl hover:scale-110 active:scale-95 transition-all outline outline-offset-8 outline-emerald-100 italic">
-        <span className="font-black text-xs uppercase tracking-widest hidden md:block pl-2">Chat Directo</span>
-        <MessageCircle className="w-8 h-8" />
-      </a>
 
     </div>
   );
