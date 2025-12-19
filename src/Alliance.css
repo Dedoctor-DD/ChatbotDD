@@ -1,4 +1,4 @@
-/* EXACT CSS FROM USER HTML */
+/* EXACT CSS FROM USER HTML + SELF-SUFFICIENT STYLES TO BYPASS TAILWIND BUILD ISSUES */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -8,28 +8,61 @@
 }
 
 .alliance-wrapper {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
     background-color: #fcfcfd;
     color: #1e293b;
     overflow-x: hidden;
     min-height: 100vh;
+    text-align: center;
 }
 
-/* Efecto de fondo dinámico */
+/* Force Font Sizes for Hero Title */
+.hero-title {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1.1 !important; /* Fixed overlap */
+    font-weight: 900 !important;
+    margin-bottom: 2.5rem !important;
+    display: block;
+}
+
+@media (min-width: 1024px) {
+    .hero-title { font-size: 8rem !important; }
+}
+@media (max-width: 1023px) {
+    .hero-title { font-size: 4rem !important; }
+}
+
+/* Button & Link Mimics */
+.bg-blue-600 {
+    background-color: #2563eb !important;
+    color: white !important;
+}
+
+.bg-slate-900 {
+    background-color: #0f172a !important;
+    color: white !important;
+}
+
+.text-blue-600 { color: #2563eb !important; }
+.text-slate-900 { color: #0f172a !important; }
+.text-slate-500 { color: #64748b !important; }
+
+/* Grid / Layout helpers since Tailwind is failing */
+.max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; }
+.max-w-6xl { max-width: 72rem; margin-left: auto; margin-right: auto; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Dynamic Background */
 .bg-gradient-soft {
-    background: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.03) 0%, transparent 40%);
+    background: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
 }
 
 .glass-nav {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.hero-title {
-    letter-spacing: -0.04em !important;
-    line-height: 0.95 !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
 }
 
 .service-container {
@@ -88,4 +121,36 @@
     padding: 0.5rem 1rem;
     border-radius: 99px;
     text-transform: uppercase;
+}
+
+/* Fix for icons if font-awesome is causing size issues */
+.fas, .fab {
+    display: inline-block;
+}
+
+/* Fallback Utilities */
+.font-black { font-weight: 900 !important; }
+.font-extrabold { font-weight: 800 !important; }
+.font-bold { font-weight: 700 !important; }
+.text-white { color: white !important; }
+.text-4xl { font-size: 2.25rem !important; }
+.text-5xl { font-size: 3rem !important; }
+.text-6xl { font-size: 3.75rem !important; }
+.text-xl { font-size: 1.25rem !important; }
+.text-lg { font-size: 1.125rem !important; }
+.p-10 { padding: 2.5rem !important; }
+.p-12 { padding: 3rem !important; }
+.py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.mb-10 { margin-bottom: 2.5rem !important; }
+.rounded-3xl { border-radius: 1.5rem !important; }
+.rounded-\[3rem\] { border-radius: 3rem !important; }
+.uppercase { text-transform: uppercase !important; }
+.tracking-tighter { letter-spacing: -0.05em !important; }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; }
+
+/* Ensure sections are visible */
+section {
+    display: block;
+    width: 100%;
 }
