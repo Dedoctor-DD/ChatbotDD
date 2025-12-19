@@ -2,22 +2,32 @@
    DD CHATBOT - PREMIUM DESIGN SYSTEM (2025)
    ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 :root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  
   /* Premium Palette */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
   
+  /* Modern Colors - DD Branding */
   --sky-50: #f0f9ff;
   --sky-100: #e0f2fe;
   --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
   --sky-500: #0ea5e9;
   --sky-600: #0284c7;
   --sky-700: #0369a1;
+  --sky-800: #075985;
+  --sky-900: #0c4a6e;
   
   --indigo-50: #f5f3ff;
   --indigo-500: #6366f1;
   --indigo-600: #4f46e5;
+  --indigo-900: #1e1b4b;
   
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
@@ -1655,4 +1665,64 @@ body {
 @media (max-width: 640px) {
     .main-content { border-radius: 0; border: none; height: 100dvh; max-height: none; }
     .app-container { padding: 0; }
+}
+/* ============================================
+   PREMIUM LANDING ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes pulse-soft {
+  0% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+  100% { opacity: 0.4; transform: scale(1); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 8s ease-in-out infinite;
+}
+
+.landing-image-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.4), transparent);
+  pointer-events: none;
+}
+
+.hero-gradient-text {
+  background: linear-gradient(135deg, var(--sky-600) 0%, var(--indigo-600) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+}
+
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }

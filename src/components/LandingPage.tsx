@@ -11,7 +11,14 @@ import {
   Zap,
   Star,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Mail,
+  Instagram,
+  Facebook,
+  Twitter,
+  Activity,
+  History as LucideHistory,
+  Loader2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -41,12 +48,17 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
   const loadPartners = async () => {
     try {
-      const { data } = await supabase
+      // Simplificamos la consulta para evitar posibles errores 500 de RLS o parámetros
+      const { data, error } = await supabase
         .from('partners')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-      if (data) setPartners(data);
+        .select('name, logo_url, website_url')
+        .limit(10);
+      
+      if (error) {
+        console.warn('Error fetching partners:', error);
+        return;
+      }
+      if (data) setPartners(data.filter(p => p.logo_url));
     } catch (err) {
       console.error('Error loading partners:', err);
     }
@@ -82,7 +94,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
     <div className="bg-slate-50 text-slate-900 font-sans selection:bg-sky-100 selection:text-sky-900">
       
       {/* Navegación */}
-      <nav className={`fixed w-full z-[100] transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-xl border-b border-slate-200/60 py-4 shadow-sm' : 'bg-transparent py-6'}`}>
+      <nav className={`fixed w-full z-[100] transition-all duration-500 ${isScrolled ? 'glass-nav py-4 shadow-sm' : 'bg-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center gap-3 group cursor-pointer">
             <div className="bg-sky-600 text-white p-2.5 rounded-2xl group-hover:rotate-12 transition-transform shadow-xl shadow-sky-200 ring-4 ring-white">
@@ -129,9 +141,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
               <Star className="w-3 h-3 fill-sky-600" />
               Líderes en Movilidad Reducida
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-slate-900 mb-10 leading-[1] tracking-tight text-balance">
+            <h1 className="text-4xl sm:text-5xl lg:text-8xl font-extrabold text-slate-900 mb-10 leading-[1] tracking-tight text-balance">
               Recupera tu libertad con <br className="hidden lg:block" /> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-indigo-600 to-sky-600 bg-[length:200%_auto] animate-gradient">expertos en asistencia.</span>
+              <span className="hero-gradient-text animate-gradient pb-2">expertos en asistencia.</span>
             </h1>
             <p className="text-lg lg:text-2xl text-slate-500 max-w-4xl mx-auto mb-14 font-medium leading-relaxed">
               Ofrecemos un servicio 360° para tu movilidad: desde traslados adaptados con máxima seguridad hasta el soporte técnico especializado que necesitas.
@@ -140,11 +152,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <button 
                 onClick={onLoginClick}
-                className="bg-sky-600 text-white px-12 py-5 rounded-[24px] font-black text-lg transition-all flex items-center justify-center gap-3 shadow-2xl shadow-sky-600/30 hover:bg-sky-700 hover:translate-y-[-4px] active:translate-y-0 active:scale-95"
+                className="group relative overflow-hidden bg-sky-600 text-white px-12 py-5 rounded-[24px] font-black text-lg transition-all shadow-2xl shadow-sky-600/30 hover:bg-sky-700 hover:translate-y-[-4px] active:translate-y-0 active:scale-95"
               >
-                Inicia tu Solicitud <ArrowRight className="w-5 h-5" />
+                <div className="relative z-10 flex items-center justify-center gap-3">
+                  Inicia tu Solicitud <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               </button>
-              <a href="#taller" className="bg-white text-slate-900 border border-slate-200 px-12 py-5 rounded-[24px] font-black text-lg hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200/20 active:scale-95">
+              <a href="#taller" className="bg-white/50 backdrop-blur-md text-slate-900 border border-slate-200/60 px-12 py-5 rounded-[24px] font-black text-lg hover:bg-white hover:border-slate-300 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-200/20 active:scale-95">
                 <Wrench className="w-5 h-5 text-slate-400" /> Ver Taller
               </a>
             </div>
@@ -172,6 +187,35 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </section>
 
+      {/* Ventajas / Beneficios */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-10 rounded-[40px] bg-slate-50 border border-slate-100 hover-lift group">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                <ShieldCheck className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Seguridad Total</h3>
+              <p className="text-slate-500 font-medium leading-relaxed">Protocolos rigurosos y personal certificado para que viajes con absoluta tranquilidad.</p>
+            </div>
+            <div className="p-10 rounded-[40px] bg-sky-50 border border-sky-100 hover-lift group">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                <Zap className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Respuesta Rápida</h3>
+              <p className="text-slate-500 font-medium leading-relaxed">Entendemos la urgencia. Nuestra logística está optimizada para reducir tus tiempos de espera.</p>
+            </div>
+            <div className="p-10 rounded-[40px] bg-slate-50 border border-slate-100 hover-lift group">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                <MapPin className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Cobertura Amplia</h3>
+              <p className="text-slate-500 font-medium leading-relaxed">Llegamos a donde otros no llegan, brindando soporte técnico y traslados en zonas clave.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Partners Section */}
       {partners.length > 0 && (
         <section className="py-20 bg-white border-y border-slate-50 overflow-hidden">
@@ -179,10 +223,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-12 text-center">Empresas que confían en DedoctorDD</p>
             <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-40 hover:opacity-100 transition-opacity grayscale hover:grayscale-0 duration-500">
               {partners.map((partner) => (
-                <a 
-                  key={partner.id} 
-                  href={partner.website_url || '#'} 
-                  target="_blank" 
+                <a
+                  key={partner.id}
+                  href={partner.website_url || '#'}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block h-8 lg:h-12 w-auto grayscale contrast-125 hover:grayscale-0 hover:contrast-100 transition-all duration-300 transform hover:scale-110"
                 >
@@ -200,42 +244,45 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <div className="w-full lg:w-1/2">
               <div className="relative group">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-sky-400/20 rounded-full blur-3xl group-hover:bg-sky-400/30 transition-all duration-500"></div>
-                <img src="https://images.unsplash.com/photo-1596720426673-e47744bd20cc?auto=format&fit=crop&q=80&w=1200" 
-                     alt="Transporte Especializado" 
-                     className="rounded-[40px] shadow-3xl w-full object-cover aspect-[4/3] relative z-10 transition-transform duration-500 group-hover:scale-[1.02]" />
-                <div className="absolute -bottom-10 -right-6 lg:-right-10 bg-white p-8 rounded-[32px] shadow-2xl z-20 hidden md:block border border-slate-100 transform group-hover:translate-y-[-4px] transition-transform">
+                <div className="absolute -inset-4 bg-sky-500/10 rounded-[48px] blur-2xl group-hover:bg-sky-500/15 transition-all duration-700"></div>
+                <div className="relative rounded-[40px] overflow-hidden shadow-3xl">
+                  <img src="https://images.unsplash.com/photo-1596720426673-e47744bd20cc?auto=format&fit=crop&q=80&w=1200"
+                       alt="Transporte Especializado"
+                       className="w-full object-cover aspect-[4/3] transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <div className="absolute -bottom-10 -right-6 lg:-right-10 bg-white/90 backdrop-blur-xl p-8 rounded-[32px] shadow-2xl z-20 hidden md:block border border-white/40 shadow-sky-900/10 hover-lift">
                   <div className="flex items-center gap-5">
-                    <div className="bg-emerald-100 text-emerald-600 p-4 rounded-2xl text-2xl">
+                    <div className="bg-emerald-100 text-emerald-600 p-4 rounded-2xl text-2xl animate-pulse">
                       <ShieldCheck className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Seguridad</p>
-                      <p className="font-black text-slate-800 text-lg">Protocolos Certificados</p>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Certificado</p>
+                      <p className="font-black text-slate-800 text-lg">Normas de Calidad</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="w-full lg:w-1/2">
-              <div className="inline-block px-4 py-1.5 bg-sky-100 text-sky-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6">Transporte Especial</div>
-              <h2 className="text-3xl lg:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tight">Traslados diseñados para <br /> tu comodidad absoluta.</h2>
+              <div className="inline-block px-4 py-1.5 bg-sky-100 text-sky-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 shadow-sm border border-sky-200/40">Movilidad Adaptada</div>
+              <h2 className="text-3xl lg:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tight">Traslados diseñados para <br className="hidden md:block" /> tu comodidad absoluta.</h2>
               <p className="text-slate-500 text-xl mb-12 font-medium leading-relaxed">
-                No somos solo un transporte común; somos tu equipo de asistencia móvil. Nuestras unidades están equipadas con la mejor tecnología para garantizar un viaje suave y sin estrés.
+                No somos solo un transporte; somos tu equipo de asistencia móvil. Nuestras unidades cuentan con tecnología de punta para garantizar viajes suaves y seguros.
               </p>
-              <div className="space-y-8">
-                <div className="flex gap-6 items-start group">
-                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:shadow-sky-500/10 rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">01</div>
+              <div className="grid gap-8">
+                <div className="flex gap-6 items-start group hover-lift p-2 rounded-3xl transition-all">
+                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:bg-sky-600 group-hover:text-white rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">01</div>
                   <div>
-                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Rampas de Grado Médico</h4>
-                    <p className="text-slate-500 font-medium">Sistemas hidráulicos progresivos que evitan inclinaciones bruscas o golpes.</p>
+                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Seguridad Quirúrgica</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">Equipamiento médico a bordo y fijaciones de alta resistencia para sillas eléctricas.</p>
                   </div>
                 </div>
-                <div className="flex gap-6 items-start group">
-                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:shadow-sky-500/10 rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">02</div>
+                <div className="flex gap-6 items-start group hover-lift p-2 rounded-3xl transition-all">
+                  <div className="flex-shrink-0 w-14 h-14 bg-white shadow-xl shadow-sky-500/5 group-hover:bg-sky-600 group-hover:text-white rounded-2xl flex items-center justify-center font-black text-sky-600 text-xl border border-slate-100 transition-all">02</div>
                   <div>
-                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Personal de Asistencia</h4>
-                    <p className="text-slate-500 font-medium">Conductores altamente capacitados en el manejo y traslado de personas con movilidad reducida.</p>
+                    <h4 className="font-black text-xl mb-2 text-slate-800 tracking-tight group-hover:text-sky-600 transition-colors">Personal Humano</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">Conductores formados en trato empático y técnicas de movilización asistida.</p>
                   </div>
                 </div>
               </div>
@@ -251,26 +298,38 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
           <div className="flex flex-col lg:flex-row-reverse items-center gap-24">
             <div className="w-full lg:w-1/2">
               <div className="relative group">
-                <div className="absolute inset-0 bg-sky-500/20 rounded-[40px] blur-2xl group-hover:blur-3xl transition-all"></div>
-                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1200" 
-                     alt="Taller de Sillas" 
-                     className="rounded-[40px] shadow-3xl w-full object-cover aspect-[4/3] brightness-75 group-hover:brightness-90 transition-all relative z-10" />
+                <div className="absolute -inset-4 bg-sky-500/20 rounded-[48px] blur-3xl group-hover:blur-[40px] transition-all duration-700"></div>
+                <div className="relative rounded-[40px] overflow-hidden shadow-3xl border border-white/10">
+                  <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1200"
+                       alt="Taller de Sillas"
+                       className="w-full object-cover aspect-[16/10] sm:aspect-[4/3] brightness-75 group-hover:brightness-100 group-hover:scale-105 transition-all duration-700 relative z-10" />
+                  <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-slate-900 to-transparent">
+                     <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-sky-400">Servicio Activo 24/7</span>
+                     </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="w-full lg:w-1/2">
               <div className="inline-block px-4 py-1.5 bg-sky-500/10 text-sky-400 text-[10px] font-black rounded-lg uppercase tracking-widest mb-6 border border-sky-500/20">Servicio Técnico</div>
               <h2 className="text-3xl lg:text-6xl font-black mb-10 leading-[1.1] tracking-tight uppercase">Tu silla como nueva, <br /> en tiempo récord.</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <div className="p-8 bg-white/5 backdrop-blur-md rounded-[32px] border border-white/10 hover:border-sky-500/50 transition-all group">
-                  <Zap className="w-10 h-10 text-sky-400 mb-6 group-hover:scale-110 transition-transform" />
-                  <h4 className="font-black text-xl mb-3 tracking-tight">Electrónica Avanzada</h4>
-                  <p className="text-slate-400 font-medium text-sm leading-relaxed">Diagnóstico computarizado de motores y unidades de control para eficiencia máxima.</p>
+                <div className="p-10 bg-white/5 backdrop-blur-md rounded-[40px] border border-white/10 hover:border-sky-500/50 transition-all group hover-lift">
+                  <div className="w-16 h-16 bg-sky-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500 transition-colors">
+                    <Activity className="w-8 h-8 text-sky-400 group-hover:text-white" />
+                  </div>
+                  <h4 className="text-xl font-black mb-3 text-white tracking-tight">Diagnóstico Digital</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium">Evaluación técnica profunda de motores, baterías y sistemas electrónicos con escaneo especializado.</p>
                 </div>
-                <div className="p-8 bg-white/5 backdrop-blur-md rounded-[32px] border border-white/10 hover:border-sky-500/50 transition-all group">
-                  <Wrench className="w-10 h-10 text-sky-400 mb-6 group-hover:scale-110 transition-transform" />
-                  <h4 className="font-black text-xl mb-3 tracking-tight">Repuestos Originales</h4>
-                  <p className="text-slate-400 font-medium text-sm leading-relaxed">Stock permanente de cámaras, cubiertas reforzadas y baterías de gel importadas.</p>
+                <div className="p-10 bg-white/5 backdrop-blur-md rounded-[40px] border border-white/10 hover:border-sky-500/50 transition-all group hover-lift">
+                  <div className="w-16 h-16 bg-sky-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500 transition-colors">
+                    <LucideHistory className="w-8 h-8 text-sky-400 group-hover:text-white" />
+                  </div>
+                  <h4 className="text-xl font-black mb-3 text-white tracking-tight">Repuestos Originales</h4>
+                  <p className="text-slate-400 text-sm leading-relaxed font-medium">Contamos con stock propio de componentes certificados para restaurar el rendimiento de fábrica.</p>
                 </div>
               </div>
 
@@ -292,7 +351,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-16 relative">
           {/* Decorative Line (Desktop) */}
           <div className="hidden md:block absolute top-[45%] left-0 w-full h-[2px] bg-slate-100 -z-0"></div>
-          
+
           <div className="relative z-10 flex flex-col items-center group">
             <div className="w-20 h-20 bg-white border-2 border-slate-100 text-slate-800 rounded-3xl flex items-center justify-center text-3xl font-black mb-8 shadow-2xl shadow-slate-200/50 group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-600 transition-all duration-500">1</div>
             <h4 className="font-black text-2xl mb-4 text-slate-900 text-center tracking-tight">Solicitud Instantánea</h4>
