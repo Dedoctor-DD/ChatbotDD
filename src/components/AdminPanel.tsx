@@ -279,52 +279,63 @@ export function AdminPanel() {
 
             {/* 1. DASHBOARD VIEW */}
             {activeView === 'dashboard' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-[2rem] p-8 border border-white shadow-sm relative overflow-hidden">
-                   <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-12">
+                <div className="glass-card rounded-[40px] p-10 relative overflow-hidden group">
+                   <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
                       <div>
-                          <h1 className="text-3xl font-black mb-2 text-slate-700 tracking-tight">Panel Administrativo</h1>
-                          <p className="text-slate-400 font-medium max-w-lg text-lg">Bienvenido de nuevo. Tienes <span className="text-sky-500 font-bold">{pendingCount} solicitudes nuevas</span>.</p>
+                          <h1 className="text-4xl md:text-5xl font-black mb-3 text-slate-800 tracking-tight">Panel Administrativo</h1>
+                          <p className="text-slate-500 font-semibold text-lg md:text-xl">
+                            Gestiona operaciones y solicitudes en tiempo real.
+                          </p>
                       </div>
-                      <button onClick={() => setActiveView('pending')} className="bg-sky-100 hover:bg-sky-200 text-sky-600 px-6 py-3.5 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-3 transform hover:scale-105">
-                         <Clock className="w-5 h-5" /> Gestionar Pendientes
-                      </button>
+                      <div className="flex flex-wrap gap-4">
+                        <button 
+                          onClick={() => setActiveView('pending')} 
+                          className="bg-sky-600 text-white px-8 py-4 rounded-[20px] font-black text-sm shadow-xl shadow-sky-600/20 transition-all flex items-center gap-3 hover:translate-y-[-2px] active:scale-95"
+                        >
+                           <Clock className="w-5 h-5" /> 
+                           <span>{pendingCount} Pendientes</span>
+                        </button>
+                      </div>
                    </div>
-                   <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-sky-50/50 rounded-full blur-3xl opacity-60"></div>
+                   <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-sky-400/10 rounded-full blur-[100px] opacity-60 group-hover:opacity-80 transition-opacity"></div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                   <div onClick={() => setActiveView('transport')} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group">
-                      <div className="flex justify-between items-start mb-4">
-                         <div className="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center text-sky-500 transition-transform group-hover:scale-110"><Truck className="w-7 h-7" /></div>
-                         <span className="text-3xl font-black text-slate-700 tracking-tighter">{requests.filter(r => r.service_type === 'transport').length}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                   <div onClick={() => setActiveView('transport')} className="premium-card p-8 group cursor-pointer border-none bg-white">
+                      <div className="flex justify-between items-start mb-6">
+                         <div className="w-16 h-16 bg-sky-50 rounded-[24px] flex items-center justify-center text-sky-500 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner"><Truck className="w-8 h-8" /></div>
+                         <span className="text-4xl font-black text-slate-800 tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">{requests.filter(r => r.service_type === 'transport').length}</span>
                       </div>
-                      <h3 className="text-lg font-black text-slate-600 group-hover:text-sky-500 transition-colors">Transporte</h3>
-                      <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Rutas y Viajes</p>
+                      <h3 className="text-xl font-black text-slate-700 mb-1">Transporte</h3>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Rutas y Logística</p>
                    </div>
-                   <div onClick={() => setActiveView('workshop')} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group">
-                      <div className="flex justify-between items-start mb-4">
-                         <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 transition-transform group-hover:scale-110"><Wrench className="w-7 h-7" /></div>
-                         <span className="text-3xl font-black text-slate-700 tracking-tighter">{requests.filter(r => r.service_type === 'workshop').length}</span>
+                   
+                   <div onClick={() => setActiveView('workshop')} className="premium-card p-8 group cursor-pointer border-none bg-white">
+                      <div className="flex justify-between items-start mb-6">
+                         <div className="w-16 h-16 bg-rose-50 rounded-[24px] flex items-center justify-center text-rose-500 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner"><Wrench className="w-8 h-8" /></div>
+                         <span className="text-4xl font-black text-slate-800 tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">{requests.filter(r => r.service_type === 'workshop').length}</span>
                       </div>
-                      <h3 className="text-lg font-black text-slate-600 group-hover:text-orange-500 transition-colors">Taller</h3>
-                      <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Mantenimiento</p>
+                      <h3 className="text-xl font-black text-slate-700 mb-1">Taller Técnico</h3>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Mantenimiento</p>
                    </div>
-                   <div onClick={() => setActiveView('clients')} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group">
-                      <div className="flex justify-between items-start mb-4">
-                         <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 transition-transform group-hover:scale-110"><Users className="w-7 h-7" /></div>
-                         <span className="text-3xl font-black text-slate-800 tracking-tighter">{profiles.length}</span>
+
+                   <div onClick={() => setActiveView('clients')} className="premium-card p-8 group cursor-pointer border-none bg-white">
+                      <div className="flex justify-between items-start mb-6">
+                         <div className="w-16 h-16 bg-indigo-50 rounded-[24px] flex items-center justify-center text-indigo-500 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner"><Users className="w-8 h-8" /></div>
+                         <span className="text-4xl font-black text-slate-800 tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">{profiles.length}</span>
                       </div>
-                      <h3 className="text-lg font-black text-slate-700 group-hover:text-purple-600 transition-colors">Clientes</h3>
-                      <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Base de Datos</p>
+                      <h3 className="text-xl font-black text-slate-700 mb-1">Clientes</h3>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Base de Usuarios</p>
                    </div>
-                   <div onClick={() => setActiveView('pricing')} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group">
-                      <div className="flex justify-between items-start mb-4">
-                         <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 transition-transform group-hover:scale-110"><DollarSign className="w-7 h-7" /></div>
-                         <span className="text-3xl font-black text-slate-800 tracking-tighter">{tariffs.length}</span>
+
+                   <div onClick={() => setActiveView('pricing')} className="premium-card p-8 group cursor-pointer border-none bg-white">
+                      <div className="flex justify-between items-start mb-6">
+                         <div className="w-16 h-16 bg-emerald-50 rounded-[24px] flex items-center justify-center text-emerald-500 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner"><DollarSign className="w-8 h-8" /></div>
+                         <span className="text-4xl font-black text-slate-800 tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">{tariffs.length}</span>
                       </div>
-                      <h3 className="text-lg font-black text-slate-700 group-hover:text-green-600 transition-colors">Tarifas</h3>
-                      <p className="text-xs text-slate-400 mt-1 font-bold uppercase tracking-wider">Precios</p>
+                      <h3 className="text-xl font-black text-slate-700 mb-1">Finanzas</h3>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Tarifas y Precios</p>
                    </div>
                 </div>
               </div>
@@ -332,38 +343,51 @@ export function AdminPanel() {
 
             {/* 2. PRICING VIEW */}
             {activeView === 'pricing' && (
-              <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden max-w-5xl mx-auto">
-                <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
-                  <h3 className="font-bold text-xl text-slate-800">Gestión de Tarifas</h3>
-                  <div className="bg-slate-100 px-4 py-2 rounded-full text-xs font-bold text-slate-500 uppercase tracking-wide">
-                    {tariffs.length} Tarifas Activas
-                  </div>
+              <div className="max-w-5xl mx-auto space-y-8">
+                <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm flex items-center justify-between">
+                   <div>
+                      <h2 className="text-3xl font-black text-slate-800 tracking-tight">Gestión de Tarifas</h2>
+                      <p className="text-slate-500 font-semibold">{tariffs.length} configuraciones activas</p>
+                   </div>
+                   <div className="bg-emerald-50 text-emerald-600 p-4 rounded-2xl">
+                      <DollarSign className="w-8 h-8" />
+                   </div>
                 </div>
-                <div className="p-6 grid gap-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {tariffs.map((t) => (
-                    <div key={t.id} className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                      <div className="flex justify-between items-start mb-4">
-                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${t.category === 'transport' ? 'bg-sky-50 text-sky-600 border-sky-100' : 'bg-orange-50 text-orange-600 border-orange-100'}`}>{t.category}</span>
+                    <div key={t.id} className="premium-card p-8 bg-white border-none cursor-default group">
+                      <div className="flex justify-between items-start mb-6">
+                         <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${t.category === 'transport' ? 'bg-sky-50 text-sky-600 border-sky-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                           {t.category === 'transport' ? 'Transporte' : 'Taller'}
+                         </span>
                          {editingTariff === t.id ? (
-                            <input type="number" className="w-24 p-2 bg-slate-50 border rounded-xl font-bold text-sm" value={tempTariffValues[t.id]?.price || 0} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })} />
-                         ) : (
-                            <span className="text-emerald-600 font-black text-lg">${t.price.toLocaleString()}</span>
-                         )}
-                      </div>
-                      <h4 className="text-slate-700 font-bold text-base">{t.sub_category.replace(/_/g, ' ')}</h4>
-                      {editingTariff === t.id ? (
-                        <textarea className="w-full mt-2 p-3 bg-slate-50 border rounded-xl text-xs" value={tempTariffValues[t.id]?.description || ''} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], description: e.target.value } })} rows={2} />
-                      ) : (
-                        <p className="text-slate-400 text-sm mt-1">{t.description || 'Sin descripción'}</p>
-                      )}
-                      <div className="flex justify-end pt-3 border-t border-slate-50 mt-3">
-                         {editingTariff === t.id ? (
-                            <div className="flex gap-2">
-                               <button onClick={() => handleUpdateTariff(t.id)} className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold">Guardar</button>
-                               <button onClick={() => setEditingTariff(null)} className="px-4 py-2 bg-white border rounded-xl text-xs font-bold text-slate-400">Cancelar</button>
+                            <div className="relative">
+                              <span className="absolute left-3 top-2.5 text-slate-400 font-black">$</span>
+                              <input type="number" className="w-32 pl-7 p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-lg text-slate-800 focus:ring-2 focus:ring-sky-500/20" value={tempTariffValues[t.id]?.price || 0} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })} />
                             </div>
                          ) : (
-                            <button onClick={() => startEditingTariff(t)} className="flex items-center gap-2 text-slate-400 hover:text-sky-600 text-xs font-bold px-3 py-1 rounded-lg hover:bg-sky-50"><Edit3 className="w-4 h-4" /> Editar</button>
+                            <span className="text-2xl font-black text-slate-900 tracking-tighter">${t.price.toLocaleString()}</span>
+                         )}
+                      </div>
+                      <h4 className="text-slate-800 font-black text-lg mb-2 capitalize">{t.sub_category.replace(/_/g, ' ')}</h4>
+                      {editingTariff === t.id ? (
+                        <textarea className="w-full mt-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-sky-500/20" value={tempTariffValues[t.id]?.description || ''} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], description: e.target.value } })} rows={3} />
+                      ) : (
+                        <p className="text-slate-400 font-semibold text-sm leading-relaxed mb-6">{t.description || 'Sin descripción detallada disponible.'}</p>
+                      )}
+                      
+                      <div className="flex justify-end pt-6 border-t border-slate-50">
+                         {editingTariff === t.id ? (
+                            <div className="flex gap-3">
+                               <button onClick={() => setEditingTariff(null)} className="px-6 py-2.5 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Cancelar</button>
+                               <button onClick={() => handleUpdateTariff(t.id)} className="px-6 py-2.5 bg-sky-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-sky-600/20 hover:bg-sky-700 transition-all">Guardar</button>
+                            </div>
+                         ) : (
+                            <button onClick={() => startEditingTariff(t)} className="flex items-center gap-2 text-slate-400 hover:text-sky-600 text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-transparent hover:border-sky-100 hover:bg-sky-50 transition-all">
+                              <Edit3 className="w-4 h-4" /> 
+                              <span>Editar</span>
+                            </button>
                          )}
                       </div>
                     </div>
@@ -405,44 +429,85 @@ export function AdminPanel() {
 
             {/* 4. REQUEST LISTS */}
             {(activeView === 'transport' || activeView === 'workshop' || activeView === 'pending') && (
-              <div className="grid gap-6 max-w-5xl mx-auto">
+              <div className="grid gap-8 max-w-5xl mx-auto">
+                <div className="flex items-center justify-between px-4 mb-2">
+                   <h2 className="text-2xl font-black text-slate-800 tracking-tight capitalize">{activeView}</h2>
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">{filteredRequests.length} Resultados</span>
+                </div>
+
                 {filteredRequests.length === 0 ? (
-                  <div className="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 border-dashed"><div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4"><LayoutDashboard className="w-8 h-8 text-slate-200" /></div><p className="text-slate-400 font-bold">No hay solicitudes aquí.</p></div>
+                  <div className="text-center py-24 premium-card border-dashed bg-white/50 backdrop-blur-sm">
+                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                      <LayoutDashboard className="w-10 h-10 text-slate-200" />
+                    </div>
+                    <p className="text-slate-400 font-extrabold text-xs uppercase tracking-widest">No hay solicitudes en esta categoría.</p>
+                  </div>
                 ) : (
                   filteredRequests.map((request) => (
-                    <div key={request.id} className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-all">
-                      <div className="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-4 rounded-2xl shadow-sm ${request.service_type === 'transport' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'}`}>
-                             {request.service_type === 'transport' ? <Truck className="w-6 h-6" /> : <Wrench className="w-6 h-6" />}
+                    <div key={request.id} className="premium-card overflow-hidden bg-white border-none group">
+                      <div className="p-8 md:p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="flex items-center gap-6">
+                          <div className={`w-16 h-16 rounded-[24px] shadow-sm flex items-center justify-center transition-transform group-hover:scale-110 ${request.service_type === 'transport' ? 'bg-sky-50 text-sky-600' : 'bg-rose-50 text-rose-600'}`}>
+                             {request.service_type === 'transport' ? <Truck className="w-8 h-8" /> : <Wrench className="w-8 h-8" />}
                           </div>
                           <div>
-                            <h3 className="font-black text-lg text-slate-800">{request.service_type === 'transport' ? 'Transporte' : 'Mantenimiento'}</h3>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{new Date(request.created_at).toLocaleDateString()}</p>
+                            <h3 className="font-black text-xl text-slate-800 tracking-tight mb-1">{request.service_type === 'transport' ? 'Transporte' : 'Servicio Técnico'}</h3>
+                            <div className="flex items-center gap-3">
+                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                 <Clock className="w-3.5 h-3.5" />
+                                 {new Date(request.created_at).toLocaleDateString()} • {new Date(request.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               </span>
+                            </div>
                           </div>
                         </div>
-                        <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                        <div className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.15em] border ${
                           request.status === 'confirmed' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                           request.status === 'in_process' ? 'bg-purple-50 text-purple-600 border-purple-100' :
                           request.status === 'completed' ? 'bg-green-50 text-green-600 border-green-100' :
                           request.status === 'cancelled' ? 'bg-red-50 text-red-600 border-red-100' :
-                          'bg-yellow-50 text-yellow-600 border-yellow-101'
-                        }`}>{request.status === 'pending' ? 'Pendiente' : request.status}</div>
+                          'bg-yellow-50 text-yellow-600 border-yellow-100'
+                        }`}>
+                          {request.status === 'pending' ? 'Por Confirmar' : request.status.replace('_', ' ')}
+                        </div>
                       </div>
-                      <div className="p-8">
+                      
+                      <div className="p-8 md:p-10 bg-slate-50/30">
                          {request.collected_data && (
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                               {Object.entries(request.collected_data).filter(([k]) => k !== 'image_url' && k !== 'attachment_id' && k !== 'attachment_ids').map(([k, v]) => (
-                                <div key={k} className="flex flex-col"><span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{k.replace(/_/g, ' ')}</span><span className="text-slate-700 font-bold">{String(v)}</span></div>
+                                <div key={k} className="flex flex-col">
+                                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2 border-b border-transparent group-hover:border-slate-100 pb-1 transition-all">{k.replace(/_/g, ' ')}</span>
+                                  <span className="text-slate-700 font-bold text-sm leading-tight">{String(v)}</span>
+                                </div>
                               ))}
                            </div>
                          )}
+                         
+                         {/* Images / Attachments */}
+                         {(request.collected_data?.image_urls || request.collected_data?.image_url) && (
+                            <div className="mt-8 pt-8 border-t border-slate-100/50">
+                               <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block mb-4">Adjuntos</span>
+                               <div className="flex flex-wrap gap-4">
+                                  {Array.isArray(request.collected_data.image_urls) ? 
+                                    request.collected_data.image_urls.map((url: string, i: number) => (
+                                      <a key={i} href={url} target="_blank" rel="noreferrer" className="w-20 h-20 rounded-2xl overflow-hidden border border-slate-100 hover:border-sky-300 transition-all shadow-sm">
+                                         <img src={url} className="w-full h-full object-cover" alt="attachment" />
+                                      </a>
+                                    )) : 
+                                    <a href={request.collected_data.image_url} target="_blank" rel="noreferrer" className="w-20 h-20 rounded-2xl overflow-hidden border border-slate-100 hover:border-sky-300 transition-all shadow-sm">
+                                       <img src={request.collected_data.image_url} className="w-full h-full object-cover" alt="attachment" />
+                                    </a>
+                                  }
+                               </div>
+                            </div>
+                         )}
                       </div>
-                      <div className="px-8 py-5 bg-slate-50/50 border-t border-slate-50 flex gap-3 justify-end items-center">
-                        {request.status === 'pending' && <button onClick={() => updateStatus(request.id, 'confirmed')} className="bg-sky-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-sky-500/20 active:scale-95 transition-all">Confirmar</button>}
-                        {request.status === 'confirmed' && <button onClick={() => updateStatus(request.id, 'in_process')} className="bg-purple-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-purple-500/20 active:scale-95 transition-all">En Proceso</button>}
-                        {(request.status === 'confirmed' || request.status === 'in_process') && <button onClick={() => updateStatus(request.id, 'completed')} className="bg-emerald-500 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">Completar</button>}
-                        {request.status !== 'cancelled' && request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="text-red-400 hover:text-red-600 text-xs font-bold px-4 py-2 hover:bg-red-50 rounded-xl transition-all">Cancelar</button>}
+
+                      <div className="px-8 py-6 bg-white border-t border-slate-50 flex flex-wrap gap-3 justify-end items-center">
+                        {request.status === 'pending' && <button onClick={() => updateStatus(request.id, 'confirmed')} className="bg-sky-600 text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-sky-600/20 active:scale-95 transition-all hover:bg-sky-700">Confirmar</button>}
+                        {request.status === 'confirmed' && <button onClick={() => updateStatus(request.id, 'in_process')} className="bg-purple-600 text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all hover:bg-purple-700">En Proceso</button>}
+                        {(request.status === 'confirmed' || request.status === 'in_process') && <button onClick={() => updateStatus(request.id, 'completed')} className="bg-emerald-600 text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-emerald-600/20 active:scale-95 transition-all hover:bg-emerald-700">Completar</button>}
+                        {request.status !== 'cancelled' && request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="text-rose-400 hover:text-rose-600 text-xs font-black uppercase tracking-widest px-6 py-3 hover:bg-rose-50 rounded-2xl transition-all">Cancelar</button>}
                       </div>
                     </div>
                   ))

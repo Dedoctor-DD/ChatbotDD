@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader } from 'lucide-react';
+import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader, Home, MessageSquare, Users } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { uploadAttachment } from './lib/storage';
@@ -613,10 +613,80 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Sidebar (Desktop Only) */}
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <div className="sidebar-logo bg-white flex items-center justify-center p-1">
+            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <span className="sidebar-brand">DD Chatbot</span>
+        </div>
+
+        <nav className="sidebar-nav">
+          <button 
+            onClick={() => setActiveTab('home')} 
+            className={`sidebar-item ${activeTab === 'home' ? 'active' : ''}`}
+          >
+            <Home className="sidebar-icon" />
+            <span>Inicio</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('chat')} 
+            className={`sidebar-item ${activeTab === 'chat' ? 'active' : ''}`}
+          >
+            <MessageSquare className="sidebar-icon" />
+            <span>Chat</span>
+          </button>
+
+          {isAdmin && (
+            <button 
+              onClick={() => setActiveTab('admin')} 
+              className={`sidebar-item ${activeTab === 'admin' ? 'active' : ''}`}
+            >
+              <Users className="sidebar-icon" />
+              <span>Administración</span>
+            </button>
+          )}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="p-4 bg-slate-50/50 rounded-[24px] border border-slate-100 group hover:bg-white hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
+                  <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-black text-sky-600">{(userProfile?.full_name || userName).charAt(0).toUpperCase()}</span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black text-slate-800 truncate leading-tight group-hover:text-sky-600 transition-colors uppercase tracking-tight">{userName}</p>
+                <p className="text-[10px] text-slate-400 font-bold truncate uppercase tracking-widest">{userEmail}</p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={async () => {
+                if(window.confirm('¿Cerrar sesión?')) {
+                    localStorage.removeItem('dd_chatbot_test_session');
+                    await supabase.auth.signOut();
+                    setSession(null);
+                    window.location.reload();
+                }
+              }}
+              className="w-full py-2.5 rounded-xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </aside>
+
       <div className="main-content">
-        {/* Header - Visible only in Chat */}
-        {/* GLOBAL HEADER - Narrow & Sleek (Always Visible) */}
-        <div className="h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-40 sticky top-0 flex-none shadow-sm">
+        {/* GLOBAL HEADER - (Visible Mobile / Optional Desktop) */}
+        <div className="md:hidden h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-40 sticky top-0 flex-none shadow-sm">
           
           {/* Left: Brand & New Chat */}
           <div className="flex items-center gap-3">
@@ -641,46 +711,18 @@ function App() {
             </div>
           </div>
 
-          {/* Right: User Profile & Logout */}
+          {/* Right: Avatar only on mobile header */}
           <div className="flex items-center gap-3">
             {session?.user && (
-              <>
-                 {/* User Info (Hidden on very small screens) */}
-                 <div className="hidden sm:flex flex-col items-end mr-1">
-                    <span className="text-xs font-bold text-slate-700">{userName.split(' ')[0]}</span>
-                    <span className="text-[10px] text-slate-400 font-medium truncate max-w-[100px]">{userEmail}</span>
-                 </div>
-                 
-                 {/* Avatar */}
-                 <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
-                    {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
-                       <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                       <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-xs select-none">
-                          {(userProfile?.full_name || userName).charAt(0).toUpperCase()}
-                       </div>
-                    )}
-                 </div>
-
-                 {/* Divider */}
-                 <div className="h-4 w-px bg-slate-200 mx-1"></div>
-
-                 {/* Logout Button - Consistent Location */}
-                 <button
-                    onClick={async () => {
-                      if(window.confirm('¿Cerrar sesión?')) {
-                          localStorage.removeItem('dd_chatbot_test_session');
-                          await supabase.auth.signOut();
-                          setSession(null);
-                          window.location.reload();
-                      }
-                    }}
-                    className="p-1.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                    title="Cerrar sesión"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                 </button>
-              </>
+               <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
+                  {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
+                     <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                     <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-xs select-none">
+                        {(userProfile?.full_name || userName).charAt(0).toUpperCase()}
+                     </div>
+                  )}
+               </div>
             )}
           </div>
         </div>
@@ -708,40 +750,72 @@ function App() {
 
           {activeTab === 'chat' && (
             <div className="chat-tab">
+              {/* Chat Tab Header */}
+              <div className="h-16 border-b border-slate-100 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center text-sky-500">
+                    <MessageSquare className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black text-slate-700 tracking-tight">Chat de Soporte</h2>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">En línea</p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    if (window.confirm('¿Iniciar nueva conversación?')) {
+                      createNewSession();
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-all text-xs font-black uppercase tracking-wider border border-slate-200 hover:border-sky-100"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span className="hidden sm:inline">Nueva</span>
+                </button>
+              </div>
+
               {/* Messages Area */}
-              <div className="messages-area">
+              <div className="messages-area px-4 py-8 max-w-4xl mx-auto w-full">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`message-row ${msg.role === 'user' ? 'user' : 'assistant'}`}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-8 animate-fade-in`}
                   >
-                    <div className={`avatar ${msg.role === 'user' ? 'user' : 'assistant'}`}>
-                      {msg.role === 'user' ? (
-                        <User className="icon-sm text-white" />
-                      ) : (
-                        <Bot className="icon-sm text-white" />
-                      )}
-                    </div>
-                    <div className={`message-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}>
-                      {msg.content.split('\n').map((line, i) => (
-                        <p key={i} style={{ margin: i > 0 ? '0.5rem 0 0 0' : 0 }}>{line}</p>
-                      ))}
-                      <span className={`message-time ${msg.role === 'user' ? 'user' : 'assistant'}`}>
-                        {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                    <div className={`flex max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-3`}>
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-sky-500 text-white' : 'bg-white text-slate-400 border border-slate-100'}`}>
+                        {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+                      </div>
+                      
+                      <div className="flex flex-col">
+                        <div className={`px-6 py-4 rounded-[24px] shadow-sm relative ${
+                          msg.role === 'user' 
+                          ? 'bg-sky-600 text-white rounded-br-none' 
+                          : 'bg-white text-slate-700 rounded-bl-none border border-slate-100'
+                        }`}>
+                          {msg.content.split('\n').map((line, i) => (
+                            <p key={i} className="text-[15px] font-medium leading-relaxed leading-6">{line}</p>
+                          ))}
+                        </div>
+                        <span className={`text-[10px] mt-1.5 font-bold uppercase tracking-widest px-1 ${msg.role === 'user' ? 'text-right text-slate-400' : 'text-left text-slate-400'}`}>
+                          {msg.role === 'user' ? 'Tú' : 'Asistente'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="message-row assistant">
-                    <div className="avatar assistant">
-                      <Bot className="icon-sm text-white" />
-                    </div>
-                    <div className="typing-content">
-                      <div className="typing-dots">
-                        <span className="dot"></span>
-                        <span className="dot"></span>
-                        <span className="dot"></span>
+                  <div className="flex justify-start mb-8 animate-fade-in">
+                    <div className="flex max-w-[85%] md:max-w-[75%] items-end gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                        <Bot className="w-5 h-5 text-slate-400" />
+                      </div>
+                      <div className="bg-white border border-slate-100 px-6 py-4 rounded-[24px] rounded-bl-none shadow-sm">
+                        <div className="flex gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce"></span>
+                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -761,88 +835,86 @@ function App() {
               )}
 
               {/* Input Area - Fijo en la parte inferior */}
-              <div className="chat-input-area">
+              <div className="chat-input-area border-t border-slate-100 bg-white/80 backdrop-blur-xl">
+                <div className="input-container py-4">
+                  {/* QUICK REPLIES */}
+                  {quickReplies.length > 0 && !confirmationData && (
+                    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 px-1 no-scrollbar">
+                      {quickReplies.map((reply, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleQuickReply(reply)}
+                          className="bg-sky-50 hover:bg-sky-100 text-sky-600 px-5 py-2.5 rounded-2xl whitespace-nowrap transition-all border border-sky-100/50 font-bold text-[11px] uppercase tracking-wider active:scale-95 shadow-sm"
+                        >
+                          {reply}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-                {/* QUICK REPLIES */}
-                {quickReplies.length > 0 && !confirmationData && (
-                  <div className="flex gap-2 mb-3 overflow-x-auto pb-2 px-1">
-                    {quickReplies.map((reply, index) => (
+                  {/* LOCATION REQUEST BUTTON */}
+                  {showLocationBtn && !confirmationData && (
+                    <div className="flex justify-center mb-4">
                       <button
-                        key={index}
-                        onClick={() => handleQuickReply(reply)}
-                        className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-200 text-base px-6 py-3 rounded-full whitespace-nowrap transition-colors border border-blue-500/30 font-medium active:scale-95 duration-200"
+                        onClick={handleLocation}
+                        className="bg-white text-emerald-600 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-500/10 flex items-center gap-3 hover:bg-emerald-50 transition-all active:scale-95 border border-emerald-100 animate-bounce"
                       >
-                        {reply}
+                        <MapPin className="w-5 h-5" />
+                        Compartir Ubicación Actual (GPS)
                       </button>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
 
-                {/* LOCATION REQUEST BUTTON */}
-                {showLocationBtn && !confirmationData && (
-                  <div className="flex justify-center mb-3 animate-bounce">
-                    <button
-                      onClick={handleLocation}
-                      className="bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-green-500/30 flex items-center gap-2 hover:bg-green-500 transition-colors active:scale-95"
-                    >
-                      <MapPin className="w-5 h-5" />
-                      Compartir Ubicación Actual (GPS)
-                    </button>
-                  </div>
-                )}
+                  <form onSubmit={handleSubmit} className="input-form gap-3">
+                    <div className="flex-1 relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 to-indigo-500 rounded-2xl blur opacity-0 group-focus-within:opacity-10 transition duration-500"></div>
+                      <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
+                        className="chat-input relative w-full bg-slate-50 border-slate-100 focus:bg-white focus:border-sky-300 transition-all rounded-2xl py-4 px-6 text-slate-700 font-medium placeholder:text-slate-400"
+                        disabled={isLoading}
+                      />
+                    </div>
 
-                <form onSubmit={handleSubmit} className="input-form">
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
-                      className="chat-input pr-10 text-lg py-3"
-                      disabled={isLoading}
-                    />
-                  </div>
+                    <div className="chat-input-buttons flex items-center gap-2 flex-shrink-0">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*,application/pdf"
+                        onChange={handleFileSelect}
+                      />
 
-                  <div className="chat-input-buttons flex items-center gap-2 ml-1 flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading || isLoading}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isUploading ? 'bg-slate-100 text-slate-400' : 'bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-600 border border-slate-100'}`}
+                        title="Adjuntar"
+                      >
+                        {isUploading ? <Loader className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
+                      </button>
 
-                    {/* Hidden File Input */}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept="image/*,application/pdf"
-                      onChange={handleFileSelect}
-                    />
+                      <button
+                        type="button"
+                        onClick={toggleMic}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isListening ? 'bg-red-50 text-red-500 border border-red-100 animate-pulse' : 'bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-600 border border-slate-100'}`}
+                      >
+                        {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                      </button>
 
-                    {/* Clip / Attachment Button */}
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading || isLoading}
-                      className={`p-3.5 rounded-full transition-all duration-200 ${isUploading ? 'bg-gray-700/50 cursor-wait' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
-                      title="Adjuntar archivo o foto"
-                    >
-                      {isUploading ? <Loader className="w-6 h-6 animate-spin" /> : <Paperclip className="w-6 h-6" />}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={toggleMic}
-                      className={`p-3.5 rounded-full transition-all duration-200 ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-gray-700/50 text-gray-300 hover:bg-blue-600/20 hover:text-blue-400'}`}
-                      title="Dictar voz"
-                    >
-                      {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-                    </button>
-
-                    <button
-                      type="submit"
-                      disabled={!input.trim() || isLoading}
-                      className={`btn-send-chat p-3.5 rounded-full transition-all duration-200 ${!input.trim() || isLoading ? 'bg-gray-700/30 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:bg-blue-500'}`}
-                    >
-                      <Send className="w-6 h-6" />
-                    </button>
-                  </div>
-                </form>
+                      <button
+                        type="submit"
+                        disabled={!input.trim() || isLoading}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${!input.trim() || isLoading ? 'bg-slate-100 text-slate-300' : 'bg-sky-600 text-white shadow-lg shadow-sky-600/30 hover:bg-sky-700 hover:scale-105 active:scale-95'}`}
+                      >
+                        <Send className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           )}

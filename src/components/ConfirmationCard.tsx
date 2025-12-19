@@ -65,14 +65,19 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-4 max-w-sm mx-auto animate-fade-in flex flex-col max-h-[500px]">
+        <div className="premium-card rounded-[32px] overflow-hidden my-6 w-full max-w-sm md:max-w-md mx-auto animate-fade-in flex flex-col max-h-[600px]">
             {/* Header */}
-            <div className={`p-4 text-white flex items-center justify-between flex-none ${isTransport ? 'bg-gradient-to-r from-sky-600 to-indigo-600' : 'bg-gradient-to-r from-orange-500 to-rose-500'}`}>
+            <div className={`p-5 text-white flex items-center justify-between flex-none ${isTransport ? 'bg-gradient-to-br from-sky-600 via-sky-600 to-indigo-700 shadow-lg shadow-sky-600/20' : 'bg-gradient-to-br from-orange-500 via-rose-500 to-rose-600 shadow-lg shadow-rose-500/20'}`}>
                 <div className="flex items-center gap-3">
-                    {isTransport ? <Truck className="w-5 h-5" /> : <Wrench className="w-5 h-5" />}
-                    <h3 className="font-bold text-base">{isTransport ? 'Servicio de Transporte' : 'Servicio de Taller'}</h3>
+                    <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+                        {isTransport ? <Truck className="w-6 h-6" /> : <Wrench className="w-6 h-6" />}
+                    </div>
+                    <div>
+                        <h3 className="font-black text-base tracking-tight">{isTransport ? 'Servicio de Transporte' : 'Servicio de Taller'}</h3>
+                        <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest px-0.5">Verifica los datos</p>
+                    </div>
                 </div>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                <div className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/30">
                     Confirmación
                 </div>
             </div>
