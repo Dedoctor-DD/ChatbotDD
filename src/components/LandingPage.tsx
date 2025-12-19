@@ -1,17 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { 
-  Accessibility, 
   Wrench, 
-  ShieldCheck, 
-  Phone, 
-  MapPin, 
-  Zap,
   ArrowRight,
   CheckCircle2,
-  Mail,
   Loader2,
   MessageCircle,
-  Sparkles,
   Link as LinkIcon,
   HelpingHand,
   CalendarCheck,
