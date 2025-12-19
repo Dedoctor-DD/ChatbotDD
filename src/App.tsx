@@ -22,7 +22,7 @@ type TabType = 'home' | 'chat' | 'admin';
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('chat');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -116,25 +116,19 @@ function App() {
 
       if (error) {
         console.error('Error getting session:', error);
-        // If token/code is invalid (401), or any other error during exchange
         if (error.status === 401 || error.message.includes('invalid_grant')) {
           console.warn('Session invalid, clearing data...');
           await supabase.auth.signOut();
           localStorage.clear();
-          // Clean URL to avoid infinite loops
           window.history.replaceState(null, '', window.location.pathname);
         }
       }
 
       if (session) {
         setSession(session);
-        // If we have a session, we can clear the loading state immediately
         setIsCheckingSession(false);
       } else {
-        // If no session yet, we might still be waiting for onAuthStateChange event
-        // specifically if the auto-refresh or initial load is slightly delayed.
-        // However, we shouldn't wait forever.
-        setTimeout(() => setIsCheckingSession(false), 2000);
+        setTimeout(() => setIsCheckingSession(false), 800);
       }
     };
 
@@ -163,7 +157,8 @@ function App() {
         setMessages([]);
         setConfirmationData(null);
         setActiveTab('home');
-
+        setShowLogin(false); // Reset to show Landing Page instead of Login
+        
         // CRITICAL: If we are signed out but still have an auth hash, it means the auth failed (stale/invalid).
         // We MUST clear the hash so the Login component doesn't get stuck in "Loading..."
         if (window.location.hash && window.location.hash.includes('access_token')) {
