@@ -17,6 +17,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
     message: ''
   });
 
+  const BRAND_BLUE = '#2563eb';
+  const BRAND_SLATE = '#0f172a';
+
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY > 40;
@@ -70,13 +73,21 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <div className="alliance-wrapper bg-gradient-soft">
+    <div className="alliance-wrapper bg-gradient-soft min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Header / Nav */}
       <nav className="fixed w-full z-[100] transition-all duration-500 py-6 px-4 md:px-12">
-        <div className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}>
+        <div 
+          className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}
+          style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(226, 232, 240, 0.8)' }}
+        >
             <div className="flex items-center gap-4 text-left">
                 <div className="flex flex-col">
-                    <span className="font-extrabold text-xl tracking-tighter text-slate-900 uppercase">DeDoctor <span className="text-blue-600">& MMc</span></span>
+                    <span 
+                      className="font-extrabold text-xl tracking-tighter uppercase"
+                      style={{ color: BRAND_SLATE }}
+                    >
+                      DeDoctor <span style={{ color: BRAND_BLUE }}>& MMc</span>
+                    </span>
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em]">Grupo de Movilidad Integral</span>
                 </div>
             </div>
@@ -86,11 +97,18 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <a href="#taller" className="hover:text-blue-600 transition-colors">Taller MMc</a>
                 <button 
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-200"
+                  className="px-8 py-4 rounded-2xl hover:opacity-90 transition-all"
+                  style={{ backgroundColor: BRAND_SLATE, color: 'white', fontWeight: 800, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
                 >
                     Presupuesto Especializado
                 </button>
-                <button onClick={onLoginClick} className="ml-4 hover:text-blue-600 transition-colors">Acceso</button>
+                <button 
+                  onClick={onLoginClick} 
+                  className="ml-4 hover:text-blue-600 transition-colors"
+                  style={{ fontWeight: 800 }}
+                >
+                  ACCESO
+                </button>
             </div>
 
             <button className="lg:hidden text-slate-900 p-2">
@@ -102,27 +120,44 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       {/* Hero Section */}
       <section className="relative pt-48 pb-24 px-6">
         <div className="max-w-6xl mx-auto text-center">
-            <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-4 py-2 rounded-full mb-10 border border-blue-100">
+            <div 
+              className="inline-flex items-center gap-3 px-4 py-2 rounded-full mb-10 border"
+              style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', borderColor: '#dbeafe' }}
+            >
                 <i className="fas fa-link text-xs"></i>
                 <span className="text-[10px] font-extrabold uppercase tracking-widest">Alianza Estratégica en Movilidad</span>
             </div>
             
-            <h1 className="hero-title text-6xl md:text-8xl lg:text-9xl font-black text-slate-900 mb-10">
-                Te movemos. <br /> <span className="text-blue-600">Te cuidamos.</span>
+            <h1 
+              className="hero-title font-black mb-10"
+              style={{ 
+                fontSize: 'clamp(3rem, 10vw, 8rem)', 
+                lineHeight: '1.1', 
+                letterSpacing: '-0.04em',
+                color: BRAND_SLATE,
+                textAlign: 'center'
+              }}
+            >
+                Te movemos. <br /> <span style={{ color: BRAND_BLUE }}>Te cuidamos.</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto mb-16 font-medium leading-relaxed">
-                Unimos la excelencia logística de <span className="text-slate-900 font-bold underline decoration-blue-500 decoration-4">Transportes DeDoctor</span> con la precisión técnica del <span className="text-slate-900 font-bold underline decoration-slate-400 decoration-4">Taller MMc</span>.
+                Unimos la excelencia logística de <span className="font-bold underline decoration-4" style={{ textDecorationColor: BRAND_BLUE }}>Transportes DeDoctor</span> con la precisión técnica del <span className="font-bold underline decoration-4" style={{ textDecorationColor: '#94a3b8' }}>Taller MMc</span>.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <button 
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="bg-blue-600 text-white px-12 py-6 rounded-3xl font-extrabold text-lg shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1.5 transition-all flex items-center justify-center gap-3"
+                  className="px-12 py-6 rounded-3xl font-extrabold text-lg transition-all flex items-center justify-center gap-3"
+                  style={{ backgroundColor: BRAND_BLUE, color: 'white', boxShadow: '0 25px 50px -12px rgba(37, 99, 235, 0.25)' }}
                 >
                     Solicitar Asistencia <i className="fas fa-arrow-right text-sm"></i>
                 </button>
-                <a href="#alianza" className="bg-white text-slate-900 border border-slate-200 px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center">
+                <a 
+                  href="#alianza" 
+                  className="bg-white px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center border border-slate-200"
+                  style={{ color: BRAND_SLATE }}
+                >
                     Nuestra Alianza
                 </a>
             </div>
@@ -131,18 +166,18 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
       {/* Stats Branding Section */}
       <section id="alianza" className="py-16 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group text-left">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
                 <div className="text-blue-600 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fas fa-shield-heart"></i></div>
                 <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Compromiso DeDoctor</h4>
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">Protocolos de transporte centrados en la dignidad humana y seguridad máxima.</p>
             </div>
-            <div className="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl shadow-blue-900/10 text-left">
+            <div className="p-10 rounded-[3rem] text-white shadow-2xl shadow-blue-900/10" style={{ backgroundColor: BRAND_SLATE }}>
                 <div className="text-blue-400 mb-6 text-2xl"><i className="fas fa-microchip"></i></div>
-                <h4 className="font-black text-2xl mb-4 tracking-tighter leading-none">Ingeniería MMc</h4>
+                <h4 className="font-black text-2xl mb-4 tracking-tighter leading-none text-white">Ingeniería MMc</h4>
                 <p className="text-slate-400 text-sm leading-relaxed font-medium text-balance">Especialistas en electrónica avanzada y mantenimiento estructural de alto rendimiento.</p>
             </div>
-            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group text-left">
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
                 <div className="text-blue-600 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fas fa-sync"></i></div>
                 <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Servicio Integral</h4>
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">Si tu silla falla durante un viaje, nuestro equipo MMc la repara de inmediato.</p>
@@ -156,7 +191,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <div className="flex flex-col lg:flex-row items-center gap-20">
                 <div className="w-full lg:w-1/2 reveal">
                     <div className="abstract-visual aspect-[4/5] rounded-[4rem] flex flex-col items-center justify-center p-12 text-center group">
-                        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-blue-600 text-4xl mb-8 shadow-2xl group-hover:rotate-6 transition-transform">
+                        <div 
+                          className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center text-4xl mb-8 shadow-2xl group-hover:rotate-6 transition-transform"
+                          style={{ color: BRAND_BLUE }}
+                        >
                             <i className="fas fa-van-shuttle"></i>
                         </div>
                         <h4 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter">Unidad de Traslado</h4>
@@ -164,19 +202,32 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             <div className="h-2 w-full bg-blue-200 rounded-full"></div>
                             <div className="h-2 w-3/4 bg-blue-200 rounded-full mx-auto"></div>
                         </div>
-                        <p className="mt-8 text-xs font-bold text-blue-500 uppercase tracking-widest">Transportes DeDoctor</p>
+                        <p 
+                          className="mt-8 text-xs font-bold uppercase tracking-widest"
+                          style={{ color: BRAND_BLUE }}
+                        >
+                          Transportes DeDoctor
+                        </p>
                     </div>
                 </div>
                 
                 <div className="w-full lg:w-1/2 text-left">
-                    <span className="brand-badge bg-blue-100 text-blue-700 mb-6 inline-block">División Logística</span>
+                    <span 
+                      className="brand-badge mb-6 inline-block"
+                      style={{ backgroundColor: '#dbeafe', color: '#1d4ed8' }}
+                    >
+                      División Logística
+                    </span>
                     <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tighter">
-                        Transportes <br /> <span className="text-blue-600 italic">DeDoctor.</span>
+                        Transportes <br /> <span className="italic" style={{ color: BRAND_BLUE }}>DeDoctor.</span>
                     </h2>
                     
                     <div className="grid grid-cols-1 gap-10">
                         <div className="flex gap-6">
-                            <div className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                            <div 
+                              className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center"
+                              style={{ color: BRAND_BLUE }}
+                            >
                                 <i className="fas fa-hand-holding-medical text-2xl"></i>
                             </div>
                             <div>
@@ -185,7 +236,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             </div>
                         </div>
                         <div className="flex gap-6">
-                            <div className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                            <div 
+                              className="w-16 h-16 shrink-0 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center justify-center"
+                              style={{ color: BRAND_BLUE }}
+                            >
                                 <i className="fas fa-calendar-check text-2xl"></i>
                             </div>
                             <div>
@@ -201,7 +255,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
       {/* Sección Empresa 2: Taller MMc */}
       <section id="taller" className="py-32 px-6">
-        <div className="max-w-7xl mx-auto bg-slate-900 rounded-[5rem] overflow-hidden p-12 lg:p-24 relative shadow-2xl">
+        <div 
+          className="max-w-7xl mx-auto rounded-[5rem] overflow-hidden p-12 lg:p-24 relative shadow-2xl"
+          style={{ backgroundColor: BRAND_SLATE }}
+        >
             <div className="absolute inset-0 opacity-10 pointer-events-none" style={{background: 'radial-gradient(#3b82f6 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
             
             <div className="flex flex-col lg:flex-row-reverse items-center gap-20 relative z-10">
@@ -221,14 +278,22 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 </div>
                 
                 <div className="w-full lg:w-1/2 text-white text-left">
-                    <span className="brand-badge bg-slate-800 text-blue-400 mb-6 inline-block">División Técnica</span>
+                    <span 
+                      className="brand-badge mb-6 inline-block"
+                      style={{ backgroundColor: '#1e293b', color: '#60a5fa' }}
+                    >
+                      División Técnica
+                    </span>
                     <h2 className="text-5xl md:text-6xl font-black mb-10 leading-[1.1] tracking-tighter text-white">
-                        Taller de Sillas <br /> <span className="text-blue-500">MMc.</span>
+                        Taller de Sillas <br /> <span style={{ color: '#3b82f6' }}>MMc.</span>
                     </h2>
                     
                     <div className="space-y-12">
                         <div className="flex gap-8 group">
-                            <div className="w-12 h-12 shrink-0 border-b-2 border-blue-500 flex items-center justify-center text-blue-400 text-3xl font-black">
+                            <div 
+                              className="w-12 h-12 shrink-0 border-b-2 flex items-center justify-center text-3xl font-black"
+                              style={{ borderBottomColor: '#3b82f6', color: '#60a5fa' }}
+                            >
                                 01
                             </div>
                             <div>
@@ -237,7 +302,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             </div>
                         </div>
                         <div className="flex gap-8 group">
-                            <div className="w-12 h-12 shrink-0 border-b-2 border-slate-600 flex items-center justify-center text-slate-400 text-3xl font-black group-hover:border-blue-500 transition-colors">
+                            <div 
+                              className="w-12 h-12 shrink-0 border-b-2 flex items-center justify-center text-3xl font-black"
+                              style={{ borderBottomColor: '#475569', color: '#94a3b8' }}
+                            >
                                 02
                             </div>
                             <div>
@@ -260,21 +328,24 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             </div>
             
             <div className="bg-white rounded-[4rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-slate-100 flex flex-col md:flex-row">
-                <div className="md:w-1/3 bg-slate-900 p-12 lg:p-16 text-white flex flex-col justify-between relative overflow-hidden text-left">
+                <div 
+                  className="md:w-1/3 p-12 lg:p-16 text-white flex flex-col justify-between relative overflow-hidden text-left"
+                  style={{ backgroundColor: BRAND_SLATE }}
+                >
                     <div className="relative z-10">
-                        <h4 className="text-3xl font-black mb-8 leading-none">Contacto Directo.</h4>
+                        <h4 className="text-3xl font-black mb-8 leading-none text-white">Contacto Directo.</h4>
                         <div className="space-y-10">
                             <div>
                                 <p className="text-[10px] uppercase font-bold text-blue-400 tracking-widest mb-2">Transportes DeDoctor</p>
-                                <p className="font-bold text-lg">+56 9 1234 5678</p>
+                                <p className="font-bold text-lg text-white">+56 9 1234 5678</p>
                             </div>
                             <div>
                                 <p className="text-[10px] uppercase font-bold text-blue-400 tracking-widest mb-2">Taller MMc</p>
-                                <p className="font-bold text-lg">+56 9 8765 4321</p>
+                                <p className="font-bold text-lg text-white">+56 9 8765 4321</p>
                             </div>
                             <div>
                                 <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-2">Email Central</p>
-                                <p className="font-bold text-sm text-balance">grupo@dedoctor-mmc.com</p>
+                                <p className="font-bold text-sm text-balance text-white">grupo@dedoctor-mmc.com</p>
                             </div>
                         </div>
                     </div>
@@ -294,7 +365,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Nombre Completo</label>
                                 <input 
                                     type="text" required
-                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm" 
+                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm"
+                                    style={{ border: 'none' }}
                                     placeholder="Tu nombre"
                                     value={formData.full_name}
                                     onChange={(e) => setFormData({...formData, full_name: e.target.value})}
@@ -304,7 +376,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Celular / WhatsApp</label>
                                 <input 
                                     type="tel" required
-                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm" 
+                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm"
+                                    style={{ border: 'none' }}
                                     placeholder="+56 9..."
                                     value={formData.phone}
                                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -319,6 +392,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                             type="button" 
                                             onClick={() => setFormData({...formData, service_type: type})}
                                             className={`px-5 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all ${formData.service_type === type ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                                            style={formData.service_type === type ? { backgroundColor: BRAND_BLUE, color: 'white' } : {}}
                                         >
                                             {type}
                                         </button>
@@ -329,7 +403,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Detalles del Pedido</label>
                                 <textarea 
                                     rows={4} required
-                                    className="w-full bg-slate-50 border-none rounded-3xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium text-sm resize-none" 
+                                    className="w-full bg-slate-50 border-none rounded-3xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm resize-none"
+                                    style={{ border: 'none' }}
                                     placeholder="¿En qué podemos ayudarte?"
                                     value={formData.message}
                                     onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -337,7 +412,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             </div>
                             <button 
                                 disabled={formStatus === 'loading'}
-                                className="sm:col-span-2 bg-blue-600 text-white font-black py-6 rounded-3xl hover:bg-blue-700 hover:-translate-y-1 transition-all shadow-2xl shadow-blue-200 uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4"
+                                className="sm:col-span-2 text-white font-black py-6 rounded-3xl hover:opacity-90 transition-all uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4"
+                                style={{ backgroundColor: BRAND_BLUE, boxShadow: '0 25px 50px -12px rgba(37, 99, 235, 0.25)' }}
                             >
                                 {formStatus === 'loading' ? <Loader2 className="animate-spin w-5 h-5" /> : 'Solicitar Atención Prioritaria'}
                             </button>
@@ -354,10 +430,10 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <div className="flex flex-col md:flex-row justify-between items-center gap-12">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs" style={{ backgroundColor: BRAND_BLUE }}>
                             <i className="fas fa-link"></i>
                         </div>
-                        <span className="font-black text-lg tracking-tighter uppercase">DeDoctor <span className="text-blue-600">& MMc</span></span>
+                        <span className="font-black text-lg tracking-tighter uppercase" style={{ color: BRAND_SLATE }}>DeDoctor <span style={{ color: BRAND_BLUE }}>& MMc</span></span>
                     </div>
                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Red de Movilidad Integral Especializada</p>
                 </div>
