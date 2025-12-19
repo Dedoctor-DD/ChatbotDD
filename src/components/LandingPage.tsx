@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import './Alliance.css';
 
 interface LandingPageProps {
   onLoginClick: () => void;
@@ -17,20 +18,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   });
 
   useEffect(() => {
-    // Add alliance-mode class to body for the specific font and bg
-    document.body.classList.add('bg-gradient-soft', 'alliance-mode');
-
     const handleScroll = () => {
       const scrolled = window.scrollY > 40;
       setIsScrolled(scrolled);
-      const nav = document.querySelector('nav');
-      if (nav) {
-        if (scrolled) {
-          nav.querySelector('.glass-nav')?.classList.add('shadow-xl', 'shadow-blue-900/5');
-        } else {
-          nav.querySelector('.glass-nav')?.classList.remove('shadow-xl', 'shadow-blue-900/5');
-        }
-      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -49,7 +39,6 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      document.body.classList.remove('bg-gradient-soft', 'alliance-mode');
       observer.disconnect();
     };
   }, []);
@@ -81,11 +70,11 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <>
+    <div className="alliance-wrapper bg-gradient-soft">
       {/* Header / Nav */}
       <nav className="fixed w-full z-[100] transition-all duration-500 py-6 px-4 md:px-12">
-        <div className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center shadow-sm ${isScrolled ? 'shadow-xl shadow-blue-900/5' : ''}`}>
-            <div className="flex items-center gap-4">
+        <div className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}>
+            <div className="flex items-center gap-4 text-left">
                 <div className="flex flex-col">
                     <span className="font-extrabold text-xl tracking-tighter text-slate-900 uppercase">DeDoctor <span className="text-blue-600">& MMc</span></span>
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em]">Grupo de Movilidad Integral</span>
@@ -99,9 +88,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
                   className="bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-200"
                 >
-                  Presupuesto Especializado
+                    Presupuesto Especializado
                 </button>
-                <button onClick={onLoginClick} className="ml-4 hover:text-blue-600 transition-colors">ACCESO</button>
+                <button onClick={onLoginClick} className="ml-4 hover:text-blue-600 transition-colors">Acceso</button>
             </div>
 
             <button className="lg:hidden text-slate-900 p-2">
@@ -133,7 +122,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 >
                     Solicitar Asistencia <i className="fas fa-arrow-right text-sm"></i>
                 </button>
-                <a href="#alianza" className="bg-white text-slate-900 border border-slate-200 px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all">
+                <a href="#alianza" className="bg-white text-slate-900 border border-slate-200 px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center">
                     Nuestra Alianza
                 </a>
             </div>
@@ -143,17 +132,17 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       {/* Stats Branding Section */}
       <section id="alianza" className="py-16 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group text-left">
                 <div className="text-blue-600 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fas fa-shield-heart"></i></div>
                 <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Compromiso DeDoctor</h4>
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">Protocolos de transporte centrados en la dignidad humana y seguridad máxima.</p>
             </div>
-            <div className="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl shadow-blue-900/10">
+            <div className="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl shadow-blue-900/10 text-left">
                 <div className="text-blue-400 mb-6 text-2xl"><i className="fas fa-microchip"></i></div>
                 <h4 className="font-black text-2xl mb-4 tracking-tighter leading-none">Ingeniería MMc</h4>
                 <p className="text-slate-400 text-sm leading-relaxed font-medium text-balance">Especialistas en electrónica avanzada y mantenimiento estructural de alto rendimiento.</p>
             </div>
-            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group">
+            <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-50 group text-left">
                 <div className="text-blue-600 mb-6 text-2xl group-hover:scale-110 transition-transform"><i className="fas fa-sync"></i></div>
                 <h4 className="font-black text-slate-900 text-2xl mb-4 tracking-tighter leading-none">Servicio Integral</h4>
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">Si tu silla falla durante un viaje, nuestro equipo MMc la repara de inmediato.</p>
@@ -179,7 +168,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                     </div>
                 </div>
                 
-                <div className="w-full lg:w-1/2">
+                <div className="w-full lg:w-1/2 text-left">
                     <span className="brand-badge bg-blue-100 text-blue-700 mb-6 inline-block">División Logística</span>
                     <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-10 leading-[1.1] tracking-tighter">
                         Transportes <br /> <span className="text-blue-600 italic">DeDoctor.</span>
@@ -231,9 +220,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                     </div>
                 </div>
                 
-                <div className="w-full lg:w-1/2 text-white">
+                <div className="w-full lg:w-1/2 text-white text-left">
                     <span className="brand-badge bg-slate-800 text-blue-400 mb-6 inline-block">División Técnica</span>
-                    <h2 className="text-5xl md:text-6xl font-black mb-10 leading-[1.1] tracking-tighter">
+                    <h2 className="text-5xl md:text-6xl font-black mb-10 leading-[1.1] tracking-tighter text-white">
                         Taller de Sillas <br /> <span className="text-blue-500">MMc.</span>
                     </h2>
                     
@@ -243,7 +232,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 01
                             </div>
                             <div>
-                                <h4 className="font-black text-2xl mb-3">Sillas Eléctricas</h4>
+                                <h4 className="font-black text-2xl mb-3 text-white">Sillas Eléctricas</h4>
                                 <p className="text-slate-400 font-medium leading-relaxed">Expertos en marcas internacionales. Reparamos joystick, módulos de potencia y pack de baterías con celdas de alta capacidad.</p>
                             </div>
                         </div>
@@ -252,7 +241,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 02
                             </div>
                             <div>
-                                <h4 className="font-black text-2xl mb-3">Stock Permanente</h4>
+                                <h4 className="font-black text-2xl mb-3 text-white">Stock Permanente</h4>
                                 <p className="text-slate-400 font-medium leading-relaxed">No esperes repuestos. Tenemos el inventario de MMc más grande de la zona para neumáticos, cámaras y frenos.</p>
                             </div>
                         </div>
@@ -271,7 +260,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             </div>
             
             <div className="bg-white rounded-[4rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-slate-100 flex flex-col md:flex-row">
-                <div className="md:w-1/3 bg-slate-900 p-12 lg:p-16 text-white flex flex-col justify-between relative overflow-hidden">
+                <div className="md:w-1/3 bg-slate-900 p-12 lg:p-16 text-white flex flex-col justify-between relative overflow-hidden text-left">
                     <div className="relative z-10">
                         <h4 className="text-3xl font-black mb-8 leading-none">Contacto Directo.</h4>
                         <div className="space-y-10">
@@ -301,7 +290,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                         </div>
                     ) : (
                         <form className="grid grid-cols-1 sm:grid-cols-2 gap-8" onSubmit={handleSubmit}>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 text-left">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Nombre Completo</label>
                                 <input 
                                     type="text" required
@@ -311,7 +300,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                     onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                                 />
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 text-left">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Celular / WhatsApp</label>
                                 <input 
                                     type="tel" required
@@ -321,7 +310,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                 />
                             </div>
-                            <div className="sm:col-span-2 flex flex-col gap-2">
+                            <div className="sm:col-span-2 flex flex-col gap-2 text-left">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Requerimiento Especial</label>
                                 <div className="flex flex-wrap gap-3">
                                     {(['Traslado DeDoctor', 'Servicio Taller MMc', 'Consulta Grupal'] as const).map((type) => (
@@ -336,7 +325,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                     ))}
                                 </div>
                             </div>
-                            <div className="sm:col-span-2 flex flex-col gap-2">
+                            <div className="sm:col-span-2 flex flex-col gap-2 text-left">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Detalles del Pedido</label>
                                 <textarea 
                                     rows={4} required
@@ -390,6 +379,6 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
