@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { Loader2, CheckCircle2 } from 'lucide-react';
-import './Alliance.css';
 
 interface LandingPageProps {
   onLoginClick: () => void;
@@ -19,30 +18,29 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
   const BRAND_BLUE = '#2563eb';
   const BRAND_SLATE = '#0f172a';
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY > 40;
-      setIsScrolled(scrolled);
+      setIsScrolled(window.scrollY > 40);
     };
 
     window.addEventListener('scroll', handleScroll);
 
     // Reveal Animations
-    const observerOptions = { threshold: 0.15 };
-    const observer = new IntersectionObserver((entries) => {
+    observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
         }
       });
-    }, observerOptions);
+    }, { threshold: 0.15 });
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => observerRef.current?.observe(el));
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
+      observerRef.current?.disconnect();
     };
   }, []);
 
@@ -73,12 +71,86 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <div className="alliance-wrapper bg-gradient-soft min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div className="alliance-wrapper bg-gradient-soft min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", backgroundColor: '#fcfcfd' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        .alliance-wrapper {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          color: #1e293b;
+          text-align: center;
+        }
+
+        .bg-gradient-soft {
+          background: radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 40%),
+                      radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
+        }
+
+        .hero-title {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          line-height: 1.1 !important;
+          letter-spacing: -0.04em !important;
+          font-weight: 900 !important;
+          font-display: swap;
+        }
+
+        .reveal {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .reveal.active {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .abstract-visual {
+          background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+          position: relative;
+          overflow: hidden;
+        }
+
+        @keyframes pulse-slow {
+          0% { transform: scale(1); opacity: 0.5; }
+          100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .abstract-visual::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+          animation: pulse-slow 8s infinite alternate;
+        }
+
+        .glass-nav {
+          background: rgba(255, 255, 255, 0.85) !important;
+          backdrop-filter: blur(20px) !important;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+
+        .brand-badge {
+          font-size: 0.65rem;
+          letter-spacing: 0.2em;
+          font-weight: 800;
+          padding: 0.5rem 1rem;
+          border-radius: 99px;
+          text-transform: uppercase;
+        }
+
+        input, textarea {
+          border: none !important;
+          outline: none !important;
+        }
+        
+        button { cursor: pointer; }
+      `}</style>
+
       {/* Header / Nav */}
       <nav className="fixed w-full z-[100] transition-all duration-500 py-6 px-4 md:px-12">
         <div 
           className={`max-w-7xl mx-auto glass-nav rounded-3xl px-8 py-5 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}
-          style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(226, 232, 240, 0.8)' }}
         >
             <div className="flex items-center gap-4 text-left">
                 <div className="flex flex-col">
@@ -97,21 +169,21 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <a href="#taller" className="hover:text-blue-600 transition-colors">Taller MMc</a>
                 <button 
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-8 py-4 rounded-2xl hover:opacity-90 transition-all"
+                  className="px-8 py-4 rounded-2xl hover:opacity-90 transition-all border-none"
                   style={{ backgroundColor: BRAND_SLATE, color: 'white', fontWeight: 800, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
                 >
                     Presupuesto Especializado
                 </button>
                 <button 
                   onClick={onLoginClick} 
-                  className="ml-4 hover:text-blue-600 transition-colors"
-                  style={{ fontWeight: 800 }}
+                  className="ml-4 hover:text-blue-600 transition-colors bg-transparent border-none"
+                  style={{ fontWeight: 800, color: '#64748b' }}
                 >
                   ACCESO
                 </button>
             </div>
 
-            <button className="lg:hidden text-slate-900 p-2">
+            <button className="lg:hidden text-slate-900 p-2 bg-transparent border-none">
                 <i className="fas fa-bars-staggered text-xl"></i>
             </button>
         </div>
@@ -131,11 +203,12 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <h1 
               className="hero-title font-black mb-10"
               style={{ 
-                fontSize: 'clamp(3rem, 10vw, 8rem)', 
-                lineHeight: '1.1', 
+                fontSize: 'clamp(3rem, 10vw, 7.5rem)', 
+                lineHeight: '1.2', 
                 letterSpacing: '-0.04em',
                 color: BRAND_SLATE,
-                textAlign: 'center'
+                textAlign: 'center',
+                margin: '0 auto 2.5rem auto'
               }}
             >
                 Te movemos. <br /> <span style={{ color: BRAND_BLUE }}>Te cuidamos.</span>
@@ -148,14 +221,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <button 
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-12 py-6 rounded-3xl font-extrabold text-lg transition-all flex items-center justify-center gap-3"
+                  className="px-12 py-6 rounded-3xl font-extrabold text-lg transition-all flex items-center justify-center gap-3 border-none"
                   style={{ backgroundColor: BRAND_BLUE, color: 'white', boxShadow: '0 25px 50px -12px rgba(37, 99, 235, 0.25)' }}
                 >
                     Solicitar Asistencia <i className="fas fa-arrow-right text-sm"></i>
                 </button>
                 <a 
                   href="#alianza" 
-                  className="bg-white px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center border border-slate-200"
+                  className="bg-white px-12 py-6 rounded-3xl font-extrabold text-lg hover:bg-slate-50 transition-all flex items-center justify-center border border-slate-200 no-underline"
                   style={{ color: BRAND_SLATE }}
                 >
                     Nuestra Alianza
@@ -357,7 +430,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-6" />
                             <h4 className="text-3xl font-black text-slate-900 mb-4 tracking-tight uppercase">¡Recibido!</h4>
                             <p className="text-slate-500 font-medium">Un especialista se pondrá en contacto pronto.</p>
-                            <button onClick={() => setFormStatus('idle')} className="mt-8 text-blue-600 font-bold uppercase text-xs tracking-widest">Enviar otro</button>
+                            <button onClick={() => setFormStatus('idle')} className="mt-8 text-blue-600 font-bold uppercase text-xs tracking-widest bg-transparent border-none">Enviar otro</button>
                         </div>
                     ) : (
                         <form className="grid grid-cols-1 sm:grid-cols-2 gap-8" onSubmit={handleSubmit}>
@@ -365,8 +438,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Nombre Completo</label>
                                 <input 
                                     type="text" required
-                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm"
-                                    style={{ border: 'none' }}
+                                    className="w-full bg-slate-50 rounded-2xl px-6 py-5 font-medium text-sm"
                                     placeholder="Tu nombre"
                                     value={formData.full_name}
                                     onChange={(e) => setFormData({...formData, full_name: e.target.value})}
@@ -376,8 +448,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Celular / WhatsApp</label>
                                 <input 
                                     type="tel" required
-                                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm"
-                                    style={{ border: 'none' }}
+                                    className="w-full bg-slate-50 rounded-2xl px-6 py-5 font-medium text-sm"
                                     placeholder="+56 9..."
                                     value={formData.phone}
                                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -391,8 +462,8 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                             key={type}
                                             type="button" 
                                             onClick={() => setFormData({...formData, service_type: type})}
-                                            className={`px-5 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all ${formData.service_type === type ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-                                            style={formData.service_type === type ? { backgroundColor: BRAND_BLUE, color: 'white' } : {}}
+                                            className={`px-5 py-3 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all border-none ${formData.service_type === type ? 'text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                                            style={formData.service_type === type ? { backgroundColor: BRAND_BLUE, boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)' } : {}}
                                         >
                                             {type}
                                         </button>
@@ -403,8 +474,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Detalles del Pedido</label>
                                 <textarea 
                                     rows={4} required
-                                    className="w-full bg-slate-50 border-none rounded-3xl px-6 py-5 outline-none focus:ring-2 transition-all font-medium text-sm resize-none"
-                                    style={{ border: 'none' }}
+                                    className="w-full bg-slate-50 rounded-3xl px-6 py-5 font-medium text-sm resize-none"
                                     placeholder="¿En qué podemos ayudarte?"
                                     value={formData.message}
                                     onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -412,7 +482,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                             </div>
                             <button 
                                 disabled={formStatus === 'loading'}
-                                className="sm:col-span-2 text-white font-black py-6 rounded-3xl hover:opacity-90 transition-all uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4"
+                                className="sm:col-span-2 text-white font-black py-6 rounded-3xl hover:opacity-90 transition-all uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4 border-none"
                                 style={{ backgroundColor: BRAND_BLUE, boxShadow: '0 25px 50px -12px rgba(37, 99, 235, 0.25)' }}
                             >
                                 {formStatus === 'loading' ? <Loader2 className="animate-spin w-5 h-5" /> : 'Solicitar Atención Prioritaria'}
@@ -439,9 +509,14 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 </div>
                 
                 <div className="flex gap-12 text-slate-500 font-bold text-xs uppercase tracking-widest">
-                    <a href="#transporte" className="hover:text-blue-600 transition-colors">Logística</a>
-                    <button onClick={onLoginClick} className="hover:text-blue-600 transition-colors uppercase font-bold text-xs">Acceso Portal</button>
-                    <a href="#taller" className="hover:text-blue-600 transition-colors">Taller</a>
+                    <a href="#transporte" className="hover:text-blue-600 transition-colors no-underline">Logística</a>
+                    <button 
+                      onClick={onLoginClick} 
+                      className="hover:text-blue-600 transition-colors uppercase font-bold text-xs bg-transparent border-none"
+                    >
+                      Acceso Portal
+                    </button>
+                    <a href="#taller" className="hover:text-blue-600 transition-colors no-underline">Taller</a>
                 </div>
                 
                 <div className="flex gap-4">
