@@ -67,12 +67,40 @@ export function Login({ onBack }: LoginProps) {
     };
 
     return (
-        <div className="login-wrapper overflow-hidden flex flex-col items-center justify-center p-4">
-            {/* Background Orbs */}
-            <div className="login-bg-glow glow-blue"></div>
-            <div className="login-bg-glow glow-indigo"></div>
+        <>
+            {/* Navigation Bar */}
+            <nav className="fixed w-full z-[100] py-4 px-4 sm:px-6 md:px-10">
+                <div className="max-w-[1400px] mx-auto glass-nav rounded-2xl md:rounded-[2rem] px-5 md:px-10 py-4 flex justify-between items-center shadow-xl shadow-blue-900/5">
+                    <div className="flex items-center gap-3 text-left">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                            <i className="fas fa-link text-xl"></i>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-black text-lg md:text-xl tracking-tighter uppercase leading-none text-slate-900">
+                                DeDoctor <span className="text-blue-600">&amp; MMc</span>
+                            </span>
+                            <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Grupo de Movilidad Integral</span>
+                        </div>
+                    </div>
+                    
+                    {onBack && (
+                        <button 
+                            onClick={onBack}
+                            className="px-6 py-3 rounded-xl transition-all border-none bg-slate-900 text-white font-extrabold shadow-lg shadow-black/10 hover:bg-slate-800 text-[10px] uppercase tracking-widest flex items-center gap-2"
+                        >
+                            <i className="fas fa-arrow-left text-xs"></i>
+                            Volver al Inicio
+                        </button>
+                    )}
+                </div>
+            </nav>
 
-            <div className="login-card z-20">
+            <div className="login-wrapper overflow-hidden flex flex-col items-center justify-center p-4">
+                {/* Background Orbs */}
+                <div className="login-bg-glow glow-blue"></div>
+                <div className="login-bg-glow glow-indigo"></div>
+
+                <div className="login-card z-20">
                 <div className="login-logo-box">
                     <img src="/logo.jpg" alt="Logo" />
                 </div>
@@ -103,15 +131,6 @@ export function Login({ onBack }: LoginProps) {
                         </>
                     )}
                 </button>
-
-                {onBack && (
-                    <button 
-                        onClick={onBack}
-                        className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                        ← Volver al Inicio
-                    </button>
-                )}
 
                 {error && (
                     <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
@@ -208,5 +227,6 @@ export function Login({ onBack }: LoginProps) {
                 </p>
             </div>
         </div>
+        </>
     );
 }
