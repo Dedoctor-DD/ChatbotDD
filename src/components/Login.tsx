@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { Instagram, Facebook, Globe, Twitter } from 'lucide-react';
 import { generateUUID } from '../lib/utils';
+import { GlobalNavbar } from './GlobalNavbar';
 
 interface Partner {
     id: string;
@@ -67,80 +68,51 @@ export function Login({ onBack }: LoginProps) {
     };
 
     return (
-        <>
-            {/* Navigation Bar */}
-            <nav className="fixed w-full z-[100] py-4 px-4 sm:px-6 md:px-10">
-                <div className="max-w-[1400px] mx-auto glass-nav rounded-2xl md:rounded-[2rem] px-5 md:px-10 py-4 flex justify-between items-center shadow-xl shadow-blue-900/5">
-                    <div className="flex items-center gap-3 text-left">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
-                            <i className="fas fa-link text-xl"></i>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-black text-lg md:text-xl tracking-tighter uppercase leading-none text-slate-900">
-                                DeDoctor <span className="text-blue-600">&amp; MMc</span>
-                            </span>
-                            <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Grupo de Movilidad Integral</span>
-                        </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" style={{ paddingTop: '100px' }}>
+            {/* Global Navigation Bar */}
+            <GlobalNavbar onBack={onBack} showBackButton={!!onBack} />
+
+            <div className="flex flex-col items-center justify-center px-4 py-8">
+                <div className="login-card z-20 max-w-md w-full">
+                    <div className="login-logo-box">
+                        <img src="/logo.jpg" alt="Logo" />
                     </div>
-                    
-                    {onBack && (
-                        <button 
-                            onClick={onBack}
-                            className="px-6 py-3 rounded-xl transition-all border-none bg-slate-900 text-white font-extrabold shadow-lg shadow-black/10 hover:bg-slate-800 text-[10px] uppercase tracking-widest flex items-center gap-2"
-                        >
-                            <i className="fas fa-arrow-left text-xs"></i>
-                            Volver al Inicio
-                        </button>
+
+                    <h2 className="login-title">Dedoctor DD</h2>
+                    <p className="login-subtitle">
+                        Tu asistente virtual inteligente para transportes y mantenimiento.
+                    </p>
+
+                    <button
+                        onClick={handleLogin}
+                        disabled={isLoading}
+                        className="login-btn btn-google"
+                    >
+                        {isLoading ? (
+                            <>
+                                <div className="spinner"></div>
+                                <span>Conectando...</span>
+                            </>
+                        ) : (
+                            <>
+                                <img
+                                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                                    alt="Google"
+                                    style={{ width: '20px', height: '20px' }}
+                                />
+                                <span>Continuar con Google</span>
+                            </>
+                        )}
+                    </button>
+
+                    {error && (
+                        <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                            <p className="text-xs text-red-400 font-medium">{error}</p>
+                        </div>
                     )}
-                </div>
-            </nav>
 
-            <div className="login-wrapper overflow-hidden flex flex-col items-center justify-center p-4">
-                {/* Background Orbs */}
-                <div className="login-bg-glow glow-blue"></div>
-                <div className="login-bg-glow glow-indigo"></div>
-
-                <div className="login-card z-20">
-                <div className="login-logo-box">
-                    <img src="/logo.jpg" alt="Logo" />
-                </div>
-
-                <h2 className="login-title">Dedoctor DD</h2>
-                <p className="login-subtitle">
-                    Tu asistente virtual inteligente para transportes y mantenimiento.
-                </p>
-
-                <button
-                    onClick={handleLogin}
-                    disabled={isLoading}
-                    className="login-btn btn-google"
-                >
-                    {isLoading ? (
-                        <>
-                            <div className="spinner"></div>
-                            <span>Conectando...</span>
-                        </>
-                    ) : (
-                        <>
-                            <img
-                                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                                alt="Google"
-                                style={{ width: '20px', height: '20px' }}
-                            />
-                            <span>Continuar con Google</span>
-                        </>
-                    )}
-                </button>
-
-                {error && (
-                    <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-                        <p className="text-xs text-red-400 font-medium">{error}</p>
-                    </div>
-                )}
-
-                <div className="mt-6 text-center space-y-3">
                     {import.meta.env.DEV && (
-                        <div className="flex flex-col gap-2">
+                        <div className="mt-6 flex flex-col gap-3">
                             <button
                                 onClick={() => {
                                     const mockSession = {
@@ -154,7 +126,7 @@ export function Login({ onBack }: LoginProps) {
                                     localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                     window.location.reload();
                                 }}
-                                className="text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-blue-500 transition-colors py-2 border border-slate-100 rounded-full bg-white shadow-sm"
+                                className="login-btn-test text-[11px] uppercase font-black tracking-widest text-slate-600 hover:text-sky-600 transition-all py-3 border border-slate-200 rounded-xl bg-white hover:bg-sky-50 hover:border-sky-200 shadow-sm"
                             >
                                 👻 Acceso Invitado
                             </button>
@@ -172,61 +144,59 @@ export function Login({ onBack }: LoginProps) {
                                     localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                     window.location.reload();
                                 }}
-                                className="text-[10px] uppercase font-black tracking-widest text-slate-400 hover:text-purple-500 transition-colors py-2 border border-slate-100 rounded-full bg-white shadow-sm"
+                                className="login-btn-test text-[11px] uppercase font-black tracking-widest text-slate-600 hover:text-purple-600 transition-all py-3 border border-slate-200 rounded-xl bg-white hover:bg-purple-50 hover:border-purple-200 shadow-sm"
                             >
                                 👮 Acceso Admin
                             </button>
                         </div>
                     )}
                 </div>
-            </div>
 
-            {/* Social & Partners Section */}
-            <div className="mt-12 w-full max-w-2xl px-4 text-center z-10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8 mb-5">
-                    Empresas que confían en nosotros
-                </p>
-                
-                {/* Logo Loop Track */}
-                <div className="logoloop logoloop--fade logoloop--scale-hover">
-                    <div className="logoloop__track">
-                        <div className="logoloop__list">
-                            {partners.length > 0 ? (
-                                partners.map((partner, idx) => (
-                                    <div key={`${partner.id}-${idx}`} className="logoloop__item">
-                                        <a href={partner.website_url || '#'} className="logoloop__link" target="_blank" rel="noopener noreferrer">
-                                            <img src={partner.logo_url} alt={partner.name} title={partner.name} />
-                                        </a>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-slate-300 text-[10px] font-bold py-4">Cargando aliados...</div>
-                            )}
+                {/* Partners Section - Compacta */}
+                {partners.length > 0 && (
+                    <div className="mt-12 w-full max-w-2xl text-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">
+                            Empresas que confían en nosotros
+                        </p>
+                        
+                        <div className="logoloop logoloop--fade logoloop--scale-hover">
+                            <div className="logoloop__track">
+                                <div className="logoloop__list">
+                                    {partners.map((partner, idx) => (
+                                        <div key={`${partner.id}-${idx}`} className="logoloop__item">
+                                            <a href={partner.website_url || '#'} className="logoloop__link" target="_blank" rel="noopener noreferrer">
+                                                <img src={partner.logo_url} alt={partner.name} title={partner.name} />
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                {/* Social Links Panel */}
-                <div className="mt-10 flex gap-6 items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
-                    <a href="https://instagram.com/dedoctor" className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-400 hover:text-pink-500 hover:scale-110 transition-all">
-                        <Instagram className="w-5 h-5" />
+                {/* Social Links - Compactos */}
+                <div className="mt-8 flex gap-4 items-center justify-center">
+                    <a href="https://instagram.com/dedoctor" className="p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm text-slate-400 hover:text-pink-500 hover:scale-110 transition-all">
+                        <Instagram className="w-4 h-4" />
                     </a>
-                    <a href="https://facebook.com/dedoctor" className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-400 hover:text-blue-600 hover:scale-110 transition-all">
-                        <Facebook className="w-5 h-5" />
+                    <a href="https://facebook.com/dedoctor" className="p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm text-slate-400 hover:text-blue-600 hover:scale-110 transition-all">
+                        <Facebook className="w-4 h-4" />
                     </a>
-                    <a href="https://twitter.com/dedoctor" className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-400 hover:text-sky-500 hover:scale-110 transition-all">
-                        <Twitter className="w-5 h-5" />
+                    <a href="https://twitter.com/dedoctor" className="p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm text-slate-400 hover:text-sky-500 hover:scale-110 transition-all">
+                        <Twitter className="w-4 h-4" />
                     </a>
-                    <a href="https://dedoctor.cl" className="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm text-slate-400 hover:text-indigo-600 hover:scale-110 transition-all">
-                        <Globe className="w-5 h-5" />
+                    <a href="https://dedoctor.cl" className="p-2.5 bg-white border border-slate-100 rounded-xl shadow-sm text-slate-400 hover:text-indigo-600 hover:scale-110 transition-all">
+                        <Globe className="w-4 h-4" />
                     </a>
                 </div>
                 
-                <p className="mt-8 text-[9px] text-slate-300 font-bold uppercase tracking-widest">
+                <p className="mt-6 text-[9px] text-slate-400 font-bold uppercase tracking-widest">
                     © 2025 Dedoctor. Todos los derechos reservados.
                 </p>
             </div>
         </div>
-        </>
     );
 }
+
+

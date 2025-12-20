@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { GlobalNavbar } from './GlobalNavbar';
 
 interface LandingPageProps {
   onLoginClick: () => void;
 }
 
 export function LandingPage({ onLoginClick }: LandingPageProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     full_name: '',
@@ -21,12 +21,6 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
     // Reveal Animations
     observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -39,7 +33,6 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
     document.querySelectorAll('.reveal').forEach(el => observerRef.current?.observe(el));
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       observerRef.current?.disconnect();
     };
   }, []);
@@ -71,7 +64,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <div className="alliance-wrapper bg-gradient-soft min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", backgroundColor: '#fcfcfd' }}>
+    <div className="alliance-wrapper bg-gradient-soft min-h-screen" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", backgroundColor: '#fcfcfd', paddingTop: '120px' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
@@ -246,50 +239,15 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         }
       `}</style>
 
-      {/* Header / Nav */}
-      <nav className={`fixed w-full z-[100] transition-all duration-500 ${isScrolled ? 'py-4' : 'py-6'} px-4 sm:px-6 md:px-10`}>
-        <div 
-          className={`max-w-[1400px] mx-auto glass-nav rounded-2xl md:rounded-[2rem] px-5 md:px-10 py-4 flex justify-between items-center transition-all ${isScrolled ? 'shadow-xl shadow-blue-900/5' : 'shadow-sm'}`}
-        >
-            <div className="flex items-center gap-3 text-left">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
-                    <i className="fas fa-link text-xl"></i>
-                </div>
-                <div className="flex flex-col">
-                    <span 
-                      className="font-black text-lg md:text-xl tracking-tighter uppercase leading-none"
-                      style={{ color: BRAND_SLATE }}
-                    >
-                      DeDoctor <span style={{ color: BRAND_BLUE }}>& MMc</span>
-                    </span>
-                    <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Grupo de Movilidad Integral</span>
-                </div>
-            </div>
-            
-            <div className="hidden lg:flex items-center gap-10 font-bold text-[10px] uppercase tracking-[0.2em] text-slate-500">
-                <a href="#transporte" className="hover:text-blue-600 transition-colors no-underline">Transportes</a>
-                <a href="#taller" className="hover:text-blue-600 transition-colors no-underline">Taller MMc</a>
-                <a href="#contacto" className="hover:text-blue-600 transition-colors no-underline">Asistencia</a>
-                
-                <div className="w-px h-6 bg-slate-200 ml-2"></div>
-                
-                <button 
-                  onClick={onLoginClick} 
-                  className="px-8 py-3.5 rounded-xl transition-all border-none bg-blue-600 text-white font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2"
-                >
-                  <i className="fas fa-lock-open text-[10px]"></i>
-                  ACCESO PORTAL
-                </button>
-            </div>
-
-            <button onClick={onLoginClick} className="lg:hidden text-white p-3 bg-blue-600 rounded-xl border-none shadow-lg shadow-blue-600/30">
-                <i className="fas fa-user text-sm"></i>
-            </button>
-        </div>
-      </nav>
+      {/* Global Navigation Bar */}
+      <GlobalNavbar 
+        onLoginClick={onLoginClick}
+        showLoginButton={true}
+        showNavLinks={true}
+      />
 
       {/* Hero Section */}
-      <section className="relative pt-40 md:pt-48 pb-20 md:pb-32 px-6">
+      <section className="relative pt-20 md:pt-24 pb-20 md:pb-32 px-6">
         <div className="max-w-6xl mx-auto text-center">
             <div 
               className="inline-flex items-center gap-2 md:gap-3 px-4 py-2 rounded-full mb-8 border"
