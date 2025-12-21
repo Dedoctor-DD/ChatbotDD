@@ -23,22 +23,24 @@
   --bg-tertiary: #f1f5f9;
   --bg-elevated: #fcfcfd;
   
-  /* Modern Colors - DD Branding */
-  --sky-50: #f0f9ff;
-  --sky-100: #e0f2fe;
-  --sky-200: #bae6fd;
-  --sky-300: #7dd3fc;
-  --sky-400: #38bdf8;
-  --sky-500: #0ea5e9;
-  --sky-600: #0284c7;
-  --sky-700: #0369a1;
-  --sky-800: #075985;
-  --sky-900: #0c4a6e;
+  /* Modern Colors - DeDoctor Corporate */
+  --navy-50: #f0f4f8;
+  --navy-100: #d9e2ec;
+  --navy-200: #bcccdc;
+  --navy-300: #9fb3c8;
+  --navy-400: #829ab1;
+  --navy-500: #627d98;
+  --navy-600: #486581;
+  --navy-700: #334e68;
+  --navy-800: #243b53;
+  --navy-900: #102a43;
+
+  --accent-blue: #2b6cb0;
+  --accent-gold: #d69e2e;
   
-  --indigo-50: #f5f3ff;
-  --indigo-500: #6366f1;
-  --indigo-600: #4f46e5;
-  --indigo-900: #1e1b4b;
+  --brand-primary: var(--navy-900);
+  --brand-secondary: var(--navy-800);
+  --brand-highlight: var(--accent-blue);
   
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
@@ -121,29 +123,34 @@
 /* ============================================
    GLOBAL NAVBAR - Fixed Top Bar
    ============================================ */
+/* ============================================
+   GLOBAL NAVBAR - Fixed Top Bar (Embedded)
+   ============================================ */
 .global-navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1rem 1.5rem;
-  background: transparent;
-}
-
-.global-navbar-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 0;
   background: var(--glass-bg-strong);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-2xl);
-  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--slate-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.global-navbar-container {
+  max-width: 100%;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--shadow-xl);
+  box-shadow: none;
   transition: all var(--transition-base);
 }
 
@@ -156,7 +163,9 @@
 .global-navbar-logo {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--brand-blue), var(--brand-accent));
+  width: 48px;
+  height: 48px;
+  background: white;
   border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
@@ -231,12 +240,14 @@
 
 @media (min-width: 768px) {
   .global-navbar {
-    padding: 1.5rem 2rem;
+    padding: 0;
   }
   
   .global-navbar-container {
-    padding: 1.25rem 2rem;
-    border-radius: var(--radius-3xl);
+    padding: 1rem 3rem;
+    border-radius: 0;
+    max-width: 1400px;
+    margin: 0 auto;
   }
   
   .global-navbar-logo {
@@ -398,10 +409,10 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #fafbfc 0%, #f0f9ff 100%);
+  background: linear-gradient(to bottom, #f8fafc, #edf2f7);
   background-image: 
-    radial-gradient(circle at 15% 25%, rgba(14, 165, 233, 0.05) 0%, transparent 35%),
-    radial-gradient(circle at 85% 75%, rgba(99, 102, 241, 0.04) 0%, transparent 35%);
+    radial-gradient(circle at 100% 0%, rgba(16, 42, 67, 0.03) 0%, transparent 25%),
+    radial-gradient(circle at 0% 100%, rgba(43, 108, 176, 0.03) 0%, transparent 25%);
   position: relative;
 }
 

@@ -43,6 +43,7 @@ export interface Message {
     role: 'user' | 'assistant';
     content: string;
     timestamp: Date;
+    options?: string[]; // Quick replies attached to this message
 }
 
 export interface ConfirmationData {

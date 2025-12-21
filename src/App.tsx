@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
-import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader, Home, MessageSquare, Users } from 'lucide-react';
+import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader, Home, MessageSquare, Users, LogOut } from 'lucide-react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { uploadAttachment } from './lib/storage';
@@ -35,7 +35,7 @@ function App() {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
 
   // State for Quick Replies
-  const [quickReplies, setQuickReplies] = useState<string[]>([]);
+
 
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
   const [showLogin, setShowLogin] = useState(false);
@@ -109,9 +109,10 @@ function App() {
       console.log('KEY (Primeros 10 chars):', key ? key.substring(0, 10) + '...' : 'NO DEFINIDA');
       console.log('--------------------------');
 
-      // In PKCE flow, getSession() handles the code exchange.
-      // We must call it even if we see a code/token in the URL.
+      // Check if we have a pending auth hash in the URL
+      const hasAuthHash = window.location.hash && window.location.hash.includes('access_token');
 
+      // In PKCE flow, getSession() handles the code exchange.
       const { data: { session }, error } = await supabase.auth.getSession();
 
       if (error) {
@@ -121,14 +122,19 @@ function App() {
           await supabase.auth.signOut();
           localStorage.clear();
           window.history.replaceState(null, '', window.location.pathname);
+          setIsCheckingSession(false);
         }
       }
 
       if (session) {
         setSession(session);
         setIsCheckingSession(false);
-      } else {
+      } else if (!hasAuthHash) {
+        // If no session and no hash, we are truly logged out
         setTimeout(() => setIsCheckingSession(false), 800);
+      } else {
+        // If hash exists but session is null, wait for onAuthStateChange to handle it
+        console.log('Detected auth hash, waiting for Supabase processing...');
       }
     };
 
@@ -159,12 +165,7 @@ function App() {
         setActiveTab('home');
         setShowLogin(false); // Reset to show Landing Page instead of Login
         
-        // CRITICAL: If we are signed out but still have an auth hash, it means the auth failed (stale/invalid).
-        // We MUST clear the hash so the Login component doesn't get stuck in "Loading..."
-        if (window.location.hash && window.location.hash.includes('access_token')) {
-          console.warn('Authentication failed (stale token), clearing hash...');
-          window.history.replaceState(null, '', window.location.pathname);
-        }
+
       }
     });
 
@@ -333,63 +334,33 @@ function App() {
       // 1. Check for Quick Replies (Regex is usually safe for arrays, but let's make it robust)
       const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
       let cleanResponse = responseText;
+      let messageOptions: string[] = [];
 
       if (quickRepliesMatch) {
         try {
-          const options = JSON.parse(quickRepliesMatch[1]);
-          setQuickReplies(options);
+          messageOptions = JSON.parse(quickRepliesMatch[1]);
           cleanResponse = cleanResponse.replace(quickRepliesMatch[0], '').trim();
         } catch (e) {
           console.error('Error parsing quick replies:', e);
         }
-      } else {
-        setQuickReplies([]);
       }
 
-      // 2. Check for Confirmation (Robust Parsing for Nested JSON)
-      const confirmMarker = '[CONFIRM_READY:';
-      const confirmIndex = cleanResponse.indexOf(confirmMarker);
+      // 2. Check for Confirmation (Robust Regex Parsing)
+      // Matches [CONFIRM_READY: { ... }] handling potential newlines and spaces
+      const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/;
+      const confirmMatch = cleanResponse.match(confirmRegex);
 
-      if (confirmIndex !== -1) {
-        // Find the start of the JSON object
-        const jsonStart = cleanResponse.indexOf('{', confirmIndex);
-        if (jsonStart !== -1) {
-          let braceCount = 0;
-          let jsonEnd = -1;
-
-          // Iterate to find the matching closing brace
-          for (let i = jsonStart; i < cleanResponse.length; i++) {
-            if (cleanResponse[i] === '{') braceCount++;
-            else if (cleanResponse[i] === '}') {
-              braceCount--;
-              if (braceCount === 0) {
-                jsonEnd = i + 1; // Include the closing brace
-                break;
-              }
-            }
-          }
-
-          if (jsonEnd !== -1) {
-            const jsonStr = cleanResponse.substring(jsonStart, jsonEnd);
-            try {
-              const confirmData = JSON.parse(jsonStr);
-              setConfirmationData(confirmData);
-
-              // Remove the entire block from [CONFIRM_READY: ... ]
-              // We need to find the closing ']' of the tag, which should be after jsonEnd
-              const tagEnd = cleanResponse.indexOf(']', jsonEnd);
-              if (tagEnd !== -1) {
-                cleanResponse = (cleanResponse.substring(0, confirmIndex) + cleanResponse.substring(tagEnd + 1)).trim();
-              } else {
-                // Fallback: just remove up to jsonEnd
-                cleanResponse = (cleanResponse.substring(0, confirmIndex) + cleanResponse.substring(jsonEnd)).trim();
-              }
-
-              setQuickReplies([]); // Clear quick replies if confirming
-            } catch (e) {
-              console.error('Failed to parse confirmation data JSON:', e);
-            }
-          }
+      if (confirmMatch && confirmMatch[1]) {
+        try {
+          const jsonStr = confirmMatch[1];
+          const confirmData = JSON.parse(jsonStr);
+          setConfirmationData(confirmData);
+          messageOptions = []; // Clear options if confirming
+          
+          // Remove the tag from the message to show the user only the text
+          cleanResponse = cleanResponse.replace(confirmMatch[0], '').trim();
+        } catch (e) {
+          console.error('Failed to parse confirmation data JSON:', e);
         }
       }
 
@@ -402,8 +373,9 @@ function App() {
       const botMessage: Message = {
         id: generateUUID(),
         role: 'assistant',
-        content: cleanResponse || (confirmIndex !== -1 ? 'He preparado tu solicitud. Por favor confirma los detalles abajo: 👇' : 'Lo siento, no pude procesar tu solicitud.'),
+        content: cleanResponse || (confirmMatch ? 'He preparado tu solicitud. Por favor confirma los detalles abajo: 👇' : 'Lo siento, no pude procesar tu solicitud.'),
         timestamp: new Date(),
+        options: messageOptions.length > 0 ? messageOptions : undefined
       };
 
       setMessages((prev) => [...prev, botMessage]);
@@ -423,7 +395,6 @@ function App() {
 
     } catch (error) {
       console.error('Error getting response:', error);
-      setQuickReplies([]);
     } finally {
       setIsLoading(false);
     }
@@ -432,7 +403,6 @@ function App() {
   // Helper to handle Quick Reply click
   const handleQuickReply = (text: string) => {
     sendMessage(text);
-    setQuickReplies([]);
   };
 
   const handleConfirm = async (additionalData?: any) => {
@@ -668,12 +638,10 @@ function App() {
             
             <button 
               onClick={async () => {
-                if(window.confirm('¿Cerrar sesión?')) {
-                    localStorage.removeItem('dd_chatbot_test_session');
-                    await supabase.auth.signOut();
-                    setSession(null);
-                    window.location.reload();
-                }
+                localStorage.removeItem('dd_chatbot_test_session');
+                await supabase.auth.signOut();
+                setSession(null);
+                window.location.reload();
               }}
               className="w-full py-2.5 rounded-xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center gap-2"
             >
@@ -714,6 +682,19 @@ function App() {
           {/* Right: Avatar only on mobile header */}
           <div className="flex items-center gap-3">
             {session?.user && (
+              <>
+                <button 
+                  onClick={async () => {
+                    localStorage.removeItem('dd_chatbot_test_session');
+                    await supabase.auth.signOut();
+                    setSession(null);
+                    window.location.reload();
+                  }}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition-all"
+                >
+                   <LogOut className="w-4 h-4" />
+                </button>
+
                <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
                   {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
                      <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -723,6 +704,7 @@ function App() {
                      </div>
                   )}
                </div>
+              </>
             )}
           </div>
         </div>
@@ -782,23 +764,42 @@ function App() {
                     key={msg.id}
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-8 animate-fade-in`}
                   >
-                    <div className={`flex max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-3`}>
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-sky-500 text-white' : 'bg-white text-slate-400 border border-slate-100'}`}>
+                    <div className={`flex max-w-[85%] md:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-3`}>
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-slate-900 text-white shadow-slate-900/20' : 'bg-white text-slate-500 border border-slate-200'}`}>
                         {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                       </div>
                       
-                      <div className="flex flex-col">
-                        <div className={`px-6 py-4 rounded-[24px] shadow-sm relative ${
+                      <div className="flex flex-col w-full">
+                        <div className={`px-6 py-4 rounded-2xl shadow-sm relative ${
                           msg.role === 'user' 
-                          ? 'bg-sky-600 text-white rounded-br-none' 
-                          : 'bg-white text-slate-700 rounded-bl-none border border-slate-100'
+                          ? 'bg-slate-900 text-white rounded-br-sm shadow-md shadow-slate-900/10' 
+                          : 'bg-white text-slate-800 rounded-bl-sm border border-slate-200 shadow-sm'
                         }`}>
                           {msg.content.split('\n').map((line, i) => (
                             <p key={i} className="text-[15px] font-medium leading-relaxed leading-6">{line}</p>
                           ))}
                         </div>
-                        <span className={`text-[10px] mt-1.5 font-bold uppercase tracking-widest px-1 ${msg.role === 'user' ? 'text-right text-slate-400' : 'text-left text-slate-400'}`}>
-                          {msg.role === 'user' ? 'Tú' : 'Asistente'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+                        {/* RENDER MESSAGE OPTIONS (QUICK REPLIES) HERE */}
+                        {msg.role === 'assistant' && msg.options && msg.options.length > 0 && (
+                           <div className="mt-3 flex flex-col gap-2 animate-fade-in-up">
+                              {msg.options.map((option, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => handleQuickReply(option)}
+                                  className="w-full text-left bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 px-5 py-3 rounded-xl border border-slate-200 hover:border-blue-200 font-bold text-xs uppercase tracking-wide transition-all shadow-sm hover:shadow-md active:scale-[0.99] flex items-center justify-between group"
+                                >
+                                  {option}
+                                  <span className="text-slate-300 group-hover:text-blue-500 transition-colors">
+                                     ➔
+                                  </span>
+                                </button>
+                              ))}
+                           </div>
+                        )}
+
+                        <span className={`text-[10px] mt-2 font-bold uppercase tracking-widest px-1 ${msg.role === 'user' ? 'text-right text-slate-400' : 'text-left text-slate-400'}`}>
+                          {msg.role === 'user' ? 'Tú' : 'Dedoctor AI'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                     </div>
@@ -837,20 +838,7 @@ function App() {
               {/* Input Area - Fijo en la parte inferior */}
               <div className="chat-input-area border-t border-slate-100 bg-white/80 backdrop-blur-xl">
                 <div className="input-container py-4">
-                  {/* QUICK REPLIES */}
-                  {quickReplies.length > 0 && !confirmationData && (
-                    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 px-1 no-scrollbar">
-                      {quickReplies.map((reply, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleQuickReply(reply)}
-                          className="bg-sky-50 hover:bg-sky-100 text-sky-600 px-5 py-2.5 rounded-2xl whitespace-nowrap transition-all border border-sky-100/50 font-bold text-[11px] uppercase tracking-wider active:scale-95 shadow-sm"
-                        >
-                          {reply}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+
 
                   {/* LOCATION REQUEST BUTTON */}
                   {showLocationBtn && !confirmationData && (
