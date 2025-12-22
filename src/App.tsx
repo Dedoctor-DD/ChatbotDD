@@ -17,7 +17,7 @@ import { ServiceDetailPanel } from './components/ServiceDetailPanel';
 import { ContactPanel } from './components/ContactPanel';
 
 import type { Session } from '@supabase/supabase-js';
-import type { Message, ConfirmationData, Profile, ServiceRequest } from './types';
+import type { Message, ConfirmationData, ServiceRequest } from './types';
 
 type TabType = 'home' | 'chat' | 'admin' | 'history' | 'profile' | 'contact';
 
@@ -33,7 +33,6 @@ function App() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   // State for Quick Replies
 
@@ -519,7 +518,6 @@ function App() {
 
     if (!session?.user?.id) return;
 
-    setIsUploading(true);
     try {
       // Upload to Supabase Storage and DB
       const result = await uploadAttachment(file, session.user.id, null);
@@ -534,7 +532,6 @@ function App() {
       console.error('Upload failed:', error);
       alert(`Error al subir archivo: ${error.message}`);
     } finally {
-      setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -597,7 +594,6 @@ function App() {
                   setShowDetail(true);
                 }}
                 userName={userName}
-                userEmail={userEmail}
                 userId={session.user.id}
               />
             </div>

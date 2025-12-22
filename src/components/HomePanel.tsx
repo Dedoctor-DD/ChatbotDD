@@ -8,11 +8,10 @@ interface HomePanelProps {
   onGoToChat: () => void;
   onViewDetail: (request: ServiceRequest) => void;
   userName: string;
-  userEmail: string;
   userId: string;
 }
 
-export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName: initialUserName, userEmail, userId }: HomePanelProps) {
+export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName: initialUserName, userId }: HomePanelProps) {
   const [debts, setDebts] = useState<Debt[]>([]);
   const [recentRequests, setRecentRequests] = useState<ServiceRequest[]>([]);
   const [profile, setProfile] = useState<Partial<Profile> | null>(null);

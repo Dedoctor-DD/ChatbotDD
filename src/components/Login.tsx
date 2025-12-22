@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { generateUUID } from '../lib/utils';
-import { GlobalNavbar } from './GlobalNavbar';
 
 interface Partner {
     id: string;
