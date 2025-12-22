@@ -1,6 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './App.css';
-import { Send, Bot, User, Mic, MicOff, PlusCircle, MapPin, Paperclip, Loader, Home, MessageSquare, Users, LogOut } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getGeminiResponse } from './lib/gemini';
 import { supabase } from './lib/supabase';
 import { uploadAttachment } from './lib/storage';
@@ -13,11 +11,15 @@ import { HomePanel } from './components/HomePanel';
 import { LandingPage } from './components/LandingPage';
 
 
+import { ProfilePanel } from './components/ProfilePanel';
+import { HistoryPanel } from './components/HistoryPanel';
+import { ServiceDetailPanel } from './components/ServiceDetailPanel';
+import { ContactPanel } from './components/ContactPanel';
+
 import type { Session } from '@supabase/supabase-js';
-import type { Message, ConfirmationData, Profile } from './types';
+import type { Message, ConfirmationData, Profile, ServiceRequest } from './types';
 
-
-type TabType = 'home' | 'chat' | 'admin';
+type TabType = 'home' | 'chat' | 'admin' | 'history' | 'profile' | 'contact';
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -32,13 +34,14 @@ function App() {
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
 
   // State for Quick Replies
 
 
   const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   // Session ID management for individual chats
   const [sessionId, setSessionId] = useState(() => {
@@ -61,6 +64,10 @@ function App() {
     return newId;
   };
 
+  useEffect(() => {
+    setShowDetail(false);
+  }, [activeTab]);
+
   // Determinar si el usuario es admin (basado en email)
   const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com';
 
@@ -68,23 +75,11 @@ function App() {
     inputRef.current = input;
   }, [input]);
 
-  const [userProfile, setUserProfile] = useState<Profile | null>(null);
 
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchUserProfile();
-    }
-  }, [session]);
 
-  const fetchUserProfile = async () => {
-    if (!session?.user?.id) return;
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .single();
-    if (data) setUserProfile(data);
-  };
+
+
+
 
   useEffect(() => {
     // Check for test session first
@@ -582,351 +577,245 @@ function App() {
   const userEmail = session.user.email || '';
 
   return (
-    <div className="app-container">
-      {/* Sidebar (Desktop Only) */}
-      <aside className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-logo bg-white flex items-center justify-center p-1">
-            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
-          </div>
-          <span className="sidebar-brand">DD Chatbot</span>
-        </div>
-
-        <nav className="sidebar-nav">
-          <button 
-            onClick={() => setActiveTab('home')} 
-            className={`sidebar-item ${activeTab === 'home' ? 'active' : ''}`}
-          >
-            <Home className="sidebar-icon" />
-            <span>Inicio</span>
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab('chat')} 
-            className={`sidebar-item ${activeTab === 'chat' ? 'active' : ''}`}
-          >
-            <MessageSquare className="sidebar-icon" />
-            <span>Chat</span>
-          </button>
-
-          {isAdmin && (
-            <button 
-              onClick={() => setActiveTab('admin')} 
-              className={`sidebar-item ${activeTab === 'admin' ? 'active' : ''}`}
-            >
-              <Users className="sidebar-icon" />
-              <span>Administración</span>
-            </button>
-          )}
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="p-4 bg-slate-50/50 rounded-[24px] border border-slate-100 group hover:bg-white hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
-                {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
-                  <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="font-black text-sky-600">{(userProfile?.full_name || userName).charAt(0).toUpperCase()}</span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-slate-800 truncate leading-tight group-hover:text-sky-600 transition-colors uppercase tracking-tight">{userName}</p>
-                <p className="text-[10px] text-slate-400 font-bold truncate uppercase tracking-widest">{userEmail}</p>
-              </div>
-            </div>
-            
-            <button 
-              onClick={async () => {
-                localStorage.removeItem('dd_chatbot_test_session');
-                await supabase.auth.signOut();
-                setSession(null);
-                window.location.reload();
-              }}
-              className="w-full py-2.5 rounded-xl bg-white border border-slate-100 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <div className="main-content">
-        {/* GLOBAL HEADER - (Visible Mobile / Optional Desktop) */}
-        <div className="md:hidden h-14 bg-white/95 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 z-40 sticky top-0 flex-none shadow-sm">
-          
-          {/* Left: Brand & New Chat */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-sm border border-slate-100 transform hover:scale-105 transition-transform">
-               <img src="/logo.jpg" alt="Logo" className="w-full h-full object-contain" />
-            </div>
-            <div className="flex items-center gap-2">
-               <h1 className="text-sm font-black text-slate-700 tracking-tight">DD Chatbot</h1>
-               
-               {/* New Chat Button */}
-               <button
-                  onClick={() => {
-                    if (window.confirm('¿Iniciar nueva conversación?')) {
-                      createNewSession();
-                    }
-                  }}
-                  className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-50 hover:bg-sky-50 text-slate-400 hover:text-sky-500 border border-slate-200 hover:border-sky-200 transition-all ml-1"
-                  title="Nueva Conversación"
-                >
-                  <PlusCircle className="w-3.5 h-3.5" />
-               </button>
-            </div>
-          </div>
-
-          {/* Right: Avatar only on mobile header */}
-          <div className="flex items-center gap-3">
-            {session?.user && (
-              <>
-                <button 
-                  onClick={async () => {
-                    localStorage.removeItem('dd_chatbot_test_session');
-                    await supabase.auth.signOut();
-                    setSession(null);
-                    window.location.reload();
-                  }}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition-all"
-                >
-                   <LogOut className="w-4 h-4" />
-                </button>
-
-               <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden relative">
-                  {userProfile?.avatar_url || session.user.user_metadata?.avatar_url ? (
-                     <img src={userProfile?.avatar_url || session.user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                     <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold text-xs select-none">
-                        {(userProfile?.full_name || userName).charAt(0).toUpperCase()}
-                     </div>
-                  )}
-               </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto relative bg-slate-50 w-full scroll-smooth">
-
-
+    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-body">
+      {/* Mobile Frame Container */}
+      <div className="w-full max-w-md bg-white dark:bg-background-dark shadow-2xl relative flex flex-col min-h-screen overflow-hidden border-x border-gray-100 dark:border-gray-800">
+        
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col relative overflow-hidden">
           {activeTab === 'home' && (
-            <HomePanel
-              onServiceSelect={(type) => {
-                // START NEW CHAT SESSION
-                createNewSession();
+            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+              <HomePanel 
+                onServiceSelect={(type) => {
+                  setActiveTab('chat');
+                  const msg = type === 'transport' ? 'Necesito solicitar un transporte' : 'Necesito mantenimiento para mi silla';
+                  sendMessage(msg);
+                }}
+                onGoToChat={() => setActiveTab('chat')}
+                onViewDetail={(req) => {
+                  setSelectedRequest(req);
+                  setShowDetail(true);
+                }}
+                userName={userName}
+                userEmail={userEmail}
+                userId={session.user.id}
+              />
+            </div>
+          )}
 
-                const prompt = type === 'transport' ? 'Quiero solicitar transporte' : 'Necesito mantenimiento para mi silla';
-                setInput(prompt);
-                setActiveTab('chat');
-              }}
-              onGoToChat={() => setActiveTab('chat')}
-              userName={userName}
-              userEmail={userEmail}
-              userId={session.user.id}
-            />
+          {activeTab === 'home' && showDetail && selectedRequest && (
+            <div className="flex-1 overflow-y-auto no-scrollbar h-full absolute inset-0 z-[60]">
+               <ServiceDetailPanel 
+                 request={selectedRequest}
+                 onBack={() => setShowDetail(false)}
+               />
+            </div>
           )}
 
           {activeTab === 'chat' && (
-            <div className="chat-tab">
-              {/* Chat Tab Header */}
-              <div className="h-16 border-b border-slate-100 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md sticky top-0 z-20">
+            <div className="flex-1 flex flex-col relative overflow-hidden h-full">
+              {/* Chat Header */}
+              <header className="px-6 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 flex justify-between items-center z-20">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center text-sky-500">
-                    <MessageSquare className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary text-2xl">smart_toy</span>
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-slate-700 tracking-tight">Chat de Soporte</h2>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">En línea</p>
+                    <h2 className="text-sm font-black text-gray-900 dark:text-white">Asistente DD</h2>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">En Línea</span>
+                    </div>
                   </div>
                 </div>
-                
-                <button
-                  onClick={() => {
-                    if (window.confirm('¿Iniciar nueva conversación?')) {
-                      createNewSession();
-                    }
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-600 hover:bg-sky-50 hover:text-sky-600 transition-all text-xs font-black uppercase tracking-wider border border-slate-200 hover:border-sky-100"
+                <button 
+                  onClick={() => window.confirm('¿Reiniciar chat?') && createNewSession()}
+                  className="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
                 >
-                  <PlusCircle className="w-4 h-4" />
-                  <span className="hidden sm:inline">Nueva</span>
+                  <span className="material-symbols-outlined text-gray-400">add_comment</span>
                 </button>
-              </div>
+              </header>
 
-              {/* Messages Area */}
-              <div className="messages-area px-4 py-8 max-w-4xl mx-auto w-full">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-8 animate-fade-in`}
-                  >
-                    <div className={`flex max-w-[85%] md:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-3`}>
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-slate-900 text-white shadow-slate-900/20' : 'bg-white text-slate-500 border border-slate-200'}`}>
-                        {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
-                      </div>
-                      
-                      <div className="flex flex-col w-full">
-                        <div className={`px-6 py-4 rounded-2xl shadow-sm relative ${
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth no-scrollbar bg-slate-50/50 dark:bg-background-dark/50">
+                <div className="flex flex-col gap-6 max-w-full">
+                  {messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+                      <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                        <div className={`px-5 py-3.5 rounded-3xl text-sm font-medium leading-relaxed relative ${
                           msg.role === 'user' 
-                          ? 'bg-slate-900 text-white rounded-br-sm shadow-md shadow-slate-900/10' 
-                          : 'bg-white text-slate-800 rounded-bl-sm border border-slate-200 shadow-sm'
+                          ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20' 
+                          : 'bg-white dark:bg-surface-dark text-gray-800 dark:text-gray-100 rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-800'
                         }`}>
                           {msg.content.split('\n').map((line, i) => (
-                            <p key={i} className="text-[15px] font-medium leading-relaxed leading-6">{line}</p>
+                            <p key={i} className={i > 0 ? 'mt-2' : ''}>{line}</p>
                           ))}
                         </div>
 
-                        {/* RENDER MESSAGE OPTIONS (QUICK REPLIES) HERE */}
-                        {msg.role === 'assistant' && msg.options && msg.options.length > 0 && (
-                           <div className="mt-3 flex flex-col gap-2 animate-fade-in-up">
-                              {msg.options.map((option, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => handleQuickReply(option)}
-                                  className="w-full text-left bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-700 px-5 py-3 rounded-xl border border-slate-200 hover:border-blue-200 font-bold text-xs uppercase tracking-wide transition-all shadow-sm hover:shadow-md active:scale-[0.99] flex items-center justify-between group"
-                                >
-                                  {option}
-                                  <span className="text-slate-300 group-hover:text-blue-500 transition-colors">
-                                     ➔
-                                  </span>
-                                </button>
-                              ))}
-                           </div>
-                        )}
-
-                        <span className={`text-[10px] mt-2 font-bold uppercase tracking-widest px-1 ${msg.role === 'user' ? 'text-right text-slate-400' : 'text-left text-slate-400'}`}>
-                          {msg.role === 'user' ? 'Tú' : 'Dedoctor AI'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {/* Options / Quick Replies */}
+                        {msg.role === 'assistant' && msg.options && msg.options.map((opt, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleQuickReply(opt)}
+                            className="mt-2 w-full text-left bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 rounded-2xl px-4 py-3 text-xs font-bold text-primary shadow-sm active:scale-95 transition-all flex justify-between items-center"
+                          >
+                            {opt}
+                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                          </button>
+                        ))}
+                        
+                        <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest mt-1.5 px-1">
+                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                     </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start mb-8 animate-fade-in">
-                    <div className="flex max-w-[85%] md:max-w-[75%] items-end gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
-                        <Bot className="w-5 h-5 text-slate-400" />
+                  ))}
+
+                  {isLoading && (
+                    <div className="flex justify-start animate-fade-in">
+                      <div className="bg-white dark:bg-surface-dark px-5 py-3 rounded-2xl rounded-tl-none shadow-sm flex gap-1.5 border border-gray-100 dark:border-gray-800">
+                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce"></div>
+                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.4s]"></div>
                       </div>
-                      <div className="bg-white border border-slate-100 px-6 py-4 rounded-[24px] rounded-bl-none shadow-sm">
-                        <div className="flex gap-1.5">
-                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce"></span>
-                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                          <span className="w-1.5 h-1.5 bg-sky-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Confirmation Card */}
-              {confirmationData && session && (
-                <ConfirmationCard
-                  serviceType={confirmationData.service_type}
-                  data={confirmationData.data}
-                  userId={session.user.id}
-                  onConfirm={handleConfirm}
-                  onEdit={handleEdit}
-                />
-              )}
-
-              {/* Input Area - Fijo en la parte inferior */}
-              <div className="chat-input-area border-t border-slate-100 bg-white/80 backdrop-blur-xl">
-                <div className="input-container py-4">
-
-
-                  {/* LOCATION REQUEST BUTTON */}
-                  {showLocationBtn && !confirmationData && (
-                    <div className="flex justify-center mb-4">
-                      <button
-                        onClick={handleLocation}
-                        className="bg-white text-emerald-600 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-500/10 flex items-center gap-3 hover:bg-emerald-50 transition-all active:scale-95 border border-emerald-100 animate-bounce"
-                      >
-                        <MapPin className="w-5 h-5" />
-                        Compartir Ubicación Actual (GPS)
-                      </button>
                     </div>
                   )}
-
-                  <form onSubmit={handleSubmit} className="input-form gap-3">
-                    <div className="flex-1 relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-400 to-indigo-500 rounded-2xl blur opacity-0 group-focus-within:opacity-10 transition duration-500"></div>
-                      <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={isListening ? "Escuchando..." : "Escribe tu mensaje aquí..."}
-                        className="chat-input relative w-full bg-slate-50 border-slate-100 focus:bg-white focus:border-sky-300 transition-all rounded-2xl py-4 px-6 text-slate-700 font-medium placeholder:text-slate-400"
-                        disabled={isLoading}
-                      />
-                    </div>
-
-                    <div className="chat-input-buttons flex items-center gap-2 flex-shrink-0">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/*,application/pdf"
-                        onChange={handleFileSelect}
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading || isLoading}
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isUploading ? 'bg-slate-100 text-slate-400' : 'bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-600 border border-slate-100'}`}
-                        title="Adjuntar"
-                      >
-                        {isUploading ? <Loader className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={toggleMic}
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${isListening ? 'bg-red-50 text-red-500 border border-red-100 animate-pulse' : 'bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-600 border border-slate-100'}`}
-                      >
-                        {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                      </button>
-
-                      <button
-                        type="submit"
-                        disabled={!input.trim() || isLoading}
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${!input.trim() || isLoading ? 'bg-slate-100 text-slate-300' : 'bg-sky-600 text-white shadow-lg shadow-sky-600/30 hover:bg-sky-700 hover:scale-105 active:scale-95'}`}
-                      >
-                        <Send className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </form>
+                  <div ref={messagesEndRef} />
                 </div>
+
+                {/* Confirmation Card Logic Integrated */}
+                {confirmationData && session && (
+                  <div className="mt-8 mb-4">
+                    <ConfirmationCard
+                      serviceType={confirmationData.service_type}
+                      data={confirmationData.data}
+                      userId={session.user.id}
+                      onConfirm={handleConfirm}
+                      onEdit={handleEdit}
+                    />
+                  </div>
+                )}
               </div>
+
+              {/* Chat Input */}
+              <div className="p-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800">
+                {showLocationBtn && !confirmationData && (
+                  <button
+                    onClick={handleLocation}
+                    className="w-full mb-3 bg-green-500 text-white rounded-2xl py-3 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 animate-bounce"
+                  >
+                    <span className="material-symbols-outlined text-lg">location_on</span>
+                    Compartir Ubicación GPS
+                  </button>
+                )}
+                
+                <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+                  <div className="flex-1 bg-gray-50 dark:bg-surface-dark rounded-[1.5rem] p-1 flex items-end border border-gray-100 dark:border-gray-800 transition-all focus-within:border-primary/50">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-primary transition-colors"
+                    >
+                      <span className="material-symbols-outlined">attach_file</span>
+                      <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} />
+                    </button>
+                    
+                    <textarea
+                      rows={1}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSubmit(e as any);
+                        }
+                      }}
+                      placeholder="Escribe un mensaje..."
+                      className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2.5 px-2 max-h-32 resize-none text-gray-800 dark:text-gray-100"
+                    />
+                    
+                    <button
+                      type="button"
+                      onClick={toggleMic}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isListening ? 'text-rose-500 animate-pulse' : 'text-gray-400'}`}
+                    >
+                      <span className="material-symbols-outlined">{isListening ? 'mic_off' : 'mic'}</span>
+                    </button>
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isLoading}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${!input.trim() || isLoading ? 'bg-gray-100 text-gray-300 dark:bg-gray-800' : 'bg-primary text-white shadow-lg shadow-primary/30 active:scale-95'}`}
+                  >
+                    <span className="material-symbols-outlined filled">send</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'profile' && (
+            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+              <ProfilePanel 
+                userName={userName}
+                userEmail={userEmail}
+                onLogout={async () => {
+                  await supabase.auth.signOut();
+                  localStorage.removeItem('dd_chatbot_test_session');
+                  setSession(null);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'history' && !showDetail && (
+            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+              <HistoryPanel 
+                onViewDetail={(req) => {
+                  setSelectedRequest(req);
+                  setShowDetail(true);
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'history' && showDetail && selectedRequest && (
+            <div className="flex-1 overflow-y-auto no-scrollbar h-full absolute inset-0 z-[60]">
+               <ServiceDetailPanel 
+                 request={selectedRequest}
+                 onBack={() => setShowDetail(false)}
+               />
+            </div>
+          )}
+
+          {activeTab === 'contact' && (
+            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+              <ContactPanel />
             </div>
           )}
 
           {activeTab === 'admin' && isAdmin && (
-            <AdminPanel />
+            <div className="flex-1 overflow-y-auto pb-24 no-scrollbar">
+              <AdminPanel />
+            </div>
           )}
-        </div>
-        
+        </main>
+
         {/* Bottom Navigation */}
         <BottomNav
           activeTab={activeTab}
-          onTabChange={(tab) => {
-             if (tab === 'admin' && activeTab === 'admin') {
-                setIsAdminMenuOpen(!isAdminMenuOpen);
-             } else {
-                setActiveTab(tab);
-                setIsAdminMenuOpen(false);
-             }
-          }}
+          onTabChange={setActiveTab}
           isAdmin={isAdmin}
         />
+
+        {/* Floating Logout for Mobile (Cleanly placed) */}
+        {!session && (
+          <div className="fixed top-6 right-6 z-[60]">
+             {/* Not needed if handled by LandingPage */}
+          </div>
+        )}
       </div>
-      
     </div>
   );
 }

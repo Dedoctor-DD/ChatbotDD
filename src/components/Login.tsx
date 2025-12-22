@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Instagram, Facebook, Globe, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { generateUUID } from '../lib/utils';
 import { GlobalNavbar } from './GlobalNavbar';
 
@@ -24,21 +23,19 @@ export function Login({ onBack }: LoginProps) {
         if (window.location.hash && window.location.hash.includes('access_token')) {
             setIsLoading(true);
         }
-
         loadPartners();
     }, []);
 
     const loadPartners = async () => {
         try {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('partners')
                 .select('*')
                 .eq('is_active', true)
                 .order('display_order', { ascending: true });
             
-            if (error) throw error;
             if (data) {
-                setPartners([...data, ...data]);
+                setPartners([...data]);
             }
         } catch (err) {
             console.error('Error loading partners:', err);
@@ -67,152 +64,116 @@ export function Login({ onBack }: LoginProps) {
     };
 
     return (
-        <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-start font-sans tracking-tight">
-            {/* Animated Premium Background */}
-            <div className="absolute inset-0 bg-slate-50">
-                <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-400/20 blur-[100px] animate-pulse-slow"></div>
-                <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-400/20 blur-[100px] animate-pulse-slow [animation-delay:2s]"></div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
-            </div>
+        <div className="min-h-screen bg-background-light dark:bg-background-dark relative overflow-hidden flex flex-col items-center">
+            {/* Ambient Background Elements */}
+            <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse-slow"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-pulse-slow [animation-delay:1.5s]"></div>
 
-            <GlobalNavbar onBack={onBack} showBackButton={!!onBack} />
+            <header className="w-full max-w-md flex justify-between items-center px-6 py-5 sticky top-0 z-50">
+                <button 
+                  onClick={onBack}
+                  className="w-10 h-10 rounded-full bg-white dark:bg-surface-dark shadow-md flex items-center justify-center border border-gray-100 dark:border-gray-800"
+                >
+                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">arrow_back</span>
+                </button>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Portal Seguro</span>
+                </div>
+                <div className="w-10"></div>
+            </header>
 
-            <div className="container relative z-10 px-4 pb-12 flex flex-col items-center" style={{ paddingTop: '150px' }}>
-                
-                {/* Main Glass Card */}
-                <div className="w-full max-w-[420px] bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] rounded-[2.5rem] p-8 md:p-10 transform hover:scale-[1.005] transition-transform duration-500 ease-out flex flex-col items-center relative overflow-hidden group">
-                    
-                    {/* Glossy Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none"></div>
-
-                    {/* Logo Area */}
-                    <div className="w-24 h-24 mb-8 relative">
-                        <div className="absolute inset-0 bg-blue-500/10 rounded-3xl rotate-6 group-hover:rotate-12 transition-transform duration-500"></div>
-                        <div className="absolute inset-0 bg-white rounded-3xl shadow-lg flex items-center justify-center border border-slate-100 overflow-hidden">
-                             <img src="/logo.jpg" alt="DD Logo" className="w-full h-full object-cover" />
-                        </div>
+            <main className="w-full max-w-md px-6 pt-10 flex flex-col items-center flex-1">
+                {/* Brand Identity */}
+                <div className="mb-12 text-center">
+                    <div className="w-20 h-20 bg-white dark:bg-surface-dark rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-gray-800 overflow-hidden transform rotate-3">
+                         <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
                     </div>
+                    <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+                        Bienvenido<span className="text-primary">.</span>
+                    </h1>
+                    <p className="text-sm text-gray-500 font-bold uppercase tracking-wider mt-2">Identifícate para continuar</p>
+                </div>
 
-                    <div className="text-center mb-10 relative z-10">
-                        <h1 className="text-3xl font-black text-slate-800 mb-2 tracking-tight">
-                            Hola, Bienvenido
-                            <span className="text-blue-600">.</span>
-                        </h1>
-                        <p className="text-slate-500 font-medium leading-relaxed text-sm px-4">
-                            Accede a tu panel personal de <br/>
-                            <span className="text-slate-800 font-bold">Transportes DeDoctor</span> & <span className="text-slate-800 font-bold">Taller MMC</span>
-                        </p>
-                    </div>
+                {/* Login Card */}
+                <div className="w-full bg-white dark:bg-surface-dark rounded-[2.5rem] p-8 shadow-2xl shadow-blue-500/10 border border-gray-50 dark:border-gray-800">
+                    <p className="text-center text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed">
+                        Accede a tu cuenta de <span className="font-bold text-gray-800 dark:text-white">DeDoctor & MMC</span> para gestionar tus traslados y servicios técnicos.
+                    </p>
 
-                    {/* Google Login Button - Redesigned */}
                     <button
                         onClick={handleLogin}
                         disabled={isLoading}
-                        className="w-full relative group overflow-hidden bg-slate-900 hover:bg-slate-800 text-white transition-all duration-300 rounded-2xl p-1"
+                        className="w-full h-16 bg-primary hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-blue-500/40 transition-all flex items-center justify-center gap-4 border-none disabled:opacity-70 group overflow-hidden relative"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="relative flex items-center justify-between bg-slate-900 group-hover:bg-opacity-0 rounded-xl px-5 py-4 transition-all h-full">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-white p-2 rounded-lg shrink-0">
-                                    {isLoading ? (
-                                       <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-                                    ) : (
-                                       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-5 h-5" />
-                                    )}
+                        {isLoading ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                            <>
+                                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                <div className="p-2 bg-white rounded-lg shrink-0">
+                                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
                                 </div>
-                                <div className="flex flex-col items-start">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Continuar con</span>
-                                    <span className="text-base font-bold text-white tracking-wide">Google Secure</span>
-                                </div>
-                            </div>
-                            <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                        </div>
+                                <span className="relative z-10">Entrar con Google</span>
+                                <span className="material-symbols-outlined relative z-10 text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </>
+                        )}
                     </button>
 
-                    {/* Trust Badges */}
-                    <div className="flex items-center justify-center gap-6 mt-8 pt-8 border-t border-slate-200/60 w-full">
-                        <div className="flex flex-col items-center gap-2 group/icon cursor-default">
-                             <div className="p-2 rounded-full bg-emerald-50 text-emerald-600 group-hover/icon:scale-110 transition-transform">
-                                <ShieldCheck className="w-4 h-4" />
-                             </div>
-                             <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Datos Seguros</span>
-                        </div>
-                         <div className="w-px h-8 bg-slate-200"></div>
-                        <div className="flex flex-col items-center gap-2 group/icon cursor-default">
-                             <div className="p-2 rounded-full bg-amber-50 text-amber-500 group-hover/icon:scale-110 transition-transform">
-                                <Zap className="w-4 h-4" />
-                             </div>
-                             <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Acceso Rápido</span>
-                        </div>
-                    </div>
-
                     {error && (
-                        <div className="mt-6 p-4 bg-red-50 text-red-500 text-xs font-bold rounded-xl w-full text-center border border-red-100 animate-fade-in">
+                        <div className="mt-6 p-4 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-widest rounded-xl text-center border border-rose-100 dark:border-rose-800">
                             {error}
                         </div>
                     )}
+
+                    {/* Trust Indicators */}
+                    <div className="grid grid-cols-2 gap-4 mt-10 pt-8 border-t border-gray-100 dark:border-gray-800">
+                        <div className="flex flex-col items-center gap-1.5">
+                            <span className="material-symbols-outlined text-green-500 filled">verified_user</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Encriptado SSL</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1.5">
+                            <span className="material-symbols-outlined text-blue-500 filled">bolt</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Acceso Directo</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Dev/Test Tools */}
+                {/* Partner Logos */}
+                <div className="mt-16 w-full opacity-40">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] text-center mb-6">Operando con los más altos estándares</p>
+                    <div className="flex flex-wrap justify-center gap-8 grayscale">
+                        {partners.slice(0, 3).map((p, i) => (
+                            <img key={i} src={p.logo_url} alt={p.name} className="h-5 object-contain" />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Dev Tools */}
                 {import.meta.env.DEV && (
-                    <div className="mt-8 flex gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                    <div className="fixed bottom-6 flex gap-2">
                         <button
                             onClick={() => {
-                                const mockSession = {
-                                    access_token: 'mock_token_' + Date.now(),
-                                    user: {
-                                        id: generateUUID(),
-                                        email: 'invitado@dedoctor.com',
-                                        user_metadata: { full_name: 'Invitado de Prueba' }
-                                    }
-                                };
+                                const mockSession = { access_token: 'tk', user: { id: generateUUID(), email: 'user@test.com', user_metadata: { full_name: 'Usuario Test' } } };
                                 localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                 window.location.reload();
                             }}
-                            className="px-4 py-2 font-mono text-[10px] bg-slate-200 rounded-lg text-slate-600 hover:bg-slate-300"
+                            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-[10px] font-mono rounded-lg"
                         >
-                            DEV: Guest
+                            Guest
                         </button>
                         <button
                             onClick={() => {
-                                const mockSession = {
-                                    access_token: 'mock_token_admin_' + Date.now(),
-                                    user: {
-                                        id: generateUUID(),
-                                        email: 'dedoctor.transportes@gmail.com',
-                                        user_metadata: { full_name: 'Admin Test', role: 'admin' }
-                                    }
-                                };
+                                const mockSession = { access_token: 'tk', user: { id: generateUUID(), email: 'dedoctor.transportes@gmail.com', user_metadata: { full_name: 'Admin Test' } } };
                                 localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                 window.location.reload();
                             }}
-                            className="px-4 py-2 font-mono text-[10px] bg-indigo-200 rounded-lg text-indigo-700 hover:bg-indigo-300"
+                            className="px-3 py-1.5 bg-blue-200 dark:bg-blue-900 text-[10px] font-mono rounded-lg text-blue-600"
                         >
-                            DEV: Admin
+                            Admin
                         </button>
                     </div>
                 )}
-
-                {/* Footer Links */}
-                <div className="mt-16 text-center">
-                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-6">Confían en Dedoctor & MMC</p>
-                    {partners.length > 0 && (
-                        <div className="flex gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                             {partners.slice(0, 4).map((p, i) => (
-                                 <img key={i} src={p.logo_url} alt={p.name} className="h-6 object-contain" title={p.name} />
-                             ))}
-                        </div>
-                    )}
-                    
-                    <div className="flex gap-4 justify-center mt-10 mb-4">
-                        <a href="#" className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-blue-600 hover:text-white transition-all"><Instagram className="w-4 h-4"/></a>
-                        <a href="#" className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-blue-600 hover:text-white transition-all"><Facebook className="w-4 h-4"/></a>
-                        <a href="https://dedoctor.cl" className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-blue-600 hover:text-white transition-all"><Globe className="w-4 h-4"/></a>
-                    </div>
-                    <p className="text-[10px] text-slate-300 font-semibold">© 2025 Dedoctor Group. Secure Portal.</p>
-                </div>
-
-            </div>
+            </main>
         </div>
     );
 }
