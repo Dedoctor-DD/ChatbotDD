@@ -46,8 +46,15 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <main className="w-full max-w-md mx-auto bg-background-light dark:bg-background-dark min-h-screen relative overflow-hidden shadow-2xl flex flex-col font-display">
-      <header className="flex justify-between items-center px-6 py-5 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800">
+    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-jakarta relative">
+      {/* Ambient Background for PC */}
+      <div className="hidden md:block absolute inset-0 z-0">
+        <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
+        <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
+      </div>
+
+      <main className="w-full max-w-md mx-auto bg-white dark:bg-surface-dark min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative overflow-hidden shadow-2xl flex flex-col z-10 border-x border-gray-100 dark:border-gray-800 transition-all duration-500">
+      <header className="flex justify-between items-center px-6 py-5 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center shadow-lg relative overflow-hidden group">
             <span className="text-white font-bold text-xl relative z-10">D</span>
@@ -190,5 +197,6 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </p>
       </footer>
     </main>
+    </div>
   );
 }

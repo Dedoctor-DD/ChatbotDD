@@ -574,9 +574,15 @@ function App() {
   const userEmail = session.user.email || '';
 
   return (
-    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-body">
+    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-body relative">
+      {/* Ambient Background for PC */}
+      <div className="hidden md:block absolute inset-0 z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:2s]"></div>
+      </div>
+
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md bg-white dark:bg-background-dark shadow-2xl relative flex flex-col min-h-screen overflow-hidden border-x border-gray-100 dark:border-gray-800">
+      <div className="w-full max-w-md bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
         
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col relative overflow-hidden">

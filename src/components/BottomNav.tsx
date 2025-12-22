@@ -15,7 +15,7 @@ export function BottomNav({ activeTab, onTabChange, isAdmin }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-white/95 dark:bg-[#101922]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-50">
+    <nav className="fixed md:absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-50 md:rounded-b-[3rem]">
       <div className={`grid h-16 items-center justify-items-center ${isAdmin ? 'grid-cols-6' : 'grid-cols-5'}`}>
         {navItems.map((item) => {
           const isActive = activeTab === item.value;

@@ -63,10 +63,17 @@ export function Login({ onBack }: LoginProps) {
     };
 
     return (
-        <div className="min-h-screen bg-background-light dark:bg-background-dark relative overflow-hidden flex flex-col items-center">
-            {/* Ambient Background Elements */}
-            <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse-slow"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-pulse-slow [animation-delay:1.5s]"></div>
+        <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-jakarta relative">
+            {/* Ambient Background for PC */}
+            <div className="hidden md:block absolute inset-0 z-0">
+                <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
+                <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
+            </div>
+
+            <div className="w-full max-w-md bg-white dark:bg-surface-dark min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative shadow-2xl flex flex-col items-center z-10 border-x border-gray-100 dark:border-gray-800 transition-all duration-500 overflow-hidden">
+                {/* Ambient Background Inside (Legacy) */}
+                <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse-slow"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-pulse-slow [animation-delay:1.5s]"></div>
 
             <header className="w-full max-w-md flex justify-between items-center px-6 py-5 sticky top-0 z-50">
                 <button 
@@ -173,6 +180,7 @@ export function Login({ onBack }: LoginProps) {
                     </div>
                 )}
             </main>
+        </div>
         </div>
     );
 }
