@@ -230,54 +230,21 @@ function App() {
 
   // Load persistent history for CURRENT SESSION ONLY
   useEffect(() => {
-    if (session && activeTab === 'chat') {
-      const loadHistory = async () => {
-        // Obtenemos los últimos 50 mensajes de este usuario (orden cronológico)
-        const { data: history, error } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('user_id', session.user.id)
-          // .eq('session_id', sessionId) // Mostramos historial completo para mejor experiencia
-          .order('created_at', { ascending: false }) // Traemos los más recientes primero
-          .limit(100);
-
-        if (error) {
-          console.error('Error loading history:', error);
-          return;
-        }
-
-        if (history && history.length > 0) {
-          // Supabase los devuelve "más recientes primero" por el orden, así que invertimos para mostrar cronológicamente
-          const sortedHistory = history.reverse().map((msg: any) => ({
-            id: msg.id,
-            role: msg.role as 'user' | 'assistant',
-            content: msg.content,
-            timestamp: new Date(msg.created_at)
-          }));
-          setMessages(sortedHistory);
-          // Opcional: Agregar una pequeña marca visual de "Historial cargado"
-        } else {
-          // Si es una sesión nueva, saludo
-          if (messages.length === 0) {
-            const userName = session.user.user_metadata?.full_name ||
-              session.user.user_metadata?.name ||
-              session.user.email?.split('@')[0] ||
-              'Usuario';
-            setMessages([
-              {
-                id: '1',
-                role: 'assistant',
-                content: `¡Hola ${userName}! 👋 Soy DD Chatbot. ¿Necesitas solicitar 'Transporte' 🚌 o 'Mantenimiento' 🔧?`,
-                timestamp: new Date(),
-              },
-            ]);
-          }
-        }
-      };
-
-      loadHistory();
+    if (session && activeTab === 'chat' && messages.length === 0) {
+      const userName = session.user.user_metadata?.full_name ||
+        session.user.user_metadata?.name ||
+        session.user.email?.split('@')[0] ||
+        'Usuario';
+      setMessages([
+        {
+          id: generateUUID(),
+          role: 'assistant',
+          content: `¡Hola ${userName}! 👋 Bienvenido a Arise. ¿En qué puedo ayudarte hoy?\n\nSolicitar 'Transporte' 🚌\nSolicitar 'Mantenimiento' 🔧`,
+          timestamp: new Date(),
+        },
+      ]);
     }
-  }, [session, activeTab, sessionId]); // Add sessionId dep
+  }, [session, activeTab]);
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
@@ -623,19 +590,31 @@ function App() {
                     <span className="material-symbols-outlined text-primary text-2xl">smart_toy</span>
                   </div>
                   <div>
-                    <h2 className="text-sm font-black text-gray-900 dark:text-white">Asistente DD</h2>
+                    <h2 className="text-sm font-black text-gray-900 dark:text-white">Arise AI</h2>
                     <div className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">En Línea</span>
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
+                      <span className="text-[10px] text-primary font-black uppercase tracking-wider">Arise Active</span>
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => window.confirm('¿Reiniciar chat?') && createNewSession()}
-                  className="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
-                >
-                  <span className="material-symbols-outlined text-gray-400">add_comment</span>
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      if (window.confirm('¿Deseas ver tus historiales anteriores?')) {
+                        setActiveTab('history');
+                      }
+                    }}
+                    className="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-gray-400">history</span>
+                  </button>
+                  <button 
+                    onClick={() => window.confirm('¿Reiniciar chat actual?') && createNewSession()}
+                    className="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors border border-gray-100 dark:border-gray-800"
+                  >
+                    <span className="material-symbols-outlined text-primary">add_comment</span>
+                  </button>
+                </div>
               </header>
 
               {/* Chat Messages */}
@@ -809,6 +788,7 @@ function App() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           isAdmin={isAdmin}
+          onNewChat={createNewSession}
         />
 
         {/* Floating Logout for Mobile (Cleanly placed) */}
