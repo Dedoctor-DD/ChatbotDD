@@ -46,130 +46,143 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-jakarta relative">
+    <div className="flex justify-center min-h-screen bg-white overflow-hidden font-jakarta relative">
       {/* Ambient Background for PC */}
       <div className="hidden md:block absolute inset-0 z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
         <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
       </div>
 
-      <main className="w-full max-w-md md:max-w-5xl mx-auto bg-white dark:bg-surface-dark min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative overflow-hidden shadow-2xl flex flex-col z-10 border-x border-gray-100 dark:border-gray-800 transition-all duration-500">
-      <header className="flex justify-between items-center px-6 py-5 bg-white/80 dark:bg-surface-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800">
+      <main className="w-full max-w-md md:max-w-5xl mx-auto bg-white min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative overflow-hidden shadow-2xl flex flex-col z-10 border-x border-gray-100 transition-all duration-500">
+      <header className="flex justify-between items-center px-6 py-5 bg-white/60 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center shadow-lg relative overflow-hidden group">
-            <span className="text-white font-bold text-xl relative z-10">D</span>
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center shadow-lg relative overflow-hidden group">
+            <span className="text-white font-black text-xl relative z-10 tracking-tighter">D</span>
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
           <div className="flex flex-col">
-            <h1 className="font-bold text-sm leading-tight text-gray-900 dark:text-white">DeDoctor <span className="text-primary">&</span> MMC</h1>
-            <p className="text-[0.6rem] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Grupo de Movilidad</p>
+            <h1 className="font-black text-[11px] uppercase tracking-[0.2em] leading-tight text-slate-800">
+              DeDoctor <span className="text-primary font-black">&</span> MMC
+            </h1>
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">Grupo de Movilidad</p>
           </div>
         </div>
         <button 
           onClick={onLoginClick}
-          className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-white rounded-full text-xs font-bold hover:bg-blue-700 transition shadow-md shadow-blue-500/30 border-none"
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition shadow-xl shadow-primary/20 border-none active:scale-95"
         >
-          <span className="material-icons-round text-sm">person</span>
-          ACCESO
+          <span className="material-symbols-outlined text-sm">person</span>
+          Acceso
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto pt-8 pb-10">
+      <div className="flex-1 overflow-y-auto pt-4 pb-10 scroll-smooth no-scrollbar">
         <div className="flex flex-col px-6">
-          <HeroSection />
-        <MissionVisionSection />
-
-
-          {/* Features Section */}
-          <section id="details" className="space-y-4 mb-12">
-            <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-lg border border-gray-50 dark:border-gray-800 flex flex-col items-center text-center">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-4 text-primary">
-                <span className="material-symbols-outlined text-3xl">security</span>
-              </div>
-              <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-3">Misión DeDoctor</h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                Protocolos de transporte diseñados para preservar la dignidad y seguridad de cada paciente.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-lg border border-gray-50 dark:border-gray-800 flex flex-col items-center text-center">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-4 text-primary">
-                <span className="material-symbols-outlined text-3xl">build</span>
-              </div>
-              <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-3">Ingeniería MMC</h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                Reparación de precisión para sillas de ruedas eléctricas y manuales con tecnología de punta.
-              </p>
-            </div>
-          </section>
+          <HeroSection onActionClick={onLoginClick} />
+          
+          <div id="details">
+            <MissionVisionSection />
+          </div>
 
           {/* Photo Gallery Section */}
-          <section className="mb-12">
+          <section className="mb-16">
+             <header className="mb-8 px-2">
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Nuestra <span className="text-primary">Flota</span></h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Excelencia en cada unidad</p>
+             </header>
              <PhotoGallery />
           </section>
 
           {/* Contact Form */}
-          <section id="contacto" className="mb-10">
-            <div className="bg-white dark:bg-surface-dark rounded-3xl p-6 shadow-xl border border-blue-50 dark:border-slate-800">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <span className="material-icons-round text-primary">contact_support</span>
+          <section id="contacto" className="mb-12">
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+              
+              <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
+                <span className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                   <span className="material-symbols-outlined text-primary text-xl filled">mail</span>
+                </span>
                 Solicitud Rápida
               </h3>
               
               {formStatus === 'success' ? (
-                <div className="py-8 text-center animate-scale-in">
-                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="material-icons-round text-3xl">check_circle</span>
+                <div className="py-12 text-center animate-scale-in">
+                  <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                    <span className="material-symbols-outlined text-4xl">check_circle</span>
                   </div>
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2">¡Recibido!</h4>
-                  <p className="text-sm text-slate-500 mb-4">Te contactaremos por WhatsApp en breve.</p>
+                  <h4 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">¡Mensaje Enviado!</h4>
+                  <p className="text-sm font-medium text-slate-500 mb-8">Te contactaremos por WhatsApp en los próximos minutos.</p>
                   <button 
                     onClick={() => setFormStatus('idle')}
-                    className="text-primary font-bold text-sm bg-transparent border-none"
+                    className="text-primary font-black text-xs uppercase tracking-widest bg-primary/5 px-6 py-3 rounded-xl border-none hover:bg-primary/10 transition-all"
                   >
                     Enviar otro mensaje
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Nombre</label>
-                    <input 
-                      required
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all dark:text-white" 
-                      placeholder="Ej: Manuel García"
-                      value={formData.full_name}
-                      onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                    />
+                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Completo</label>
+                      <input 
+                        required
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 outline-none transition-all" 
+                        placeholder="Ej: Manuel García"
+                        value={formData.full_name}
+                        onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp / Teléfono</label>
+                       <input 
+                        required type="tel"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 outline-none transition-all" 
+                        placeholder="+56 9 XXXX XXXX"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">WhatsApp</label>
-                    <input 
-                      required type="tel"
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all dark:text-white" 
-                      placeholder="+56 9 XXXX XXXX"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    />
+                  
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Servicio</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['Traslado DeDoctor', 'Taller MMC'].map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => setFormData({...formData, service_type: type})}
+                          className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${
+                            formData.service_type === type 
+                            ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-[1.02]' 
+                            : 'bg-white text-slate-400 border-slate-50 hover:border-primary/20'
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Mensaje</label>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Detalles de tu consulta</label>
                     <textarea 
-                      required rows={3}
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all dark:text-white resize-none" 
-                      placeholder="¿En qué podemos ayudarte?"
+                      required rows={4}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none" 
+                      placeholder="Danos una breve descripción de lo que necesitas..."
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
                   </div>
                   <button 
                     disabled={formStatus === 'loading'}
-                    className="w-full py-4 bg-primary text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 border-none disabled:opacity-70"
+                    className="w-full py-5 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 border-none disabled:opacity-70 active:scale-95 transition-all group"
                   >
                     {formStatus === 'loading' ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-6 h-6 animate-spin" />
                     ) : (
                       <>
-                        <span className="material-icons-round text-lg">send</span>
+                        <span className="material-symbols-outlined text-lg group-hover:rotate-12 transition-transform">send</span>
                         Enviar Solicitud
                       </>
                     )}
@@ -181,20 +194,25 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </div>
 
-      <footer className="px-6 py-8 bg-white dark:bg-background-dark border-t border-gray-100 dark:border-gray-800 flex flex-col items-center gap-6">
-        <div className="flex gap-4">
-          <a href="#" className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 dark:border-slate-700 active:scale-95 shadow-sm overflow-hidden group">
-            <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">social_leaderboard</span>
+      <footer className="px-6 py-12 bg-white border-t border-slate-50 flex flex-col items-center gap-8">
+        <div className="flex gap-6">
+          <a href="#" className="w-14 h-14 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+            <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">social_leaderboard</span>
             <span className="sr-only">Instagram</span>
           </a>
-          <a href="#" className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 dark:border-slate-700 active:scale-95 shadow-sm overflow-hidden group">
-            <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">chat</span>
+          <a href="#" className="w-14 h-14 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+            <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">chat</span>
             <span className="sr-only">WhatsApp</span>
           </a>
         </div>
-        <p className="text-[0.65rem] text-slate-400 font-black uppercase tracking-[0.2em]">
-          © {new Date().getFullYear()} Grupo DeDoctor & MMC
-        </p>
+        <div className="text-center">
+          <p className="text-[0.7rem] text-slate-400 font-black uppercase tracking-[0.3em] mb-2">
+            © {new Date().getFullYear()} Grupo DeDoctor & MMC
+          </p>
+          <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+            Comprometidos con la Movilidad Inclusiva
+          </p>
+        </div>
       </footer>
     </main>
     </div>

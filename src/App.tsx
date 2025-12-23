@@ -24,6 +24,14 @@ type TabType = 'home' | 'chat' | 'admin' | 'history' | 'profile' | 'contact';
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+  
+  // User info derived from session
+  const userName = session?.user?.user_metadata?.full_name || 
+                   session?.user?.user_metadata?.name || 
+                   session?.user?.email?.split('@')[0] || 
+                   'Usuario';
+  const userEmail = session?.user?.email || '';
+
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -50,20 +58,11 @@ function App() {
 
   const [pendingAttachmentIds, setPendingAttachmentIds] = useState<string[]>([]);
   
-  // Theme Management
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('dd_theme') === 'dark';
-  });
-
+  // Theme Management - FORCED LIGHT MODE
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('dd_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('dd_theme', 'light');
-    }
-  }, [isDarkMode]);
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('dd_theme', 'light');
+  }, []);
 
   // Persist session ID
   useEffect(() => {
@@ -245,21 +244,90 @@ function App() {
 
   // Load persistent history for CURRENT SESSION ONLY
   useEffect(() => {
-    if (session && activeTab === 'chat' && messages.length === 0) {
-      const userName = session.user.user_metadata?.full_name ||
-        session.user.user_metadata?.name ||
-        session.user.email?.split('@')[0] ||
-        'Usuario';
-      setMessages([
-        {
-          id: generateUUID(),
-          role: 'assistant',
-          content: `¡Hola ${userName}! 👋 Bienvenido a Arise. ¿En qué puedo ayudarte hoy?\n\nSolicitar 'Transporte' 🚌\nSolicitar 'Mantenimiento' 🔧`,
-          timestamp: new Date(),
-        },
-      ]);
+    const loadHistory = async () => {
+      if (!session || activeTab !== 'chat') return;
+
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('session_id', sessionId)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const formattedMessages: Message[] = data.map(m => {
+            // Limpiar tags para el UI pero mantenerlos en el objeto para lógica
+            let displayContent = m.content;
+            
+            // Extraer Quick Replies si existen
+            const qrMatch = displayContent.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
+            let options: string[] = [];
+            if (qrMatch) {
+              try { options = JSON.parse(qrMatch[1]); } catch(e) {}
+              displayContent = displayContent.replace(qrMatch[0], '').trim();
+            }
+
+            // Extraer Confirmation si existe
+            const cMatch = displayContent.match(/\[CONFIRM_READY:\s*({[\s\S]*?})\]/i);
+            if (cMatch) {
+              displayContent = displayContent.replace(cMatch[0], '').trim();
+            }
+
+            return {
+              id: m.id,
+              role: m.role,
+              content: displayContent,
+              rawContent: m.content, // Guardamos el original para recuperaciones
+              timestamp: new Date(m.created_at),
+              options: options.length > 0 ? options : undefined
+            };
+          });
+          setMessages(formattedMessages);
+
+          // Recuperar estado de confirmación si el último mensaje la tenía
+          const lastBotMessage = formattedMessages.filter(m => m.role === 'assistant').pop();
+          if (lastBotMessage && (lastBotMessage as any).rawContent) {
+            const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/i;
+            const confirmMatch = (lastBotMessage as any).rawContent.match(confirmRegex);
+            if (confirmMatch && confirmMatch[1]) {
+              try {
+                let jsonStr = confirmMatch[1].trim();
+                if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json/, '');
+                if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```/, '');
+                if (jsonStr.endsWith('```')) jsonStr = jsonStr.replace(/```$/, '');
+                const confirmData = JSON.parse(jsonStr);
+                setConfirmationData(confirmData);
+              } catch (e) {
+                console.error('Error recovering confirmation data:', e);
+              }
+            }
+          }
+        } else {
+          // Si no hay historial, poner mensaje de bienvenida
+          setMessages([
+            {
+              id: generateUUID(),
+              role: 'assistant',
+              content: `¡Hola ${userName}! 👋 Bienvenido a Dedoctor. ¿En qué podemos ayudarte hoy?\n\n- Solicitar Transporte 🚌\n- Mantención de Silla o Ayuda Técnica 🔧`,
+              timestamp: new Date(),
+              options: ['Transporte 🚌', 'Mantención 🔧']
+            },
+          ]);
+        }
+      } catch (err) {
+        console.error('Error loading history:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (activeTab === 'chat' && messages.length === 0) {
+      loadHistory();
     }
-  }, [session, activeTab]);
+  }, [session, activeTab, sessionId]);
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
@@ -328,7 +396,12 @@ function App() {
 
       if (confirmMatch && confirmMatch[1]) {
         try {
-          const jsonStr = confirmMatch[1];
+          // Limpiar el JSON de posibles decoradores markdown si el bot los incluyó
+          let jsonStr = confirmMatch[1].trim();
+          if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json/, '');
+          if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```/, '');
+          if (jsonStr.endsWith('```')) jsonStr = jsonStr.replace(/```$/, '');
+          
           const confirmData = JSON.parse(jsonStr);
           setConfirmationData(confirmData);
           messageOptions = []; // Clear options if confirming
@@ -356,11 +429,11 @@ function App() {
 
       setMessages((prev) => [...prev, botMessage]);
 
-      // Log assistant message (Always log, as IDs are now valid UUIDs)
+      // Log assistant message (Guardamos la respuesta completa para poder reconstruir el estado tras recargar)
       if (session?.user?.id) {
         supabase.from('messages').insert({
           role: 'assistant',
-          content: cleanResponse,
+          content: responseText, // USAR responseText (completo) en lugar de cleanResponse
           created_at: new Date().toISOString(),
           user_id: session.user.id,
           session_id: sessionId
@@ -549,14 +622,9 @@ function App() {
     return <LandingPage onLoginClick={() => setShowLogin(true)} />;
   }
 
-  const userName = session.user.user_metadata?.full_name ||
-    session.user.user_metadata?.name ||
-    session.user.email?.split('@')[0] ||
-    'Usuario';
-  const userEmail = session.user.email || '';
 
   return (
-    <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-body relative">
+    <div className="flex justify-center min-h-screen bg-white font-body relative">
       {/* Ambient Background for PC */}
       <div className="hidden md:block absolute inset-0 z-0">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
@@ -564,7 +632,7 @@ function App() {
       </div>
 
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md md:max-w-2xl bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col h-[100dvh] md:h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
+      <div className="w-full max-w-md md:max-w-2xl bg-white shadow-2xl relative flex flex-col h-[100dvh] md:h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 z-10 transition-all duration-500">
         
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col relative overflow-hidden">
@@ -573,7 +641,7 @@ function App() {
               <HomePanel 
                 onServiceSelect={(type) => {
                   setActiveTab('chat');
-                  const msg = type === 'transport' ? 'Necesito solicitar un transporte' : 'Necesito mantenimiento para mi silla';
+                  const msg = type === 'transport' ? 'Necesito solicitar un transporte' : 'Necesito mantención para un equipo o ayuda técnica';
                   sendMessage(msg);
                 }}
                 onGoToChat={() => setActiveTab('chat')}
@@ -599,13 +667,13 @@ function App() {
           {activeTab === 'chat' && (
             <div className="flex-1 flex flex-col relative overflow-hidden h-full">
               {/* Chat Header */}
-              <header className="px-6 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 flex justify-between items-center z-20">
+              <header className="px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 flex justify-between items-center z-20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                     <span className="material-symbols-outlined text-primary text-2xl">smart_toy</span>
                   </div>
                   <div>
-                    <h2 className="text-sm font-black text-gray-900 dark:text-white">Arise AI</h2>
+                    <h2 className="text-sm font-black text-gray-900">Arise AI</h2>
                     <div className="flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
                       <span className="text-[10px] text-primary font-black uppercase tracking-wider">Arise Active</span>
@@ -619,13 +687,13 @@ function App() {
                         setActiveTab('history');
                       }
                     }}
-                    className="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors"
+                    className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center transition-colors"
                   >
                     <span className="material-symbols-outlined text-gray-400">history</span>
                   </button>
                   <button 
                     onClick={() => window.confirm('¿Reiniciar chat actual?') && createNewSession()}
-                    className="w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors border border-gray-100 dark:border-gray-800"
+                    className="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center transition-colors border border-gray-100"
                   >
                     <span className="material-symbols-outlined text-primary">add_comment</span>
                   </button>
@@ -633,34 +701,38 @@ function App() {
               </header>
 
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth no-scrollbar bg-slate-50/50 dark:bg-background-dark/50">
-                <div className="flex flex-col gap-6 max-w-full">
+              <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth no-scrollbar bg-slate-50/50">
+                <div className="flex flex-col gap-8 max-w-full">
                   {messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-                      <div className={`flex flex-col max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                        <div className={`px-5 py-3.5 rounded-3xl text-sm font-medium leading-relaxed relative ${
+                      <div className={`flex flex-col max-w-[88%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                        <div className={`px-6 py-4 rounded-[2rem] text-sm font-medium leading-relaxed relative ${
                           msg.role === 'user' 
-                          ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20' 
-                          : 'bg-white dark:bg-surface-dark text-gray-800 dark:text-gray-100 rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-800'
+                          ? 'bg-gradient-to-br from-primary to-blue-600 text-white rounded-tr-none shadow-xl shadow-primary/25' 
+                          : 'bg-white text-slate-800 rounded-tl-none shadow-2xl shadow-slate-200/50 border border-slate-50'
                         }`}>
                           {msg.content.split('\n').map((line, i) => (
                             <p key={i} className={i > 0 ? 'mt-2' : ''}>{line}</p>
                           ))}
                         </div>
 
-                        {/* Options / Quick Replies */}
-                        {msg.role === 'assistant' && msg.options && msg.options.map((opt, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleQuickReply(opt)}
-                            className="mt-2 w-full text-left bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 rounded-2xl px-4 py-3 text-xs font-bold text-primary shadow-sm active:scale-95 transition-all flex justify-between items-center"
-                          >
-                            {opt}
-                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                          </button>
-                        ))}
+                        {/* Options / Quick Replies Premium */}
+                        {msg.role === 'assistant' && msg.options && (
+                          <div className="mt-4 flex flex-col gap-3 w-full animate-slide-up">
+                            {msg.options.map((opt, i) => (
+                              <button
+                                key={i}
+                                onClick={() => handleQuickReply(opt)}
+                                className="w-full text-left bg-white border border-slate-100 rounded-2xl px-5 py-4 text-xs font-black text-primary uppercase tracking-widest shadow-xl shadow-slate-200/40 active:scale-95 hover:bg-slate-50 transition-all flex justify-between items-center group"
+                              >
+                                {opt}
+                                <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         
-                        <span className="text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-widest mt-1.5 px-1">
+                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-2 px-2">
                           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
@@ -669,10 +741,10 @@ function App() {
 
                   {isLoading && (
                     <div className="flex justify-start animate-fade-in">
-                      <div className="bg-white dark:bg-surface-dark px-5 py-3 rounded-2xl rounded-tl-none shadow-sm flex gap-1.5 border border-gray-100 dark:border-gray-800">
-                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce"></div>
-                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                        <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                      <div className="bg-white px-6 py-4 rounded-3xl rounded-tl-none shadow-2xl shadow-slate-200/40 flex gap-2 border border-slate-50">
+                        <div className="w-2 h-2 bg-primary/40 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></div>
                       </div>
                     </div>
                   )}
@@ -695,7 +767,7 @@ function App() {
               </div>
 
               {/* Chat Input */}
-              <div className="p-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800">
+              <div className="p-4 bg-white/80 backdrop-blur-xl border-t border-gray-100">
                 {showLocationBtn && !confirmationData && (
                   <button
                     onClick={handleLocation}
@@ -707,7 +779,7 @@ function App() {
                 )}
                 
                 <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-                  <div className="flex-1 bg-gray-50 dark:bg-surface-dark rounded-[1.5rem] p-1 flex items-end border border-gray-100 dark:border-gray-800 transition-all focus-within:border-primary/50">
+                  <div className="flex-1 bg-gray-50 rounded-[1.5rem] p-1 flex items-end border border-gray-100 transition-all focus-within:border-primary/50">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -755,15 +827,14 @@ function App() {
           {activeTab === 'profile' && (
             <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
               <ProfilePanel 
-                userName={userName}
-                userEmail={userEmail}
-                onLogout={async () => {
+                name={userName}
+                email={userEmail}
+                logoutHandler={async () => {
                   await supabase.auth.signOut();
                   localStorage.removeItem('dd_chatbot_test_session');
                   setSession(null);
                 }}
-                isDarkMode={isDarkMode}
-                onThemeToggle={() => setIsDarkMode(!isDarkMode)}
+                onThemeToggle={() => {}}
               />
             </div>
           )}

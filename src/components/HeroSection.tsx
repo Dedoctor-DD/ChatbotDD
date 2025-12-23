@@ -1,37 +1,43 @@
 
-import { Link } from 'react-router-dom';
+interface HeroSectionProps {
+  onActionClick: () => void;
+}
 
-export const HeroSection = () => (
-  <section id="hero" className="flex flex-col items-center text-center mb-10">
-    <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-300 text-[0.65rem] font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100 dark:border-blue-800">
+export const HeroSection = ({ onActionClick }: HeroSectionProps) => (
+  <section id="hero" className="flex flex-col items-center text-center mb-16 pt-6">
+    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/5 text-primary text-[0.7rem] font-black tracking-[0.2em] uppercase mb-8 shadow-sm border border-primary/10 animate-fade-in">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+      </span>
       Alianza Estratégica en Movilidad
     </div>
-    <h2 className="text-4xl font-extrabold leading-tight text-gray-900 dark:text-white mb-6">
+    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] text-slate-900 mb-8 tracking-tight">
       Te movemos. <br />
-      <span className="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">
+      <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-500 to-indigo-600">
         Te cuidamos.
       </span>
     </h2>
-    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-8 max-w-xl mx-auto">
-      Unimos la excelencia logística de <span className="font-semibold text-gray-800 dark:text-gray-200 underline decoration-primary/30 decoration-2 underline-offset-2">
+    <p className="text-slate-500 text-sm md:text-base leading-relaxed mb-10 max-w-xl mx-auto font-medium">
+      Unimos la excelencia logística de <span className="text-slate-900 font-bold border-b-2 border-primary/20">
         Transportes DeDoctor
-      </span> con la precisión técnica del <span className="font-semibold text-gray-800 dark:text-gray-200 underline decoration-primary/30 decoration-2 underline-offset-2">
+      </span> con la precisión técnica del <span className="text-slate-900 font-bold border-b-2 border-primary/20">
         Taller MMC
-      </span>.
+      </span> para ofrecerte seguridad total.
     </p>
-    <div className="w-full space-y-3">
-      <Link
-        to="/register-1"
-        className="w-full py-4 bg-primary hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/40 transform active:scale-95 transition-all flex items-center justify-center gap-2 text-lg border-none"
+    <div className="w-full max-w-sm space-y-4">
+      <button
+        onClick={onActionClick}
+        className="w-full py-5 bg-primary hover:bg-primary-dark text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 transform active:scale-95 transition-all flex items-center justify-center gap-3 border-none cursor-pointer group"
       >
         Solicitar Servicio Ahora
-        <span className="material-icons-round text-xl">arrow_forward_ios</span>
-      </Link>
+        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      </button>
       <button
-        onClick={() => document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' })}
-        className="w-full py-4 bg-white dark:bg-surface-dark text-gray-800 dark:text-white rounded-xl font-bold shadow-md border border-gray-100 dark:border-gray-700 transform active:scale-95 transition-all text-sm"
+        onClick={() => document.getElementById('mission')?.scrollIntoView({ behavior: 'smooth' })}
+        className="w-full py-4 bg-white text-slate-400 hover:text-primary rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-sm border border-slate-100 hover:border-primary/30 transform active:scale-95 transition-all cursor-pointer"
       >
-        Explorar Alianza
+        Explorar Misión & Visión
       </button>
     </div>
   </section>

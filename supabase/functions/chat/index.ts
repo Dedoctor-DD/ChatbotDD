@@ -39,9 +39,7 @@ Deno.serve(async (req) => {
 
         const { prompt, conversationHistory } = await req.json() as ChatRequest;
 
-        // Initialize Supabase Client with Service Role (to bypass RLS for profile fetching if needed, or just use auth header)
-        // Actually, better use the user's token for safety if we just want their profile.
-        // But for "smart" context, service role helps fetch everything once.
+        // Initialize Supabase Client with Auth header from request
         const authHeader = req.headers.get('Authorization')
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             global: { headers: { Authorization: authHeader || '' } }
@@ -60,7 +58,7 @@ Deno.serve(async (req) => {
                 .maybeSingle();
 
             if (profile) {
-                userContext = `\n\nDATOS DEL USUARIO (Usa esto para autocompletar si es necesario):\n` +
+                userContext = `\n\nDATOS DEL USUARIO (Usa esto para autocompletar):\n` +
                     `- Nombre: ${profile.full_name}\n` +
                     `- Teléfono: ${profile.phone || 'No registrado'}\n` +
                     `- Dirección: ${profile.address || 'No registrado'}`;
@@ -71,37 +69,46 @@ Deno.serve(async (req) => {
         const { data: tariffs } = await supabase.from('tariffs').select('*');
         let tariffContext = '';
         if (tariffs && tariffs.length > 0) {
-            tariffContext = '\n\nTARIFAS VIGENTES (Referencia para cotizar):\n' +
+            tariffContext = '\n\nTARIFAS Y SERVICIOS DISPONIBLES:\n' +
                 (tariffs as Tariff[]).map(t => `- ${t.sub_category} (${t.category}): $${t.price} ${t.description ? '- ' + t.description : ''}`).join('\n')
         }
 
-        const systemPrompt = `Eres DD Chatbot, el asistente virtual amigable y experto de Dedoctor (Transporte y Taller para Sillas de Ruedas).
+        const systemPrompt = `Eres DD Chatbot, el asistente experto de Dedoctor (Movilidad y Servicio Técnico).
 📍 Operas en Iquique y Alto Hospicio, Chile. Moneda: CLP.
 
-TONO DE VOZ:
-- Extremadamente CORDIAL y EMPÁTICO.
-- Usa emojis (✨, 🚌, 🔧, ✅).
+FILOSOFÍA DE ATENCIÓN:
+- Eres EMPÁTICO y paciente. Ayudas a personas con discapacidad o movilidad reducida.
+- RECUERDA TODO lo que el usuario te ha dicho en esta conversación. NO ignores el historial previo.
 
-REGLAS DE ORO:
-1. PIDE DATOS UNO POR UNO.
-2. PERSONALIZACIÓN: Si el usuario ya tiene teléfono o dirección en su perfil, NO se los vuelvas a preguntar bruscamente. Puedes decir: "¿Deseas usar la dirección registrada (${userContext?.match(/Dirección: (.*)/)?.[1]}) o prefieres otra?".
-3. TRANSPORTE: Pide Origen, Destino, Fecha/Hora y Pasajeros.
-4. TALLER/MANTENIMIENTO: Pregunta el problema.
+SERVICIOS QUE OFRECES:
+1. TRANSPORTE ADAPTADO 🚌: Van con rampa para sillas de ruedas.
+2. MANTENCIÓN / TALLER 🔧: 
+   - Sillas de ruedas manuales y eléctricas.
+   - Andadores (con y sin rodado / "burrito").
+   - Bastones y muletas.
+   - Alzadores, catres clínicos y Camillas ortopédicas.
+   - Órtesis y otras ayudas técnicas.
+
+REGLAS DE INTERACCIÓN CRÍTICAS:
+1. PIDE DATOS UNO POR UNO. No preguntes todo a la vez.
+2. Si el usuario pide ayuda para un "burrito", bastón, camilla o cualquier otra ayuda técnica, gestiónalo como servicio de TALLER.
+3. NUNCA reinicies la conversación bruscamente. Mantén el hilo.
+4. Si detectas que tienes todos los datos necesarios, genera el BLOQUE DE CONFIRMACIÓN al final.
 
 ${userContext}
 ${tariffContext}
 
-BLOQUE DE CONFIRMACIÓN (CRÍTICO):
-Genera este bloque exacto al FINAL de tu mensaje cuando tengas todo. Usa los datos del perfil si el usuario no indicó cambios.
+BLOQUE DE CONFIRMACIÓN (OBLIGATORIO AL FINAL):
+No uses bloques de código markdown. Genera el texto plano:
 
-- Para TRANSPORTE: [CONFIRM_READY: {"service_type": "transport", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "Cifra basados en tarifas"}}]
-- Para TALLER: [CONFIRM_READY: {"service_type": "workshop", "data": {"tipo_problema": "...", "modelo_silla": "...", "direccion": "...", "telefono": "...", "precio_estimado": "Cifra basados en tarifas"}}]
+- Para TRANSPORTE: [CONFIRM_READY: {"service_type": "transport", "data": {"origen": "...", "destino": "...", "fecha": "...", "hora": "...", "pasajeros": "...", "precio_estimado": "..."}}]
+- Para TALLER: [CONFIRM_READY: {"service_type": "workshop", "data": {"tipo_problema": "...", "modelo_equipo": "...", "direccion": "...", "telefono": "...", "precio_estimado": "..."}}]
 
-BOTONES DE APOYO: [QUICK_REPLIES: ["Transporte 🚌", "Taller 🔧"]]`;
+QUICK REPLIES: [QUICK_REPLIES: ["Transporte 🚌", "Mantención Equipo 🔧", "Ver mis solicitudes 📋"]]`;
 
         const contents = [
             { role: 'user', parts: [{ text: systemPrompt }] },
-            { role: 'model', parts: [{ text: 'Entendido. Estoy listo con el contexto del usuario.' }] },
+            { role: 'model', parts: [{ text: 'Entendido. Soy el asistente de Dedoctor y estoy listo para ayudar con transporte y mantención de ayudas técnicas de forma empática.' }] },
             ...conversationHistory.map((msg) => ({
                 role: msg.role === 'user' ? 'user' : 'model',
                 parts: [{ text: msg.content }]

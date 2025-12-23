@@ -114,7 +114,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                             <h3 className="text-2xl font-black text-slate-800 tracking-tight">Tu Perfil</h3>
                             <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Personaliza tu información</p>
                         </div>
-                        <button onClick={onClose} className="p-2.5 hover:bg-slate-50 dark:hover:bg-gray-800 rounded-full text-slate-300 dark:text-gray-600 hover:text-slate-600 dark:hover:text-gray-300 transition-all border-none">
+                        <button onClick={onClose} className="p-2.5 hover:bg-slate-50 rounded-full text-slate-300 hover:text-slate-600 transition-all border-none">
                             <span className="material-symbols-outlined">close</span>
                         </button>
                     </div>
@@ -136,7 +136,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                                             <span className="material-symbols-outlined text-4xl text-slate-300">person</span>
                                         )}
                                         {uploading && (
-                                            <div className="absolute inset-0 bg-white/60 dark:bg-black/40 flex items-center justify-center rounded-full">
+                                            <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-full">
                                                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                                             </div>
                                         )}
@@ -159,7 +159,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                                         value={profile.full_name || ''} 
                                         onChange={e => setProfile(p => ({...p, full_name: e.target.value}))}
                                         placeholder="Tu nombre"
-                                        className="w-full p-4 bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-700 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600 dark:text-gray-200" 
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600" 
                                     />
                                 </div>
 
@@ -172,7 +172,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                                         value={profile.phone || ''} 
                                         onChange={e => setProfile(p => ({...p, phone: e.target.value}))}
                                         placeholder="+56 9 XXXX XXXX"
-                                        className="w-full p-4 bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-700 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600 dark:text-gray-200" 
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600" 
                                     />
                                 </div>
 
@@ -185,7 +185,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                                         value={profile.address || ''} 
                                         onChange={e => setProfile(p => ({...p, address: e.target.value}))}
                                         placeholder="Tu dirección completa"
-                                        className="w-full p-4 bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-700 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600 dark:text-gray-200 resize-none" 
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-bold text-slate-600 resize-none" 
                                     />
                                 </div>
                             </div>
@@ -193,10 +193,10 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                     )}
                 </div>
 
-                <div className="p-8 bg-slate-50/50 dark:bg-gray-900/50 border-t border-slate-50 dark:border-gray-800 flex gap-3">
+                <div className="p-8 bg-slate-50/50 border-t border-slate-50 flex gap-3">
                     <button 
                         onClick={onClose}
-                        className="flex-1 py-4 rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-gray-800 text-xs font-black uppercase text-slate-400 dark:text-gray-500 hover:bg-slate-50 dark:hover:bg-gray-800 transition-all"
+                        className="flex-1 py-4 rounded-2xl bg-white border border-slate-200 text-xs font-black uppercase text-slate-400 hover:bg-slate-50 transition-all"
                     >
                         Cerrar
                     </button>

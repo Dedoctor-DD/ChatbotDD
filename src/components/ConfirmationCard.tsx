@@ -17,8 +17,13 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
 
     const val = (keys: string[]) => {
         for (const k of keys) {
+            // Check direct key
             if (data[k]) return data[k];
+            // Check lowercase key
             if (data[k.toLowerCase()]) return data[k.toLowerCase()];
+            // Check underscore variations
+            const underscoreKey = k.replace(/ /g, '_').toLowerCase();
+            if (data[underscoreKey]) return data[underscoreKey];
         }
         return '';
     };
@@ -57,7 +62,7 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
     };
 
     return (
-        <div className="bg-white dark:bg-surface-dark rounded-[2.5rem] shadow-2xl shadow-blue-500/10 border border-gray-100 dark:border-gray-800 overflow-hidden animate-fade-in-up">
+        <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-blue-500/10 border border-gray-100 overflow-hidden animate-fade-in-up">
             {/* Gradient Header */}
             <div className={`px-6 py-5 flex items-center justify-between ${isTransport ? 'bg-primary' : 'bg-orange-600'} text-white`}>
                 <div className="flex items-center gap-3">
@@ -74,37 +79,41 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
                 </div>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-8 space-y-6">
                 {/* Data Fields */}
-                <div className="space-y-4">
+                <div className="space-y-5">
                     {isTransport ? (
                         <>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-gray-400 text-lg">trip_origin</span>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Desde</span>
+                            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                        <span className="material-symbols-outlined text-lg">trip_origin</span>
+                                    </div>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Desde</span>
                                 </div>
-                                <span className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[60%]">{val(['origen', 'desde', 'origin']) || '---'}</span>
+                                <span className="text-sm font-black text-slate-800 truncate max-w-[60%] tracking-tight">{val(['origen', 'desde', 'origin']) || '---'}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-gray-400 text-lg">location_on</span>
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hasta</span>
+                            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                        <span className="material-symbols-outlined text-lg">location_on</span>
+                                    </div>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hasta</span>
                                 </div>
-                                <span className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[60%]">{val(['destino', 'hacia', 'destination']) || '---'}</span>
+                                <span className="text-sm font-black text-slate-800 truncate max-w-[60%] tracking-tight">{val(['destino', 'hacia', 'destination']) || '---'}</span>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-2xl">
-                                <div>
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Fecha</span>
-                                    <div className="flex items-center gap-1.5 font-bold text-gray-800 dark:text-gray-200">
-                                        <span className="material-symbols-outlined text-sm">calendar_month</span>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Fecha</span>
+                                    <div className="flex items-center gap-2 font-black text-slate-700">
+                                        <span className="material-symbols-outlined text-sm text-primary">calendar_month</span>
                                         <span className="text-xs">{val(['fecha', 'date']) || '--/--'}</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Hora</span>
-                                    <div className="flex items-center gap-1.5 font-bold text-gray-800 dark:text-gray-200">
-                                        <span className="material-symbols-outlined text-sm">schedule</span>
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">Hora</span>
+                                    <div className="flex items-center gap-2 font-black text-slate-700">
+                                        <span className="material-symbols-outlined text-sm text-primary">schedule</span>
                                         <span className="text-xs">{val(['hora', 'time']) || '--:--'}</span>
                                     </div>
                                 </div>
@@ -112,15 +121,19 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
                         </>
                     ) : (
                         <>
-                            <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/50">
-                                <span className="text-[10px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-2 block">Detalle del Problema</span>
-                                <p className="text-sm font-bold text-gray-900 dark:text-white leading-relaxed">
+                            <div className="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100/50 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-20 h-20 bg-orange-100/30 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                                <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-3 block">Detalle del Problema</span>
+                                <p className="text-sm font-bold text-slate-800 leading-relaxed relative z-10">
                                     {val(['problema', 'falla', 'issue', 'detalle_problema']) || 'Sin especificar'}
                                 </p>
                             </div>
-                            <div className="flex justify-between items-center px-1">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Modelo Equipo</span>
-                                <span className="text-xs font-bold text-gray-900 dark:text-white">{val(['modelo', 'equipo']) || '---'}</span>
+                            <div className="flex justify-between items-center px-4 py-4 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-orange-600/50 text-lg">precision_manufacturing</span>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Modelo / Equipo</span>
+                                </div>
+                                <span className="text-xs font-black text-slate-800 tracking-tight">{val(['modelo_equipo', 'modelo', 'equipo', 'modelo_silla']) || '---'}</span>
                             </div>
                         </>
                     )}
@@ -137,13 +150,13 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
                         <button 
                             onClick={() => fileInputRef.current?.click()}
                             disabled={uploading || attachments.length >= 4}
-                            className="w-14 h-14 shrink-0 rounded-xl bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-colors disabled:opacity-50"
+                            className="w-14 h-14 shrink-0 rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-colors disabled:opacity-50"
                         >
                             <span className="material-symbols-outlined">{uploading ? 'sync' : 'add_photo_alternate'}</span>
                         </button>
                         
                         {attachments.map((att) => (
-                            <div key={att.id} className="w-14 h-14 shrink-0 relative rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 group shadow-sm">
+                            <div key={att.id} className="w-14 h-14 shrink-0 relative rounded-xl overflow-hidden border border-gray-100 group shadow-sm">
                                 {att.type.startsWith('image/') ? (
                                     <img src={att.url} alt="" className="w-full h-full object-cover" />
                                 ) : (
@@ -166,7 +179,7 @@ export function ConfirmationCard({ serviceType, data, userId, onConfirm, onEdit 
                 <div className="grid grid-cols-4 gap-3 pt-2">
                     <button 
                         onClick={onEdit}
-                        className="col-span-1 h-14 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors active:scale-95"
+                        className="col-span-1 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors active:scale-95"
                     >
                         <span className="material-symbols-outlined">edit_note</span>
                     </button>

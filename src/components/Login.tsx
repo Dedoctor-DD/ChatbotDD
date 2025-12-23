@@ -57,14 +57,14 @@ export function Login({ onBack }: LoginProps) {
     };
 
     return (
-        <div className="flex justify-center min-h-screen bg-background-light dark:bg-background-dark overflow-hidden font-jakarta relative">
+        <div className="flex justify-center min-h-screen bg-white overflow-hidden font-jakarta relative">
             {/* Ambient Background for PC */}
             <div className="hidden md:block absolute inset-0 z-0">
                 <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
                 <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
             </div>
 
-            <div className="w-full max-w-md bg-white dark:bg-surface-dark min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative shadow-2xl flex flex-col items-center z-10 border-x border-gray-100 dark:border-gray-800 transition-all duration-500 overflow-hidden">
+            <div className="w-full max-w-md bg-white min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] relative shadow-2xl flex flex-col items-center z-10 border-x border-gray-100 transition-all duration-500 overflow-hidden">
                 {/* Ambient Background Inside (Legacy) */}
                 <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse-slow"></div>
                 <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-primary/5 blur-[100px] rounded-full animate-pulse-slow [animation-delay:1.5s]"></div>
@@ -72,9 +72,9 @@ export function Login({ onBack }: LoginProps) {
             <header className="w-full max-w-md flex justify-between items-center px-6 py-5 sticky top-0 z-50">
                 <button 
                   onClick={onBack}
-                  className="w-10 h-10 rounded-full bg-white dark:bg-surface-dark shadow-md flex items-center justify-center border border-gray-100 dark:border-gray-800"
+                  className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center border border-gray-100"
                 >
-                  <span className="material-symbols-outlined text-gray-600 dark:text-gray-300">arrow_back</span>
+                  <span className="material-symbols-outlined text-gray-600">arrow_back</span>
                 </button>
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Portal Seguro</span>
@@ -85,19 +85,19 @@ export function Login({ onBack }: LoginProps) {
             <main className="w-full max-w-md px-6 pt-10 flex flex-col items-center flex-1">
                 {/* Brand Identity */}
                 <div className="mb-12 text-center">
-                    <div className="w-20 h-20 bg-white dark:bg-surface-dark rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 dark:border-gray-800 overflow-hidden transform rotate-3">
+                    <div className="w-20 h-20 bg-white rounded-3xl shadow-2xl flex items-center justify-center mx-auto mb-6 border border-gray-100 overflow-hidden transform rotate-3">
                          <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
                     </div>
-                    <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight">
                         Bienvenido<span className="text-primary">.</span>
                     </h1>
                     <p className="text-sm text-gray-500 font-bold uppercase tracking-wider mt-2">Identifícate para continuar</p>
                 </div>
 
                 {/* Login Card */}
-                <div className="w-full bg-white dark:bg-surface-dark rounded-[2.5rem] p-8 shadow-2xl shadow-blue-500/10 border border-gray-50 dark:border-gray-800">
-                    <p className="text-center text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed">
-                        Accede a tu cuenta de <span className="font-bold text-gray-800 dark:text-white">DeDoctor & MMC</span> para gestionar tus traslados y servicios técnicos.
+                <div className="w-full bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-blue-500/10 border border-gray-50">
+                    <p className="text-center text-gray-600 text-sm mb-8 leading-relaxed">
+                        Accede a tu cuenta de <span className="font-bold text-gray-800">DeDoctor & MMC</span> para gestionar tus traslados y servicios técnicos.
                     </p>
 
                     <button
@@ -120,13 +120,13 @@ export function Login({ onBack }: LoginProps) {
                     </button>
 
                     {error && (
-                        <div className="mt-6 p-4 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-widest rounded-xl text-center border border-rose-100 dark:border-rose-800">
+                        <div className="mt-6 p-4 bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-widest rounded-xl text-center border border-rose-100">
                             {error}
                         </div>
                     )}
 
                     {/* Trust Indicators */}
-                    <div className="grid grid-cols-2 gap-4 mt-10 pt-8 border-t border-gray-100 dark:border-gray-800">
+                    <div className="grid grid-cols-2 gap-4 mt-10 pt-8 border-t border-gray-100">
                         <div className="flex flex-col items-center gap-1.5">
                             <span className="material-symbols-outlined text-green-500 filled">verified_user</span>
                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Encriptado SSL</span>
@@ -157,7 +157,7 @@ export function Login({ onBack }: LoginProps) {
                                 localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                 window.location.reload();
                             }}
-                            className="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-[10px] font-mono rounded-lg"
+                            className="px-3 py-1.5 bg-gray-200 text-[10px] font-mono rounded-lg"
                         >
                             Guest
                         </button>
@@ -167,7 +167,7 @@ export function Login({ onBack }: LoginProps) {
                                 localStorage.setItem('dd_chatbot_test_session', JSON.stringify(mockSession));
                                 window.location.reload();
                             }}
-                            className="px-3 py-1.5 bg-blue-200 dark:bg-blue-900 text-[10px] font-mono rounded-lg text-blue-600"
+                            className="px-3 py-1.5 bg-blue-200 text-[10px] font-mono rounded-lg text-blue-600"
                         >
                             Admin
                         </button>

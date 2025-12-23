@@ -36,24 +36,29 @@ export function HistoryPanel({ onViewDetail }: HistoryPanelProps) {
     };
 
     return (
-        <div className="flex flex-col w-full min-h-full bg-background-light dark:bg-background-dark pb-24">
-            <header className="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-                <div className="flex items-center px-6 h-16 justify-center">
-                    <h1 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-[0.2em]">Mi Actividad</h1>
+        <div className="flex flex-col w-full min-h-full bg-slate-50/30 pb-24">
+            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 h-20 flex items-center justify-between">
+                <div>
+                   <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase">Mi Historial</h1>
+                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-0.5">Actividad y Servicios</p>
+                </div>
+                <div className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
+                   <span className="material-symbols-outlined text-xl">history</span>
                 </div>
             </header>
 
-            <main className="flex-1 p-4 space-y-4 animate-fade-in overflow-y-auto no-scrollbar">
+            <main className="flex-1 p-6 space-y-5 animate-fade-in overflow-y-auto no-scrollbar">
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-lg"></div>
                     </div>
                 ) : requests.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-gray-700">
-                            <span className="material-symbols-outlined text-gray-300 text-3xl">history</span>
+                    <div className="text-center py-20 px-8 bg-white rounded-[3rem] border border-slate-100 shadow-inner">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <span className="material-symbols-outlined text-slate-200 text-5xl">folder_off</span>
                         </div>
-                        <p className="text-sm font-bold text-gray-400">No tienes servicios registrados aún.</p>
+                        <h3 className="text-lg font-black text-slate-900 mb-2 tracking-tight">Sin actividad</h3>
+                        <p className="text-xs font-medium text-slate-400 leading-relaxed">Aún no has solicitado servicios técnicos o de transporte.</p>
                     </div>
                 ) : (
                     requests.map((request) => {
@@ -61,34 +66,39 @@ export function HistoryPanel({ onViewDetail }: HistoryPanelProps) {
                         const isTransport = request.service_type === 'transport';
                         
                         return (
-                            <div key={request.id} className="bg-white dark:bg-surface-dark rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex flex-col gap-4 active:scale-[0.98] transition-all">
+                            <div key={request.id} className="bg-white rounded-[2.5rem] border border-slate-50 shadow-2xl shadow-slate-200/50 p-6 flex flex-col gap-4 active:scale-[0.98] transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isTransport ? 'bg-blue-50 text-primary dark:bg-blue-900/20' : 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'}`}>
-                                            <span className="material-symbols-outlined filled">{isTransport ? 'ambulance' : 'build'}</span>
+                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform ${isTransport ? 'bg-blue-50/50 text-primary' : 'bg-orange-50/50 text-orange-600'}`}>
+                                            <span className="material-symbols-outlined text-3xl filled">{isTransport ? 'ambulance' : 'build'}</span>
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-gray-900 dark:text-white text-base leading-tight">
-                                                {isTransport ? 'Traslado Programado' : 'Servicio Técnico'}
+                                            <h4 className="font-black text-slate-800 text-base tracking-tight uppercase">
+                                                {isTransport ? 'Traslado' : 'Taller Técnico'}
                                             </h4>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-                                                {new Date(request.created_at).toLocaleDateString()} • {new Date(request.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">
+                                                {new Date(request.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} • {new Date(request.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${status.color}`}>
+                                    <div className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border shadow-sm ${status.color}`}>
                                         {status.label}
                                     </div>
                                 </div>
 
-                                <div className="border-t border-gray-50 dark:border-gray-800 pt-3 flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">ID: {request.id.slice(0, 8)}</span>
+                                <div className="h-px bg-slate-50 w-full"></div>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">#{request.id.slice(0, 8)}</span>
+                                    </div>
                                     <button 
                                         onClick={() => onViewDetail(request)}
-                                        className="text-primary text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group border-none bg-transparent cursor-pointer"
+                                        className="bg-slate-50 hover:bg-primary hover:text-white text-primary text-[9px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 group border-none cursor-pointer"
                                     >
                                         Ver Detalles
-                                        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">chevron_right</span>
+                                        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                     </button>
                                 </div>
                             </div>

@@ -248,11 +248,11 @@ export function AdminPanel() {
   };
 
   return (
-    <div className="flex flex-col min-h-full pb-24 bg-slate-50 dark:bg-background-dark transition-colors duration-500">
+    <div className="flex flex-col min-h-full pb-24 bg-slate-50 transition-colors duration-500">
         
         {/* HEADER & NAV */}
-        <div className="sticky top-0 z-30 bg-slate-50/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200/50 dark:border-gray-800 pt-10 pb-2 px-6 shadow-sm">
-             <h1 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight mb-4">Panel Control</h1>
+        <div className="sticky top-0 z-30 bg-slate-50/95 backdrop-blur-md border-b border-slate-200/50 pt-10 pb-2 px-6 shadow-sm">
+             <h1 className="text-2xl font-black text-slate-800 tracking-tight mb-4">Panel Control</h1>
              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar snap-x pb-2">
                  {[
                    { id: 'dashboard', label: 'Inicio', icon: 'dashboard' },
@@ -268,18 +268,18 @@ export function AdminPanel() {
                       key={tab.id}
                       onClick={() => { setActiveView(tab.id as any); setSelectedClient(null); }}
                       className={`
-                         flex-none px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all snap-start select-none border
+                         flex-none px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all snap-start select-none border-none
                          ${activeView === tab.id 
-                           ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105' 
-                           : 'bg-white dark:bg-surface-dark text-slate-400 dark:text-gray-400 border-slate-200 dark:border-gray-700 hover:border-primary/50 hover:text-primary'}
+                           ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-105' 
+                           : 'bg-white text-slate-400 hover:text-primary'}
                       `}
                    >
                       <span className="material-symbols-outlined text-base">{tab.icon}</span>
                       <span>{tab.label}</span>
                       {tab.count !== undefined && tab.count > 0 && (
                         <span className={`
-                          ml-1 px-1.5 py-0.5 rounded-full text-[9px]
-                          ${activeView === tab.id ? 'bg-white/20 text-white' : 'bg-red-100 text-red-500'}
+                          ml-1 px-1.5 py-0.5 rounded-full text-[9px] font-black
+                          ${activeView === tab.id ? 'bg-white/20 text-white' : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'}
                         `}>
                           {tab.count}
                         </span>
@@ -295,92 +295,76 @@ export function AdminPanel() {
             {activeView === 'dashboard' && (
               <div className="space-y-6">
                 {/* Pending Actions Card */}
-                <div onClick={() => setActiveView('pending')} className="bg-gradient-to-br from-primary to-blue-600 rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary/30 relative overflow-hidden group cursor-pointer active:scale-95 transition-all">
-                   <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                           <span className="material-symbols-outlined text-2xl">notifications_active</span>
-                        </div>
-                        <span className="text-4xl font-black">{pendingCount}</span>
+                <div onClick={() => setActiveView('pending')} className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group cursor-pointer active:scale-95 transition-all">
+                   <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                         <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 shadow-inner">
+                            <span className="material-symbols-outlined text-3xl text-primary animate-pulse">notifications_active</span>
+                         </div>
+                         <h3 className="text-2xl font-black tracking-tight mb-1">Solicitudes Pendientes</h3>
+                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">Gestión inmediata requerida</p>
                       </div>
-                      <h3 className="text-xl font-bold mb-1">Solicitudes Pendientes</h3>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">Requieren atención inmediata</p>
+                      <div className="text-5xl font-black text-white/90">{pendingCount}</div>
                    </div>
                    {/* Decorative Circles */}
-                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
+                   <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                   <div onClick={() => setActiveView('transport')} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm active:scale-95 transition-all cursor-pointer group">
-                      <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 text-primary rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined filled">ambulance</span>
-                      </div>
-                      <span className="text-2xl font-black text-slate-800 dark:text-white block mb-1">{requests.filter(r => r.service_type === 'transport').length}</span>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Transportes</p>
-                   </div>
-
-                   <div onClick={() => setActiveView('workshop')} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm active:scale-95 transition-all cursor-pointer group">
-                      <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined filled">build</span>
-                      </div>
-                      <span className="text-2xl font-black text-slate-800 dark:text-white block mb-1">{requests.filter(r => r.service_type === 'workshop').length}</span>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Taller</p>
-                   </div>
-                   
-                   <div onClick={() => setActiveView('clients')} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm active:scale-95 transition-all cursor-pointer group">
-                      <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 text-purple-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined filled">group</span>
-                      </div>
-                      <span className="text-2xl font-black text-slate-800 dark:text-white block mb-1">{profiles.length}</span>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Clientes</p>
-                   </div>
-
-                   <div onClick={() => setActiveView('pricing')} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm active:scale-95 transition-all cursor-pointer group">
-                      <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined filled">payments</span>
-                      </div>
-                      <span className="text-2xl font-black text-slate-800 dark:text-white block mb-1">{tariffs.length}</span>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tarifas</p>
-                   </div>
+                <div className="grid grid-cols-2 gap-5">
+                   {[
+                     { id: 'transport', label: 'Transportes', icon: 'ambulance', color: 'blue', count: requests.filter(r => r.service_type === 'transport').length },
+                     { id: 'workshop', label: 'Taller', icon: 'precision_manufacturing', color: 'rose', count: requests.filter(r => r.service_type === 'workshop').length },
+                     { id: 'clients', label: 'Clientes', icon: 'group', color: 'purple', count: profiles.length },
+                     { id: 'pricing', label: 'Tarifas', icon: 'payments', color: 'emerald', count: tariffs.length },
+                   ].map((stat) => (
+                    <div key={stat.id} onClick={() => setActiveView(stat.id as any)} className="bg-white p-6 rounded-[2.5rem] border border-slate-50 shadow-2xl shadow-slate-200/50 active:scale-95 transition-all cursor-pointer group relative overflow-hidden">
+                       <div className="absolute top-0 right-0 w-20 h-20 bg-slate-50 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:rotate-6 bg-${stat.color}-50 text-${stat.color}-600`}>
+                         <span className="material-symbols-outlined filled">{stat.icon}</span>
+                       </div>
+                       <span className="text-2xl font-black text-slate-800 block mb-1 tracking-tighter">{stat.count}</span>
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                    </div>
+                   ))}
                 </div>
               </div>
             )}
 
             {/* 2. PRICING VIEW */}
             {activeView === 'pricing' && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                   {tariffs.map((t) => (
-                    <div key={t.id} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm">
-                      <div className="flex justify-between items-start mb-4">
-                         <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${t.category === 'transport' ? 'bg-blue-50 text-primary border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/50' : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:border-orange-800/50'}`}>
-                           {t.category === 'transport' ? 'Transporte' : 'Taller'}
+                    <div key={t.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-50 shadow-2xl shadow-slate-200/50 group">
+                      <div className="flex justify-between items-start mb-6">
+                         <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${t.category === 'transport' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                           {t.category === 'transport' ? 'Transporte' : 'Workshop'}
                          </span>
                          {editingTariff === t.id ? (
-                            <div className="relative w-24">
-                              <span className="absolute left-2 top-2 text-slate-400 font-black text-xs">$</span>
-                              <input type="number" className="w-full pl-5 py-1.5 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg font-black text-sm text-slate-800 dark:text-white outline-none" value={tempTariffValues[t.id]?.price || 0} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })} />
+                            <div className="relative w-28">
+                              <span className="absolute left-3 top-2.5 text-slate-400 font-black text-xs">$</span>
+                              <input type="number" className="w-full pl-6 pr-3 py-2.5 bg-slate-50 border-none rounded-xl font-black text-sm text-slate-800 outline-none ring-2 ring-transparent focus:ring-primary/20" value={tempTariffValues[t.id]?.price || 0} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], price: Number(e.target.value) } })} />
                             </div>
                          ) : (
-                            <span className="text-xl font-black text-slate-900 dark:text-white tracking-tight">${t.price.toLocaleString()}</span>
+                            <span className="text-2xl font-black text-slate-900 tracking-tight">${t.price.toLocaleString()}</span>
                          )}
                       </div>
-                      <h4 className="text-slate-800 dark:text-gray-100 font-black text-base mb-2 capitalize">{t.sub_category.replace(/_/g, ' ')}</h4>
+                      <h4 className="text-slate-800 font-black text-base mb-2 tracking-tight uppercase leading-none">{t.sub_category.replace(/_/g, ' ')}</h4>
                       {editingTariff === t.id ? (
-                        <textarea className="w-full p-3 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl text-xs font-medium outline-none text-gray-700 dark:text-gray-200 mb-4" value={tempTariffValues[t.id]?.description || ''} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], description: e.target.value } })} rows={3} />
+                        <textarea className="w-full p-4 bg-slate-50 border-none rounded-2xl text-xs font-medium outline-none text-slate-700 mb-6 ring-2 ring-transparent focus:ring-primary/20" value={tempTariffValues[t.id]?.description || ''} onChange={(e) => setTempTariffValues({ ...tempTariffValues, [t.id]: { ...tempTariffValues[t.id], description: e.target.value } })} rows={3} />
                       ) : (
-                        <p className="text-slate-400 font-medium text-xs leading-relaxed mb-4">{t.description || 'Sin descripción.'}</p>
+                        <p className="text-slate-400 font-medium text-xs leading-relaxed mb-6 italic">"{t.description || 'Sin descripción detallada.'}"</p>
                       )}
                       
                       <div className="flex justify-end pt-2">
                          {editingTariff === t.id ? (
-                            <div className="flex gap-2">
-                               <button onClick={() => setEditingTariff(null)} className="px-4 py-2 bg-slate-100 dark:bg-gray-800 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest">Cancelar</button>
-                               <button onClick={() => handleUpdateTariff(t.id)} className="px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">Guardar</button>
+                            <div className="flex gap-3">
+                               <button onClick={() => setEditingTariff(null)} className="px-5 py-2.5 bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">Cancelar</button>
+                               <button onClick={() => handleUpdateTariff(t.id)} className="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">Guardar</button>
                             </div>
                          ) : (
-                            <button onClick={() => startEditingTariff(t)} className="flex items-center gap-1 text-slate-400 hover:text-primary text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-800 transition-all">
-                              <span className="material-symbols-outlined text-sm">edit</span> Editar
+                            <button onClick={() => startEditingTariff(t)} className="flex items-center gap-2 text-primary text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-xl bg-primary/5 hover:bg-primary/10 transition-all border-none">
+                              <span className="material-symbols-outlined text-base">edit</span> 
+                              Editar Tarifa
                             </button>
                          )}
                       </div>
@@ -391,22 +375,24 @@ export function AdminPanel() {
 
             {/* 3. CLIENT MANAGEMENT */}
             {activeView === 'clients' && !selectedClient && (
-              <div className="space-y-4">
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-400">search</span>
-                  <input type="text" placeholder="Buscar clientes..." className="w-full pl-12 p-3.5 border-none rounded-2xl bg-white dark:bg-surface-dark shadow-sm text-sm font-bold text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-primary/20" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <div className="space-y-6">
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-6 top-5 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                  <input type="text" placeholder="Buscar por nombre o email..." className="w-full pl-14 pr-6 py-5 border-none rounded-[2rem] bg-white shadow-2xl shadow-slate-200/50 text-sm font-black text-slate-700 outline-none focus:ring-2 focus:ring-primary/20 transition-all" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                 </div>
-                <div className="grid gap-3">
+                <div className="grid gap-4">
                   {filteredClients.map(client => (
-                    <div key={client.id} onClick={() => handleClientSelect(client)} className="p-4 bg-white dark:bg-surface-dark rounded-[1.5rem] shadow-sm flex items-center gap-4 cursor-pointer active:scale-95 transition-all">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg">
+                    <div key={client.id} onClick={() => handleClientSelect(client)} className="p-6 bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 flex items-center gap-5 cursor-pointer active:scale-98 hover:translate-x-1 transition-all group">
+                      <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-primary font-black text-xl group-hover:scale-110 transition-transform">
                         {client.full_name?.charAt(0) || <span className="material-symbols-outlined">person</span>}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-slate-800 dark:text-gray-100 text-sm truncate">{client.full_name || 'Sin Nombre'}</h3>
-                        <p className="text-slate-400 dark:text-gray-500 text-xs truncate">{client.email}</p>
+                        <h3 className="font-black text-slate-800 text-base tracking-tight truncate uppercase leading-none mb-1">{client.full_name || 'Usuario Anonimo'}</h3>
+                        <p className="text-slate-400 font-bold text-[10px] truncate tracking-widest uppercase">{client.email}</p>
                       </div>
-                      <span className="material-symbols-outlined text-slate-300">chevron_right</span>
+                      <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 group-hover:bg-primary/5 group-hover:text-primary transition-colors">
+                        <span className="material-symbols-outlined">arrow_forward</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -414,78 +400,93 @@ export function AdminPanel() {
             )}
 
             {selectedClient && (
-              <div className="space-y-6">
-                <button onClick={() => setSelectedClient(null)} className="flex items-center gap-2 text-slate-500 hover:text-primary font-bold text-xs uppercase tracking-widest pl-2">
-                  <span className="material-symbols-outlined text-sm rotate-180">chevron_right</span> 
-                  Volver
+              <div className="space-y-6 animate-fade-in">
+                <button onClick={() => setSelectedClient(null)} className="flex items-center gap-3 text-slate-400 hover:text-primary font-black text-[10px] uppercase tracking-widest pl-2 transition-colors border-none bg-transparent">
+                  <span className="material-symbols-outlined text-base">arrow_back</span> 
+                  Volver a la lista
                 </button>
-                <div className="bg-white dark:bg-surface-dark p-6 rounded-[2.5rem] shadow-sm text-center">
-                   <div className="w-20 h-20 bg-primary mx-auto rounded-full flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-primary/20 mb-4">
+                <div className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-slate-200/50 text-center relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+                   <div className="w-24 h-24 bg-gradient-to-br from-primary to-blue-600 mx-auto rounded-[2rem] flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-primary/30 mb-6 relative z-10">
                      {selectedClient.full_name?.charAt(0)}
                    </div>
-                   <h3 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">{selectedClient.full_name}</h3>
-                   <p className="text-slate-500 dark:text-gray-400 font-bold text-sm mb-6">{selectedClient.email}</p>
+                   <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none mb-2 relative z-10">{selectedClient.full_name}</h3>
+                   <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] mb-8 relative z-10">{selectedClient.email}</p>
                    
-                   {/* Add more client details/actions here if needed */}
+                   <div className="grid grid-cols-2 gap-4 mt-10">
+                      <div className="p-6 bg-slate-50 rounded-[2rem]">
+                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Registrado</p>
+                         <p className="text-xs font-black text-slate-800 tracking-tight">{new Date(selectedClient.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <div className="p-6 bg-slate-50 rounded-[2rem]">
+                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Servicios</p>
+                         <p className="text-xs font-black text-slate-800 tracking-tight">{requests.filter(r => r.user_id === selectedClient.id).length}</p>
+                      </div>
+                   </div>
                 </div>
               </div>
             )}
 
             {/* 4. REQUEST LISTS (Common for Transport, Workshop, Pending) */}
             {(activeView === 'transport' || activeView === 'workshop' || activeView === 'pending') && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {filteredRequests.length === 0 ? (
-                  <div className="text-center py-16 bg-white dark:bg-surface-dark border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-[2rem]">
-                    <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">inbox</span>
-                    <p className="text-slate-400 font-extrabold text-[10px] uppercase tracking-widest">Sin solicitudes</p>
+                  <div className="text-center py-24 bg-white border border-slate-100 rounded-[3rem] shadow-inner">
+                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                       <span className="material-symbols-outlined text-5xl text-slate-200">folder_open</span>
+                    </div>
+                    <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Cero solicitudes encontradas</p>
                   </div>
                 ) : (
-                  filteredRequests.map((request) => (
-                    <div key={request.id} className="bg-white dark:bg-surface-dark rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                      <div className="p-6 border-b border-gray-50 dark:border-gray-800">
-                        <div className="flex justify-between items-start mb-4">
-                           <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${request.service_type === 'transport' ? 'bg-sky-50 dark:bg-sky-900/20 text-sky-600' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600'}`}>
-                                 <span className="material-symbols-outlined text-xl">{request.service_type === 'transport' ? 'local_shipping' : 'build'}</span>
+                   filteredRequests.map((request) => (
+                    <div key={request.id} className="bg-white rounded-[3rem] border border-slate-50 shadow-2xl shadow-slate-200/50 overflow-hidden animate-fade-in group">
+                      <div className="p-8 border-b border-slate-50">
+                        <div className="flex justify-between items-start mb-8">
+                           <div className="flex items-center gap-5">
+                              <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform ${request.service_type === 'transport' ? 'bg-blue-50/50 text-blue-600' : 'bg-rose-50/50 text-rose-600'}`}>
+                                 <span className="material-symbols-outlined text-3xl filled">{request.service_type === 'transport' ? 'local_shipping' : 'precision_manufacturing'}</span>
                               </div>
                               <div>
-                                 <h3 className="font-black text-sm text-slate-800 dark:text-white">{request.service_type === 'transport' ? 'Transporte' : 'Taller'}</h3>
-                                 <p className="text-[10px] text-slate-400 font-bold">{new Date(request.created_at).toLocaleDateString()}</p>
+                                 <h3 className="font-black text-lg text-slate-800 tracking-tight uppercase leading-none mb-1">{request.service_type === 'transport' ? 'Transporte' : 'Workshop'}</h3>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                    {new Date(request.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })} • {new Date(request.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                 </p>
                               </div>
                            </div>
-                           <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                           <div className={`px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm ${
                              request.status === 'confirmed' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                              request.status === 'in_process' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                             request.status === 'completed' ? 'bg-green-50 text-green-600 border-green-100' :
-                             request.status === 'cancelled' ? 'bg-red-50 text-red-600 border-red-100' :
-                             'bg-yellow-50 text-yellow-600 border-yellow-100'
+                             request.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                             request.status === 'cancelled' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                             'bg-amber-50 text-amber-600 border-amber-100'
                            }`}>
-                             {request.status === 'pending' ? 'Pendiente' : request.status}
+                             {request.status === 'pending' ? 'Pendiente' : request.status.replace('_', ' ')}
                            </div>
                         </div>
 
-                        {/* Data Grid */}
+                        {/* Data Grid Premium */}
                         {request.collected_data && (
-                           <div className="grid grid-cols-2 gap-3 mt-4">
-                              {Object.entries(request.collected_data).filter(([k]) => !['image_url', 'attachment_id', 'attachment_ids', 'image_urls'].includes(k)).slice(0, 6).map(([k, v]) => (
-                                <div key={k}>
-                                  <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-0.5">{k.replace(/_/g, ' ')}</p>
-                                  <p className="text-slate-700 dark:text-gray-300 font-bold text-xs truncate">{String(v)}</p>
+                           <div className="grid grid-cols-2 gap-x-8 gap-y-6 p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100/50">
+                              {Object.entries(request.collected_data).filter(([k]) => !['image_url', 'attachment_id', 'attachment_ids', 'image_urls'].includes(k)).slice(0, 10).map(([k, v]) => (
+                                <div key={k} className="min-w-0">
+                                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">{k.replace(/_/g, ' ')}</p>
+                                  <p className="text-slate-800 font-black text-xs truncate tracking-tight">{String(v)}</p>
                                 </div>
                               ))}
                            </div>
                         )}
                         
-                        {/* Attachments Preview */}
+                        {/* Attachments Preview Premium */}
                         {(request.collected_data?.image_urls || request.collected_data?.image_url) && (
-                           <div className="mt-4 pt-4 border-t border-gray-50 dark:border-gray-800 flex gap-2 overflow-x-auto pb-2">
+                           <div className="mt-8 pt-6 border-t border-slate-50 flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest absolute -mt-6">Adjuntos:</p>
                               {Array.isArray(request.collected_data.image_urls) ? 
                                 request.collected_data.image_urls.map((url: string, i: number) => (
-                                  <a key={i} href={url} target="_blank" rel="noreferrer" className="flex-none w-12 h-12 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                                  <a key={i} href={url} target="_blank" rel="noreferrer" className="flex-none w-20 h-20 rounded-2xl overflow-hidden border border-slate-100 hover:scale-105 transition-transform shadow-xl shadow-slate-200/40">
                                      <img src={url} className="w-full h-full object-cover" alt="attachment" />
                                   </a>
                                 )) : 
-                                request.collected_data.image_url && <a href={request.collected_data.image_url} target="_blank" rel="noreferrer" className="flex-none w-12 h-12 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                                request.collected_data.image_url && <a href={request.collected_data.image_url} target="_blank" rel="noreferrer" className="flex-none w-20 h-20 rounded-2xl overflow-hidden border border-slate-100 hover:scale-105 transition-transform shadow-xl shadow-slate-200/40">
                                    <img src={request.collected_data.image_url} className="w-full h-full object-cover" alt="attachment" />
                                 </a>
                               }
@@ -493,11 +494,14 @@ export function AdminPanel() {
                         )}
                       </div>
 
-                      <div className="px-6 py-4 bg-slate-50/50 dark:bg-gray-800/30 flex gap-2 justify-end overflow-x-auto">
-                        {request.status === 'pending' && <button onClick={() => updateStatus(request.id, 'confirmed')} className="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 whitespace-nowrap">Confirmar</button>}
-                        {request.status === 'confirmed' && <button onClick={() => updateStatus(request.id, 'in_process')} className="bg-purple-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-600/20 active:scale-95 whitespace-nowrap">En Proceso</button>}
-                        {(request.status === 'confirmed' || request.status === 'in_process') && <button onClick={() => updateStatus(request.id, 'completed')} className="bg-emerald-600 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-600/20 active:scale-95 whitespace-nowrap">Completar</button>}
-                        {request.status !== 'cancelled' && request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="px-4 py-2 text-rose-400 hover:text-rose-600 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Cancelar</button>}
+                      <div className="px-8 py-6 bg-white flex gap-4 justify-end items-center">
+                        <div className="flex-1">
+                           <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">REF: {request.id.slice(0, 8)}</span>
+                        </div>
+                        {request.status === 'pending' && <button onClick={() => updateStatus(request.id, 'confirmed')} className="bg-primary text-white px-8 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:bg-primary-dark transition-all active:scale-95 border-none">Confirmar</button>}
+                        {request.status === 'confirmed' && <button onClick={() => updateStatus(request.id, 'in_process')} className="bg-purple-600 text-white px-8 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-purple-600/30 hover:bg-purple-700 transition-all active:scale-95 border-none">En Proceso</button>}
+                        {(request.status === 'confirmed' || request.status === 'in_process') && <button onClick={() => updateStatus(request.id, 'completed')} className="bg-emerald-600 text-white px-8 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-emerald-500/30 hover:bg-emerald-700 transition-all active:scale-95 border-none">Finalizar</button>}
+                        {request.status !== 'cancelled' && request.status !== 'completed' && <button onClick={() => updateStatus(request.id, 'cancelled')} className="px-6 py-4 text-slate-400 hover:text-rose-500 text-[10px] font-black uppercase tracking-widest transition-colors border-none bg-transparent">Anular</button>}
                       </div>
                     </div>
                   ))
@@ -505,56 +509,58 @@ export function AdminPanel() {
               </div>
             )}
 
-            {/* 5. PARTNERS MNGT */}
+            {/* 5. PARTNERS MNGT PREMIUM */}
             {activeView === 'partners' && (
-              <div className="space-y-4">
-                 <button onClick={() => openPartnerModal()} className="w-full py-4 bg-primary/10 border border-dashed border-primary/30 rounded-2xl text-primary font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 mb-4 hover:bg-primary/20 transition-all">
-                    <span className="material-symbols-outlined text-sm">add_circle</span> Nuevo Socio
+              <div className="space-y-6">
+                 <button onClick={() => openPartnerModal()} className="w-full py-6 bg-primary/5 border-2 border-dashed border-primary/20 rounded-[2.5rem] text-primary font-black uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 mb-6 hover:bg-primary/10 hover:border-primary/40 transition-all group">
+                    <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform">add_circle</span> 
+                    Agregar Nuevo Socio
                  </button>
-                 <div className="grid grid-cols-2 gap-4">
-                    {partners.map((p) => (
-                      <div key={p.id} className="bg-white dark:bg-surface-dark p-4 rounded-[1.5rem] border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center text-center relative overflow-hidden group">
-                         <div className="w-full h-20 bg-gray-50 dark:bg-gray-900 rounded-xl mb-3 flex items-center justify-center p-4 relative">
-                            <img src={p.logo_url} alt={p.name} className="max-h-full max-w-full object-contain mix-blend-multiply dark:mix-blend-normal" />
-                            {!p.is_active && <div className="absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-[1px] flex items-center justify-center"><span className="text-[9px] font-black uppercase bg-gray-200 text-gray-500 px-2 py-1 rounded-full">Inactivo</span></div>}
+                 <div className="grid grid-cols-2 gap-5">
+                     {partners.map((p) => (
+                      <div key={p.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-50 shadow-2xl shadow-slate-200/50 flex flex-col items-center text-center relative overflow-hidden group">
+                         <div className="w-full h-28 bg-slate-50/50 rounded-2xl mb-4 flex items-center justify-center p-6 relative group-hover:bg-slate-50 transition-colors">
+                            <img src={p.logo_url} alt={p.name} className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform" />
+                            {!p.is_active && <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center"><span className="text-[9px] font-black uppercase bg-slate-200 text-slate-500 px-3 py-1.5 rounded-full tracking-widest">Inactivo</span></div>}
                          </div>
-                         <h4 className="font-black text-slate-800 dark:text-white text-xs mb-1">{p.name}</h4>
-                         <p className="text-[10px] text-slate-400 truncate w-full mb-3">{p.website_url || 'No URL'}</p>
+                         <h4 className="font-black text-slate-800 text-sm mb-1 tracking-tight uppercase leading-none">{p.name}</h4>
+                         <p className="text-[9px] text-slate-400 font-bold truncate w-full mb-4 px-2 uppercase tracking-tighter">{p.website_url || 'URL no especificada'}</p>
                          <div className="flex gap-2 w-full mt-auto">
-                           <button onClick={() => openPartnerModal(p)} className="flex-1 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-[10px] font-bold text-gray-500">Editar</button>
-                           <button onClick={() => handleDeletePartner(p.id)} className="w-8 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-500 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-sm">delete</span></button>
+                           <button onClick={() => openPartnerModal(p)} className="flex-1 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest transition-colors border-none">Editar</button>
+                           <button onClick={() => handleDeletePartner(p.id)} className="w-11 h-11 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-100 transition-colors border-none"><span className="material-symbols-outlined text-lg">delete</span></button>
                          </div>
                       </div>
                     ))}
                  </div>
 
-                 {/* PARTNER MODAL reusing logic but updated styled */}
+                 {/* PARTNER MODAL PREMIUM */}
                  {isPartnerModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
-                        <div className="w-full max-w-md bg-white dark:bg-surface-dark rounded-[2.5rem] shadow-2xl p-6 md:p-8 animate-slide-up">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-black text-slate-800 dark:text-white">{currentPartner?.id ? 'Editar Socio' : 'Nuevo Socio'}</h3>
-                                <button onClick={() => setIsPartnerModalOpen(false)} className="material-symbols-outlined text-slate-400">close</button>
+                    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in">
+                        <div className="w-full max-w-md bg-white rounded-[3rem] shadow-2xl p-8 md:p-10 animate-slide-up relative overflow-hidden">
+                            <div className="flex justify-between items-center mb-8 relative z-10">
+                                <h3 className="text-2xl font-black text-slate-800 tracking-tight">{currentPartner?.id ? 'Editar Socio' : 'Nuevo Socio'}</h3>
+                                <button onClick={() => setIsPartnerModalOpen(false)} className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 border-none transition-colors"><span className="material-symbols-outlined">close</span></button>
                             </div>
                             
-                            {/* Simplified Form for Mobile Context */}
-                            <div className="space-y-4">
-                               <div onClick={() => document.getElementById('logo-upload')?.click()} className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${currentPartner?.logo_url ? 'border-primary/50 bg-primary/5' : 'border-slate-200 dark:border-gray-700'}`}>
-                                  {isUploading ? <span className="text-xs font-bold text-primary">Subiendo...</span> : currentPartner?.logo_url ? <img src={currentPartner.logo_url} className="h-20 object-contain" /> : <><span className="material-symbols-outlined text-slate-300">cloud_upload</span><span className="text-[10px] uppercase font-black text-slate-400">Subir Logo</span></>}
+                            <div className="space-y-5 relative z-10">
+                               <div onClick={() => document.getElementById('logo-upload')?.click()} className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${currentPartner?.logo_url ? 'border-primary/40 bg-primary/5' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'}`}>
+                                  {isUploading ? <div className="flex flex-col items-center gap-2"><div className="w-6 h-6 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div><span className="text-[10px] font-black text-primary uppercase tracking-widest">Subiendo...</span></div> : currentPartner?.logo_url ? <img src={currentPartner.logo_url} className="h-24 object-contain mix-blend-multiply" /> : <><div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm"><span className="material-symbols-outlined text-2xl">cloud_upload</span></div><span className="text-[10px] uppercase font-black text-slate-400 tracking-widest">Seleccionar Logo</span></>}
                                   <input id="logo-upload" type="file" className="hidden" accept="image/*" onChange={handleUploadLogo} disabled={isUploading} />
                                </div>
-                               <input type="text" placeholder="Nombre" value={currentPartner?.name || ''} onChange={e => setCurrentPartner(p => p ? {...p, name: e.target.value} : null)} className="w-full p-4 bg-slate-50 dark:bg-gray-800 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20" />
-                               <input type="url" placeholder="Website URL" value={currentPartner?.website_url || ''} onChange={e => setCurrentPartner(p => p ? {...p, website_url: e.target.value} : null)} className="w-full p-4 bg-slate-50 dark:bg-gray-800 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20" />
+                               <input type="text" placeholder="Nombre de la empresa" value={currentPartner?.name || ''} onChange={e => setCurrentPartner(p => p ? {...p, name: e.target.value} : null)} className="w-full p-5 bg-slate-50 border-none rounded-2xl text-sm font-black text-slate-700 outline-none ring-2 ring-transparent focus:ring-primary/20 placeholder:text-slate-300" />
+                               <input type="url" placeholder="URL Web (ej: https://...)" value={currentPartner?.website_url || ''} onChange={e => setCurrentPartner(p => p ? {...p, website_url: e.target.value} : null)} className="w-full p-5 bg-slate-50 border-none rounded-2xl text-sm font-black text-slate-700 outline-none ring-2 ring-transparent focus:ring-primary/20 placeholder:text-slate-300" />
                                <div className="flex gap-4">
-                                  <input type="number" placeholder="Orden" value={currentPartner?.display_order || 0} onChange={e => setCurrentPartner(p => p ? {...p, display_order: parseInt(e.target.value)} : null)} className="w-1/3 p-4 bg-slate-50 dark:bg-gray-800 rounded-2xl text-sm font-bold outline-none" />
-                                  <label className="flex-1 flex items-center gap-3 px-4 bg-slate-50 dark:bg-gray-800 rounded-2xl">
-                                     <input type="checkbox" checked={currentPartner?.is_active || false} onChange={e => setCurrentPartner(p => p ? {...p, is_active: e.target.checked} : null)} className="text-primary focus:ring-primary w-5 h-5 rounded" />
-                                     <span className="text-xs font-bold text-slate-600 dark:text-gray-300">Activo</span>
+                                  <div className="w-1/3">
+                                     <input type="number" placeholder="Orden" value={currentPartner?.display_order || 0} onChange={e => setCurrentPartner(p => p ? {...p, display_order: parseInt(e.target.value)} : null)} className="w-full p-5 bg-slate-50 border-none rounded-2xl text-sm font-black text-slate-700 outline-none ring-2 ring-transparent focus:ring-primary/20 text-center" />
+                                  </div>
+                                  <label className="flex-1 flex items-center justify-between px-6 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Socio Activo</span>
+                                     <input type="checkbox" checked={currentPartner?.is_active || false} onChange={e => setCurrentPartner(p => p ? {...p, is_active: e.target.checked} : null)} className="w-6 h-6 rounded-lg border-none bg-slate-200 text-primary focus:ring-primary/20" />
                                   </label>
                                </div>
-                               <button onClick={handleSavePartner} disabled={isUploading} className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase text-xs shadow-xl shadow-primary/20 active:scale-95 transition-all">
-                                  Guardar Cambios
-                               </button>
+                               <button onClick={handleSavePartner} disabled={isUploading} className="w-full py-5 bg-primary text-white rounded-[1.5rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all mt-4 border-none disabled:opacity-50">
+                                  Confirmar y Guardar
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -562,35 +568,78 @@ export function AdminPanel() {
               </div>
             )}
 
-            {/* 7. LEADS VIEW */}
+            {/* 7. LEADS VIEW PREMIUM */}
             {activeView === 'leads' && (
-               <div className="space-y-4">
+               <div className="space-y-6">
                   {landingLeads.length === 0 ? (
-                      <div className="py-12 text-center">
-                         <span className="text-xs font-bold text-gray-400 uppercase">No hay leads nuevos</span>
+                      <div className="py-24 text-center bg-white border border-slate-100 rounded-[3rem] shadow-inner">
+                        <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                           <span className="material-symbols-outlined text-5xl text-slate-200">contact_mail</span>
+                        </div>
+                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No hay nuevos leads registrados</p>
                       </div>
                   ) : (
                       landingLeads.map(lead => (
-                         <div key={lead.id} className="bg-white dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
-                            <div className="flex justify-between items-start mb-2">
-                               <h3 className="font-black text-slate-800 dark:text-white text-base">{lead.full_name}</h3>
-                               <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase ${lead.status === 'new' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>{lead.status}</span>
+                         <div key={lead.id} className="bg-white p-10 rounded-[3rem] border border-slate-50 shadow-2xl shadow-slate-200/50 relative overflow-hidden group animate-fade-in">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+                            
+                            <div className="flex justify-between items-start mb-8 relative z-10">
+                               <div className="flex items-center gap-5">
+                                  <div className="w-16 h-16 bg-slate-50 rounded-[1.5rem] flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform">
+                                     <span className="material-symbols-outlined text-3xl">person</span>
+                                  </div>
+                                  <div>
+                                     <h3 className="font-black text-xl text-slate-800 tracking-tight uppercase leading-none mb-2">{lead.full_name}</h3>
+                                     <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{lead.service_type}</p>
+                                  </div>
+                               </div>
+                               <span className={`text-[9px] font-black px-5 py-2.5 rounded-full uppercase tracking-[0.2em] shadow-sm border ${lead.status === 'new' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}`}>
+                                  {lead.status === 'new' ? 'Pendiente' : 'Contactado'}
+                               </span>
                             </div>
-                            <p className="text-xs text-slate-500 mb-1">{lead.service_type}</p>
-                            <p className="text-xs text-slate-400 font-mono mb-4">{lead.phone}</p>
-                            <div className="bg-slate-50 dark:bg-gray-800 p-3 rounded-xl mb-4">
-                               <p className="text-xs italic text-slate-600 dark:text-gray-300">"{lead.message}"</p>
+                            
+                            <div className="space-y-5 mb-10 relative z-10">
+                               <div className="flex items-center gap-4 text-slate-600 bg-slate-50/50 p-5 rounded-[1.5rem] border border-slate-100/50">
+                                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm">
+                                     <span className="material-symbols-outlined text-xl">phone_iphone</span>
+                                  </div>
+                                  <p className="text-sm font-black text-slate-800 font-mono tracking-tighter">{lead.phone}</p>
+                               </div>
+                               <div className="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100/50 relative">
+                                  <span className="material-symbols-outlined text-slate-200 absolute right-6 top-6 text-4xl opacity-50">format_quote</span>
+                                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Mensaje Recibido</span>
+                                  <p className="text-sm font-medium text-slate-700 leading-relaxed italic relative z-10">"{lead.message}"</p>
+                               </div>
                             </div>
-                            <div className="flex gap-2 justify-end">
-                               {lead.status === 'new' && <button onClick={() => updateLeadStatus(lead.id, 'contacted')} className="px-4 py-2 bg-primary text-white text-[10px] font-black uppercase rounded-lg">Contactar</button>}
-                               <button onClick={() => handleDeleteLead(lead.id)} className="px-3 py-2 text-rose-400 bg-rose-50 dark:bg-rose-900/20 rounded-lg"><span className="material-symbols-outlined text-sm">delete</span></button>
+
+                            <div className="flex gap-4 relative z-10">
+                               <a 
+                                 href={`https://wa.me/${lead.phone.replace(/\D/g, '')}`} 
+                                 target="_blank" 
+                                 rel="noreferrer"
+                                 className="flex-1 py-5 bg-emerald-500 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 flex items-center justify-center gap-3 active:scale-95 transition-all text-center no-underline"
+                               >
+                                  <span className="material-symbols-outlined text-lg">message</span>
+                                  Contactar WhatsApp
+                               </a>
+                               {lead.status === 'new' && (
+                                 <button 
+                                   onClick={() => updateLeadStatus(lead.id, 'contacted')}
+                                   className="flex-1 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/30 flex items-center justify-center gap-3 active:scale-95 transition-all border-none"
+                                 >
+                                    <span className="material-symbols-outlined text-lg">check_circle</span>
+                                    Cerrar Lead
+                                 </button>
+                               )}
+                               <button onClick={() => handleDeleteLead(lead.id)} className="w-16 h-16 bg-rose-50 text-rose-500 rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-rose-500/10 hover:bg-rose-100 transition-colors active:scale-90 border-none">
+                                  <span className="material-symbols-outlined text-2xl">delete</span>
+                               </button>
                             </div>
                          </div>
                       ))
                   )}
                </div>
             )}
-
         </main>
     </div>
   );
