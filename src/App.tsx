@@ -49,6 +49,21 @@ function App() {
   });
 
   const [pendingAttachmentIds, setPendingAttachmentIds] = useState<string[]>([]);
+  
+  // Theme Management
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('dd_theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('dd_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('dd_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   // Persist session ID
   useEffect(() => {
@@ -554,7 +569,7 @@ function App() {
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col relative overflow-hidden">
           {activeTab === 'home' && (
-            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
               <HomePanel 
                 onServiceSelect={(type) => {
                   setActiveTab('chat');
@@ -737,7 +752,7 @@ function App() {
           )}
 
           {activeTab === 'profile' && (
-            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
               <ProfilePanel 
                 userName={userName}
                 userEmail={userEmail}
@@ -746,12 +761,14 @@ function App() {
                   localStorage.removeItem('dd_chatbot_test_session');
                   setSession(null);
                 }}
+                isDarkMode={isDarkMode}
+                onThemeToggle={() => setIsDarkMode(!isDarkMode)}
               />
             </div>
           )}
 
           {activeTab === 'history' && !showDetail && (
-            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
               <HistoryPanel 
                 onViewDetail={(req) => {
                   setSelectedRequest(req);
@@ -771,13 +788,13 @@ function App() {
           )}
 
           {activeTab === 'contact' && (
-            <div className="flex-1 overflow-y-auto pb-24 scroll-smooth no-scrollbar">
+            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
               <ContactPanel />
             </div>
           )}
 
           {activeTab === 'admin' && isAdmin && (
-            <div className="flex-1 overflow-y-auto pb-24 no-scrollbar">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
               <AdminPanel />
             </div>
           )}
