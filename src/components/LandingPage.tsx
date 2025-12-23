@@ -58,7 +58,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center shadow-lg relative overflow-hidden group">
-            <span className="text-white font-black text-xl relative z-10 tracking-tighter">D</span>
+            <img src="/icon-192.png" alt="DeDoctor" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
           <div className="flex flex-col">
