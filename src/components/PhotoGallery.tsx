@@ -34,11 +34,11 @@ export function PhotoGallery() {
         <h3 className="text-xl font-black text-gray-900 tracking-tight">Galería de <span className="text-primary">Servicios</span></h3>
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {items.map((item, idx) => (
           <div 
             key={item.id} 
-            className={`group relative overflow-hidden rounded-[2rem] bg-gray-100 shadow-lg ${idx === 0 ? 'col-span-2 h-64' : 'h-48'}`}
+            className={`group relative overflow-hidden rounded-[2rem] bg-gray-100 shadow-lg ${idx === 0 ? 'col-span-2 md:col-span-2 md:row-span-2 h-64 md:h-auto' : 'h-48 md:h-64'}`}
           >
             <img 
               src={item.image_url} 
