@@ -53,7 +53,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
       </div>
 
-      <main className="w-full bg-white min-h-[100dvh] relative overflow-x-hidden flex flex-col z-10 transition-all duration-500">
+      <main className="w-full bg-white h-[100dvh] max-h-[100dvh] relative overflow-hidden flex flex-col z-10 transition-all duration-500">
       <header className="w-full bg-white/60 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-100 flex-shrink-0">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
         <div className="flex items-center gap-3">

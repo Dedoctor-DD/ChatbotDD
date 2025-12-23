@@ -66,9 +66,9 @@ export function Login({ onBack }: LoginProps) {
 
     if (view === 'register') {
         return (
-            <div className="flex justify-center min-h-screen bg-white overflow-hidden font-jakarta relative">
+            <div className="flex justify-center min-h-screen bg-white overflow-x-hidden font-jakarta relative">
                 {/* Ambient Background */}
-                <div className="hidden md:block absolute inset-0 z-0">
+                <div className="hidden md:block fixed inset-0 z-0 pointer-events-none overflow-hidden">
                     <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
                     <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
                 </div>
@@ -95,9 +95,9 @@ export function Login({ onBack }: LoginProps) {
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-white overflow-hidden font-jakarta relative">
+        <div className="flex justify-center min-h-screen bg-white overflow-x-hidden font-jakarta relative">
             {/* Ambient Background for PC */}
-            <div className="hidden md:block absolute inset-0 z-0">
+            <div className="hidden md:block fixed inset-0 z-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
                 <div className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:3s]"></div>
             </div>
