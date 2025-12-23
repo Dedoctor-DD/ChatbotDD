@@ -22,33 +22,35 @@ export function BottomNav({ activeTab, onTabChange, isAdmin, onNewChat }: Bottom
     <nav className="w-full max-w-md md:max-w-xl mx-auto bg-white/80 backdrop-blur-2xl border-t border-slate-100 pb-[env(safe-area-inset-bottom)] z-[70] md:rounded-b-[3rem] sticky bottom-0 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
       {/* Arise Sub-menu */}
       {showAriseMenu && (
-        <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[220px] bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-slate-100 p-2 animate-slide-up overflow-hidden z-[80]">
-          <button 
-            onClick={() => {
-              onNewChat?.();
-              onTabChange('chat');
-              setShowAriseMenu(false);
-            }}
-            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-primary/10 rounded-2xl transition-all group active:scale-95"
-          >
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:rotate-12">
-               <span className="material-symbols-outlined text-xl filled">add_circle</span>
+        <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[220px] p-2 animate-slide-up overflow-hidden z-[80]">
+          <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-slate-100 overflow-hidden">
+             <button 
+                onClick={() => {
+                  onNewChat?.();
+                  onTabChange('chat');
+                  setShowAriseMenu(false);
+                }}
+                className="w-full flex items-center gap-3 px-5 py-4 hover:bg-primary/10 transition-all group active:scale-95"
+              >
+                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary transition-transform group-hover:rotate-12">
+                   <span className="material-symbols-outlined text-xl filled">add_circle</span>
+                </div>
+                <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Nuevo Chat</span>
+              </button>
+              <div className="h-px bg-slate-100/50 mx-4" />
+              <button 
+                onClick={() => {
+                  onTabChange('history');
+                  setShowAriseMenu(false);
+                }}
+                className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-all group active:scale-95"
+              >
+                <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
+                   <span className="material-symbols-outlined text-xl">history</span>
+                </div>
+                <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Historial</span>
+              </button>
             </div>
-            <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Nuevo Chat</span>
-          </button>
-          <div className="h-px bg-slate-100/50 my-1 mx-2" />
-          <button 
-            onClick={() => {
-              onTabChange('history');
-              setShowAriseMenu(false);
-            }}
-            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 rounded-2xl transition-all group active:scale-95"
-          >
-            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
-               <span className="material-symbols-outlined text-xl">history</span>
-            </div>
-            <span className="text-xs font-black text-slate-700 uppercase tracking-widest">Historial</span>
-          </button>
         </div>
       )}
 
