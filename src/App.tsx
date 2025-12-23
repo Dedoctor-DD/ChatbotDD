@@ -564,7 +564,7 @@ function App() {
       </div>
 
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md md:max-w-2xl bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
+      <div className="w-full max-w-md md:max-w-2xl bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col h-[100dvh] md:h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
         
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col relative overflow-hidden">
@@ -691,6 +691,7 @@ function App() {
                     />
                   </div>
                 )}
+                <div className="h-4" /> {/* Botton spacer for chat flow */}
               </div>
 
               {/* Chat Input */}

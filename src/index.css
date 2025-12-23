@@ -63,3 +63,17 @@ body {
 .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Ocultar barra de scroll globalmente */
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
