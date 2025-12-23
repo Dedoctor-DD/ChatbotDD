@@ -61,3 +61,22 @@ export interface Attachment {
     file_size: number;
     created_at: string;
 }
+
+export interface Partner {
+    id: string;
+    name: string;
+    logo_url: string;
+    website_url: string;
+    display_order: number;
+    is_active: boolean;
+}
+
+export interface LandingLead {
+    id: string;
+    full_name: string;
+    phone: string;
+    service_type: string;
+    message: string | null;
+    status: string;
+    created_at: string;
+}

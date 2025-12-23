@@ -168,7 +168,7 @@ function App() {
 
   // Watchdog: Reset isLoading if it gets stuck for more than 25 seconds
   useEffect(() => {
-    let timeout: any;
+    let timeout: ReturnType<typeof setTimeout>;
     if (isLoading) {
       timeout = setTimeout(() => {
         console.warn('Loading stuck for 15s, resetting...');
@@ -708,7 +708,7 @@ function App() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
-                          handleSubmit(e as any);
+                          handleSubmit(e);
                         }
                       }}
                       placeholder="Escribe un mensaje..."

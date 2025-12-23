@@ -1,15 +1,6 @@
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { supabase } from '../lib/supabase';
-import type { ServiceRequest, Profile, Tariff } from '../types';
-
-interface Partner {
-    id: string;
-    name: string;
-    logo_url: string;
-    website_url: string;
-    display_order: number;
-    is_active: boolean;
-}
+import type { ServiceRequest, Profile, Tariff, Partner, LandingLead } from '../types';
 
 export function AdminPanel() {
   const [activeView, setActiveView] = useState<'dashboard' | 'transport' | 'workshop' | 'pending' | 'clients' | 'pricing' | 'partners' | 'leads'>('dashboard');
@@ -17,7 +8,7 @@ export function AdminPanel() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [tariffs, setTariffs] = useState<Tariff[]>([]); 
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [landingLeads, setLandingLeads] = useState<any[]>([]);
+  const [landingLeads, setLandingLeads] = useState<LandingLead[]>([]);
 
   // Partner Modal State
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);

@@ -30,7 +30,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (profileData) setProfile(profileData);
 

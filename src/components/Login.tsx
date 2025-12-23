@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { generateUUID } from '../lib/utils';
-
-interface Partner {
-    id: string;
-    name: string;
-    logo_url: string;
-    website_url: string;
-}
+import type { Partner } from '../types';
 
 interface LoginProps {
     onBack?: () => void;

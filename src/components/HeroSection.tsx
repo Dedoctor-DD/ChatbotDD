@@ -12,7 +12,7 @@ export const HeroSection = () => (
         Te cuidamos.
       </span>
     </h2>
-    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
+    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-8 max-w-xl mx-auto">
       Unimos la excelencia logística de <span className="font-semibold text-gray-800 dark:text-gray-200 underline decoration-primary/30 decoration-2 underline-offset-2">
         Transportes DeDoctor
       </span> con la precisión técnica del <span className="font-semibold text-gray-800 dark:text-gray-200 underline decoration-primary/30 decoration-2 underline-offset-2">
