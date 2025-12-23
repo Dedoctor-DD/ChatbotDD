@@ -5,6 +5,7 @@ import { HomePanel } from './components/HomePanel';
 import { LandingPage } from './components/LandingPage';
 import { ServiceDetailPanel } from './components/ServiceDetailPanel';
 import { HistoryPanel } from './components/HistoryPanel';
+import { AdminPanel } from './components/AdminPanel';
 
 import type { ServiceRequest } from './types';
 import { useAuth } from './hooks/useAuth';
@@ -14,7 +15,7 @@ import { useVoiceInput } from './hooks/useVoiceInput';
 type TabType = 'home' | 'chat' | 'admin' | 'history' | 'profile' | 'contact';
 
 function App() {
-  const { session, isCheckingSession, userName } = useAuth();
+  const { session, isCheckingSession, userName, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [showLogin, setShowLogin] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
@@ -73,8 +74,6 @@ function App() {
 
     // Since we don't expose setIsLoading from useChat for general use, we might need to?
     // Actually we do expose it.
-    // But setting it true here might conflict if `sendMessage` sets it.
-    // `sendMessage` sets it true.
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -100,20 +99,6 @@ function App() {
   const handleEdit = () => {
     setConfirmationData(null);
     setShowLocationBtn(false);
-    // Manually add message to UI? send 'hidden' message?
-    // Original code:
-    // setMessages((prev) => [...prev, editMessage]);
-    // We need to expose a way to add a local system message or just use sendMessage.
-    // But sendMessage sends to API.
-    // We can just send a user message "Quiero corregir" or similar?
-    // Or we can expose `setMessages`? 
-    // Let's keep it simple: Call sendMessage with a prompt?
-    // Or better, let's just use `sendMessage` but maybe we need a "system" message injection.
-    // For now, I'll just send a "Quiero corregir" user message or similar, 
-    // OR I can modify `useChat` to expose `addSystemMessage`.
-    // Simpler: Just sendMessage("Quiero editar la información"). 
-    // But the original had a specific UI behavior.
-    // Let's assume for this refactor we can just sendMessage("Corregir").
     sendMessage("Quiero modificar la información");
   };
 
@@ -174,6 +159,12 @@ function App() {
                  }} 
                />
              </div>
+          )}
+
+          {activeTab === 'admin' && isAdmin && (
+            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
+              <AdminPanel />
+            </div>
           )}
 
           {(activeTab === 'home' || activeTab === 'history') && showDetail && selectedRequest && (
@@ -356,6 +347,12 @@ function App() {
                 <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
                 <span className="text-[9px] font-black uppercase tracking-wider">Chat</span>
              </button>
+             {isAdmin && (
+               <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all ${activeTab === 'admin' ? 'text-primary bg-blue-50' : 'text-gray-400 hover:text-gray-600'}`}>
+                  <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
+                  <span className="text-[9px] font-black uppercase tracking-wider">Admin</span>
+               </button>
+             )}
         </nav>
       </div>
     </div>

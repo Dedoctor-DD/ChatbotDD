@@ -35,9 +35,9 @@ export function Login({ onBack }: LoginProps) {
             });
 
             if (error) throw error;
-        } catch (err: any) {
-            console.error('Error logging in:', err);
-            setError(err.message || 'Credenciales incorrectas');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Credenciales incorrectas';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -57,9 +57,9 @@ export function Login({ onBack }: LoginProps) {
             });
 
             if (error) throw error;
-        } catch (err: any) {
-            console.error('Error logging in with Google:', err);
-            setError(err.message || 'Error al conectar con Google');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error al conectar con Google';
+            setError(errorMessage);
             setIsLoading(false);
         }
     };

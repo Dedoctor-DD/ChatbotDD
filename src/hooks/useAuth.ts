@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 export function useAuth() {
     const [session, setSession] = useState<Session | null>(null);
     const [isCheckingSession, setIsCheckingSession] = useState(true);
+    const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
     useEffect(() => {
         const handleSessionCheck = async () => {
@@ -24,6 +25,15 @@ export function useAuth() {
 
             if (session) {
                 setSession(session);
+
+                // Fetch Role
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                setUserRole(profile?.role as 'admin' | 'user' || 'user');
                 setIsCheckingSession(false);
             } else if (!hasAuthHash) {
                 setTimeout(() => setIsCheckingSession(false), 800);
@@ -34,6 +44,14 @@ export function useAuth() {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
+            if (session) {
+                // Re-fetch role on auth change
+                supabase.from('profiles').select('role').eq('id', session.user.id).single()
+                    .then(({ data }) => setUserRole(data?.role as 'admin' | 'user' || 'user'));
+            } else {
+                setUserRole(null);
+            }
+
             setIsCheckingSession(false);
 
             if (session && _event === 'SIGNED_IN') {
@@ -44,12 +62,12 @@ export function useAuth() {
         return () => subscription.unsubscribe();
     }, []);
 
-    const isAdmin = session?.user?.email === 'dedoctor.transportes@gmail.com';
+    const isAdmin = userRole === 'admin';
 
     const userName = session?.user?.user_metadata?.full_name ||
         session?.user?.user_metadata?.name ||
         session?.user?.email?.split('@')[0] ||
         'Usuario';
 
-    return { session, isCheckingSession, isAdmin, userName };
+    return { session, isCheckingSession, isAdmin, userName, userRole };
 }

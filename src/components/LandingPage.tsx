@@ -90,7 +90,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
           <section className="mb-16">
              <header className="mb-8 px-2">
                 <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Nuestra <span className="text-primary">Flota</span></h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Excelencia en cada unidad</p>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Excelencia en cada unidad</p>
              </header>
              <PhotoGallery />
           </section>
@@ -147,7 +147,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Servicio</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Servicio</label>
                     <div className="grid grid-cols-2 gap-3">
                       {['Traslado DeDoctor', 'Taller MMC'].map((type) => (
                         <button
@@ -212,7 +212,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <p className="text-[0.7rem] text-slate-400 font-black uppercase tracking-[0.3em] mb-2">
               © {new Date().getFullYear()} Grupo DeDoctor & MMC
             </p>
-            <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+            <p className="text-xs text-slate-300 font-bold uppercase tracking-widest">
               Comprometidos con la Movilidad Inclusiva
             </p>
           </div>
