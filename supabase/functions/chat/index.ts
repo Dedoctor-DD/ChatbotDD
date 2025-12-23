@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
                 .from('profiles')
                 .select('full_name, phone, address')
                 .eq('id', user.id)
-                .single();
+                .maybeSingle();
 
             if (profile) {
                 userContext = `\n\nDATOS DEL USUARIO (Usa esto para autocompletar si es necesario):\n` +

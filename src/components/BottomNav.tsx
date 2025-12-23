@@ -19,7 +19,7 @@ export function BottomNav({ activeTab, onTabChange, isAdmin, onNewChat }: Bottom
   ];
 
   return (
-    <nav className="fixed md:absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-[70] md:rounded-b-[3rem]">
+    <nav className="fixed md:absolute bottom-0 left-0 right-0 w-full max-w-md md:max-w-2xl mx-auto bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-[env(safe-area-inset-bottom)] z-[70] md:rounded-b-[3rem]">
       {/* Arise Sub-menu */}
       {showAriseMenu && (
         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[200px] bg-white dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 p-2 animate-slide-up overflow-hidden z-[80]">

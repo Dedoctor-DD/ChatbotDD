@@ -307,8 +307,8 @@ function App() {
       }
 
       // 2. Check for Confirmation (Robust Regex Parsing)
-      // Matches [CONFIRM_READY: { ... }] handling potential newlines and spaces
-      const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/;
+      // Matches [CONFIRM_READY: { ... }] handling potential newlines, spaces, and markdown blocks
+      const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/i;
       const confirmMatch = cleanResponse.match(confirmRegex);
 
       if (confirmMatch && confirmMatch[1]) {
@@ -549,7 +549,7 @@ function App() {
       </div>
 
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
+      <div className="w-full max-w-md md:max-w-2xl bg-white dark:bg-surface-dark shadow-2xl relative flex flex-col min-h-screen md:min-h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 dark:border-gray-800 z-10 transition-all duration-500">
         
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col relative overflow-hidden">
