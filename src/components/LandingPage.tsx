@@ -97,7 +97,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
           {/* Contact Form */}
           <section id="contacto" className="mb-12">
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden">
+            <div className="bg-white rounded-4xl p-8 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-50 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               
               <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
@@ -199,11 +199,11 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       <footer className="w-full border-t border-slate-50 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col items-center gap-8">
           <div className="flex gap-6">
-            <a href="#" className="w-14 h-14 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+            <a href="#" className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
               <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">social_leaderboard</span>
               <span className="sr-only">Instagram</span>
             </a>
-            <a href="#" className="w-14 h-14 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+            <a href="#" className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
               <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">chat</span>
               <span className="sr-only">WhatsApp</span>
             </a>

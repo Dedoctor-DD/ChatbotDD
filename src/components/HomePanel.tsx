@@ -85,7 +85,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
           </div>
           <button 
             onClick={() => setIsProfileModalOpen(true)}
-            className="w-14 h-14 rounded-[1.5rem] bg-white shadow-2xl shadow-slate-200 flex items-center justify-center border border-slate-50 overflow-hidden active:scale-90 transition-all group"
+            className="w-14 h-14 rounded-2xl bg-white shadow-2xl shadow-slate-200 flex items-center justify-center border border-slate-50 overflow-hidden active:scale-90 transition-all group"
           >
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
@@ -99,7 +99,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
       {/* Alerta de Deuda si existe */}
       {totalDebt > 0 && (
         <section className="px-6 mb-8">
-          <div className="bg-rose-500 rounded-[2rem] p-6 text-white shadow-xl shadow-rose-500/30 relative overflow-hidden group">
+          <div className="bg-rose-500 rounded-3xl p-6 text-white shadow-xl shadow-rose-500/30 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-4">
@@ -128,7 +128,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
         <div className="grid grid-cols-2 gap-5">
           <button 
             onClick={() => onServiceSelect('transport')}
-            className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
+            className="bg-white p-8 rounded-5xl shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
             <div className="w-14 h-14 bg-blue-50/50 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:rotate-6 transition-all relative z-10">
@@ -140,7 +140,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
 
           <button 
             onClick={() => onServiceSelect('workshop')}
-            className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
+            className="bg-white p-8 rounded-5xl shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/5 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
             <div className="w-14 h-14 bg-orange-50/50 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:rotate-6 transition-all relative z-10">
@@ -156,7 +156,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
       <section className="px-6 mb-10">
         <button 
           onClick={onGoToChat}
-          className="w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 flex items-center justify-between text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group border-none transition-all active:scale-95"
+          className="w-full bg-gradient-to-br from-slate-900 to-slate-800 rounded-4xl p-8 flex items-center justify-between text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group border-none transition-all active:scale-95"
         >
           <div className="absolute top-[-20%] right-[-10%] w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
           <div className="flex items-center gap-5 relative z-10">
@@ -191,7 +191,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
                 <button 
                   key={req.id} 
                   onClick={() => onViewDetail(req)}
-                  className="w-full bg-white p-5 rounded-[2rem] border border-slate-50 flex items-center justify-between shadow-xl shadow-slate-200/40 cursor-pointer active:scale-98 transition-all text-left group"
+                  className="w-full bg-white p-5 rounded-3xl border border-slate-50 flex items-center justify-between shadow-xl shadow-slate-200/40 cursor-pointer active:scale-98 transition-all text-left group"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 ${isTransport ? 'bg-blue-50/50 text-primary' : 'bg-orange-50/50 text-orange-500'} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
@@ -218,7 +218,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
               );
             })
           ) : (
-            <div className="py-16 text-center bg-white rounded-[3rem] border border-slate-100 shadow-inner">
+            <div className="py-16 text-center bg-white rounded-5xl border border-slate-100 shadow-inner">
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
                  <span className="material-symbols-outlined text-4xl text-slate-200 group-hover:rotate-12 transition-transform">history_toggle_off</span>
               </div>
