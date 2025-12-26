@@ -3,9 +3,10 @@ import type { ServiceRequest } from '../../types';
 interface RecentActivityProps {
   requests: ServiceRequest[];
   onViewDetail: (request: ServiceRequest) => void;
+  onViewHistory: () => void;
 }
 
-export function RecentActivity({ requests, onViewDetail }: RecentActivityProps) {
+export function RecentActivity({ requests, onViewDetail, onViewHistory }: RecentActivityProps) {
   return (
     <section className="px-6">
       <div className="flex justify-between items-center mb-6">
@@ -13,6 +14,12 @@ export function RecentActivity({ requests, onViewDetail }: RecentActivityProps) 
           Actividad Reciente
           <div className="h-px w-12 bg-slate-100"></div>
         </h3>
+        <button 
+           onClick={onViewHistory}
+           className="text-[9px] font-black text-primary uppercase tracking-widest hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+        >
+           Ver todo
+        </button>
       </div>
       
       <div className="space-y-4">

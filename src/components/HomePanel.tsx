@@ -14,11 +14,14 @@ interface HomePanelProps {
   onServiceSelect: (service: 'transport' | 'workshop') => void;
   onGoToChat: () => void;
   onViewDetail: (request: ServiceRequest) => void;
+  onViewHistory: () => void;
+  onLogout: () => void;
   userName: string;
   userId: string;
 }
 
-export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName: initialUserName, userId }: HomePanelProps) {
+
+export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, onViewHistory, onLogout, userName: initialUserName, userId }: HomePanelProps) {
 
   const [recentRequests, setRecentRequests] = useState<ServiceRequest[]>([]);
   const [profile, setProfile] = useState<Partial<Profile> | null>(null);
@@ -103,13 +106,17 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
 
       <ChatbotBanner onGoToChat={onGoToChat} />
 
-      <RecentActivity requests={recentRequests} onViewDetail={onViewDetail} />
+      <RecentActivity requests={recentRequests} onViewDetail={onViewDetail} onViewHistory={onViewHistory} />
 
       <ProfileModal 
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         userId={userId}
         onUpdate={loadUserData}
+        onLogout={() => {
+           onLogout();
+           setIsProfileModalOpen(false);
+        }}
       />
       
       <BookingModal 
@@ -118,6 +125,17 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
         userId={userId}
         userName={userName}
       />
+
+      {/* Floating WhatsApp Button */}
+      <a 
+        href="https://wa.me/56912345678" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-slow"
+        aria-label="Contactar por WhatsApp"
+      >
+        <i className="fa-brands fa-whatsapp text-3xl"></i>
+      </a>
     </div>
   );
 }

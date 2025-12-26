@@ -12,13 +12,13 @@ export const HeroSection = ({ onActionClick }: HeroSectionProps) => (
       </span>
       Alianza Estratégica en Movilidad
     </div>
-    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] text-slate-900 mb-8 tracking-tight">
+    <h2 className="text-3xl md:text-5xl font-black leading-tight text-slate-900 mb-6 tracking-tight">
       Te movemos. <br />
       <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-500 to-indigo-600">
         Te cuidamos.
       </span>
     </h2>
-    <p className="text-slate-500 text-sm md:text-base leading-relaxed mb-10 max-w-xl mx-auto font-medium">
+    <p className="text-slate-500 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto font-medium px-4">
       Unimos la excelencia logística de <span className="text-slate-900 font-bold border-b-2 border-primary/20">
         Transportes DeDoctor
       </span> con la precisión técnica del <span className="text-slate-900 font-bold border-b-2 border-primary/20">

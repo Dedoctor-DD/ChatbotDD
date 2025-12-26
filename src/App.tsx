@@ -200,6 +200,8 @@ function App() {
                   setSelectedRequest(req);
                   setShowDetail(true);
                 }}
+                onViewHistory={() => setActiveTab('history')}
+                onLogout={handleLogout}
                 userName={userName}
                 userId={session.user.id}
               />

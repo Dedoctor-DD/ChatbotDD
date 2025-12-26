@@ -16,7 +16,7 @@ interface SavedAddress {
     address: string;
 }
 
-export function BookingModal({ isOpen, onClose, userId, userName }: BookingModalProps) {
+export function BookingModal({ isOpen, onClose, userId }: BookingModalProps) {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -217,13 +217,13 @@ export function BookingModal({ isOpen, onClose, userId, userName }: BookingModal
                 <div className="p-8 -mt-6 bg-white rounded-t-[2.5rem] relative z-20 flex-1 overflow-y-auto no-scrollbar">
                     {success ? (
                          <div className="text-center py-8 animate-scale-in">
-                            <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <div className="w-20 h-20 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                                 <span className="material-symbols-outlined text-4xl filled">check_circle</span>
                             </div>
-                            <h4 className="text-2xl font-black text-slate-800 mb-2">¡Cita Confirmada, {userName.split(' ')[0]}!</h4>
+                            <h4 className="text-2xl font-black text-slate-800 mb-2">¡Solicitud Recibida!</h4>
                             <p className="text-sm font-medium text-slate-500 mb-8">
-                                Se ha reservado tu hora para el <br/>
-                                <span className="font-bold text-slate-800">{new Date(`${formData.date}T${formData.time}`).toLocaleString()}</span>
+                                Tu solicitud ha sido ingresada correctamente.<br/>
+                                <span className="font-bold text-slate-800">Serás notificado a la brevedad</span> para la confirmación final.
                             </p>
                             <button onClick={reset} className="w-full py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
                                 Entendido

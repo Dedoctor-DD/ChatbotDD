@@ -7,9 +7,11 @@ interface ProfileModalProps {
     onClose: () => void;
     userId: string;
     onUpdate: () => void;
+    onLogout: () => void;
 }
 
-export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModalProps) {
+
+export function ProfileModal({ isOpen, onClose, userId, onUpdate, onLogout }: ProfileModalProps) {
     const [profile, setProfile] = useState<Partial<Profile>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -213,6 +215,13 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate }: ProfileModal
                             <span className="material-symbols-outlined text-lg">save</span>
                         )}
                         {saving ? 'Guardando...' : success ? '¡Listo!' : 'Guardar Perfil'}
+                    </button>
+                    <button 
+                         onClick={onLogout}
+                         className="px-4 py-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-100 transition-all flex items-center justify-center active:scale-95"
+                         title="Cerrar Sesión"
+                    >
+                        <span className="material-symbols-outlined">logout</span>
                     </button>
                 </div>
             </div>
