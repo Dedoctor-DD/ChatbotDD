@@ -13,12 +13,18 @@ interface LandingPageProps {
 
 export function LandingPage({ onLoginClick }: LandingPageProps) {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [showPromo, setShowPromo] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
     phone: '',
     service_type: 'Traslado DeDoctor',
     message: ''
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPromo(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +54,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
   return (
     <div className="flex justify-center h-[100dvh] bg-white overflow-hidden font-jakarta relative">
-      <PromoPopup />
+      <PromoPopup isOpen={showPromo} onClose={() => setShowPromo(false)} />
       {/* Ambient Background for PC */}
       <div className="hidden md:block absolute inset-0 z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
@@ -70,13 +76,22 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">Grupo de Movilidad</p>
           </div>
         </div>
-        <button 
-          onClick={onLoginClick}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition shadow-xl shadow-primary/20 border-none active:scale-95"
-        >
-          <span className="material-symbols-outlined text-sm">person</span>
-          Acceso
-        </button>
+        <div className="flex gap-2">
+            <button 
+            onClick={() => setShowPromo(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 hover:text-primary transition-all active:scale-95"
+            >
+            <span className="material-symbols-outlined text-sm">campaign</span>
+            <span className="hidden sm:inline">Novedades</span>
+            </button>
+            <button 
+            onClick={onLoginClick}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-dark transition shadow-xl shadow-primary/20 border-none active:scale-95"
+            >
+            <span className="material-symbols-outlined text-sm">person</span>
+            Acceso
+            </button>
+        </div>
         </div>
       </header>
 

@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { ProfileModal } from './ProfileModal';
 import { BookingModal } from './home/BookingModal';
 import { WelcomeHeader } from './home/WelcomeHeader';
-import { DebtAlert } from './home/DebtAlert';
+import { WelcomeHeader } from './home/WelcomeHeader';
 import { ServicesGrid } from './home/ServicesGrid';
 import { ChatbotBanner } from './home/ChatbotBanner';
 import { RecentActivity } from './home/RecentActivity';
@@ -85,12 +85,15 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
         onProfileClick={() => setIsProfileModalOpen(true)} 
       />
 
-      <DebtAlert 
-        totalDebt={totalDebt} 
-        onPayClick={() => alert('Próximamente: Integración de Pagos')} 
+  return (
+    <div className="flex flex-col min-h-full pb-24 md:pb-8 bg-slate-50/30">
+      <WelcomeHeader 
+        userName={userName} 
+        profile={profile} 
+        onProfileClick={() => setIsProfileModalOpen(true)} 
       />
 
-      <section className="px-6 mb-8">
+      <section className="px-6 mb-8 mt-6">
         <button 
           onClick={() => setIsBookingModalOpen(true)}
           className="w-full bg-slate-900 text-white p-6 rounded-3xl shadow-xl shadow-slate-900/20 relative overflow-hidden group active:scale-[0.98] transition-all"
