@@ -66,7 +66,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
     }
   }, [userId, loadUserData]);
 
-  const totalDebt = debts.reduce((sum, debt) => sum + debt.amount, 0);
+
   const userName = profile?.full_name || initialUserName;
 
   if (loading) {
@@ -77,13 +77,6 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
     );
   }
 
-  return (
-    <div className="flex flex-col min-h-full pb-24 md:pb-8 bg-slate-50/30">
-      <WelcomeHeader 
-        userName={userName} 
-        profile={profile} 
-        onProfileClick={() => setIsProfileModalOpen(true)} 
-      />
 
   return (
     <div className="flex flex-col min-h-full pb-24 md:pb-8 bg-slate-50/30">
