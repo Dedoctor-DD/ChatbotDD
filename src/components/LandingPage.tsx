@@ -80,6 +80,18 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
         </div>
 
+
+
+        <a 
+          href="https://wa.me/56933003113" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-slow"
+          aria-label="Contactar por WhatsApp"
+        >
+          <i className="fa-brands fa-whatsapp text-3xl"></i>
+        </a>
+
         <footer className="w-full border-t border-slate-50 bg-white mt-10">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col items-center gap-6">
             <div className="flex gap-4">
@@ -87,7 +99,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
                 <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">social_leaderboard</span>
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="#" className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+              <a href="https://wa.me/56933003113" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
                 <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">chat</span>
                 <span className="sr-only">WhatsApp</span>
               </a>
