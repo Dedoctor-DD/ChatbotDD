@@ -18,7 +18,7 @@ export function ServiceDetailPanel({ request, onBack }: ServiceDetailPanelProps)
     const val = (key: string) => request.collected_data?.[key] || '---';
 
     return (
-        <div className="flex flex-col w-full min-h-full bg-background-light pb-24">
+        <div className="flex flex-col w-full min-h-full bg-background-light pb-24 md:pb-6">
             <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
                 <div className="flex items-center px-4 h-16">
                     <button onClick={onBack} className="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 text-gray-900 transition-colors border-none bg-transparent">
@@ -53,7 +53,7 @@ export function ServiceDetailPanel({ request, onBack }: ServiceDetailPanelProps)
                     
                     <div className="flex justify-between mt-3 px-1">
                         {['Pendiente', 'Confirmado', 'En Proceso', 'Finalizado'].map((label, idx) => (
-                            <span key={label} className={`text-[8px] font-black uppercase tracking-tighter ${idx === currentStep ? 'text-primary' : 'text-gray-400'}`}>{label}</span>
+                            <span key={label} className={`text-[10px] font-black uppercase tracking-tighter ${idx === currentStep ? 'text-primary' : 'text-gray-400'}`}>{label}</span>
                         ))}
                     </div>
                 </section>

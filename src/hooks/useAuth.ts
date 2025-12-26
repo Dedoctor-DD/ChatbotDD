@@ -54,8 +54,11 @@ export function useAuth() {
 
             setIsCheckingSession(false);
 
-            if (session && _event === 'SIGNED_IN') {
-                window.history.replaceState(null, '', window.location.pathname);
+            if (session && (_event === 'SIGNED_IN' || _event === 'TOKEN_REFRESHED')) {
+                // Clear the hash from the URL so it looks clean
+                if (window.location.hash && window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
             }
         });
 

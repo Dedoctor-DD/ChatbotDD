@@ -55,9 +55,10 @@ function App() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset detail view when tab changes
+  // Reset detail view and scroll when tab changes
   useEffect(() => {
     setShowDetail(false);
+    window.scrollTo(0, 0);
   }, [activeTab]);
 
   // Theme Management - FORCED LIGHT MODE
@@ -128,8 +129,49 @@ function App() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:2s]"></div>
       </div>
 
-      <div className="w-full max-w-md md:max-w-2xl bg-white shadow-2xl relative flex flex-col h-[100dvh] md:h-[90vh] md:my-auto md:rounded-[3rem] overflow-hidden border-x border-gray-100 z-10 transition-all duration-500">
+      <div className="w-full bg-white relative flex flex-col md:flex-row h-[100dvh] overflow-hidden z-10">
         
+        {/* DESKTOP SIDEBAR */}
+        <nav className="hidden md:flex flex-col w-64 bg-slate-50 border-r border-slate-100 py-8 px-4 justify-between z-30">
+            <div className="flex flex-col gap-8">
+                {/* Brand */}
+                <div className="px-2 mb-4">
+                    <h1 className="font-black text-xs uppercase tracking-[0.2em] leading-tight text-slate-800">
+                        DeDoctor <span className="text-primary">&</span> MMC
+                    </h1>
+                </div>
+
+                {/* Nav Items */}
+                <div className="flex flex-col gap-2">
+                    <button onClick={() => setActiveTab('home')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'home' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                        <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Inicio</span>
+                    </button>
+                    <button onClick={() => setActiveTab('chat')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'chat' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                        <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">Chat AI</span>
+                    </button>
+                    {isAdmin && (
+                         <button onClick={() => setActiveTab('admin')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'admin' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                            <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* User Profile Mini */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
+                    {userName.charAt(0)}
+                </div>
+                <div className="overflow-hidden">
+                    <p className="text-[10px] font-bold text-slate-800 truncate">{userName}</p>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{isAdmin ? 'Administrador' : 'Cliente'}</p>
+                </div>
+            </div>
+        </nav>
+
         <main className="flex-1 flex flex-col relative overflow-hidden">
           {activeTab === 'home' && (
             <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
@@ -276,7 +318,7 @@ function App() {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-white/80 backdrop-blur-xl border-t border-gray-100">
+              <div className="p-4 md:px-8 md:py-6 bg-white/80 backdrop-blur-xl border-t border-gray-100 relative z-20">
                 {showLocationBtn && !confirmationData && (
                   <button
                     onClick={handleLocation}
@@ -338,7 +380,8 @@ function App() {
           )}
         </main>
 
-        <nav className="bg-white border-t border-gray-100 py-2 px-6 flex justify-between items-center z-30">
+        {/* MOBILE BOTTOM NAV */}
+        <nav className="md:hidden bg-white border-t border-gray-100 py-2 px-6 flex justify-between items-center z-30">
              <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all ${activeTab === 'home' ? 'text-primary bg-blue-50' : 'text-gray-400 hover:text-gray-600'}`}>
                 <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
                 <span className="text-[9px] font-black uppercase tracking-wider">Inicio</span>

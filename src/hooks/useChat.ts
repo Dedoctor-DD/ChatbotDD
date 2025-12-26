@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { getGeminiResponse } from '../lib/gemini';
 import { uploadAttachment } from '../lib/storage';
 import { generateUUID } from '../lib/utils';
+import { parseBotMessage, formatHistoryMessages } from '../lib/chatUtils';
 import type { Message, ConfirmationData } from '../types';
 import type { Session } from '@supabase/supabase-js';
 
@@ -58,48 +59,12 @@ export function useChat(session: Session | null, activeTab: string) {
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    const formattedMessages: Message[] = data.map(m => {
-                        let displayContent = m.content;
+                    const { messages: formattedMessages, lastConfirmation } = formatHistoryMessages(data);
 
-                        const qrMatch = displayContent.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
-                        let options: string[] = [];
-                        if (qrMatch) {
-                            try { options = JSON.parse(qrMatch[1]); } catch (e) { }
-                            displayContent = displayContent.replace(qrMatch[0], '').trim();
-                        }
-
-                        const cMatch = displayContent.match(/\[CONFIRM_READY:\s*({[\s\S]*?})\]/i);
-                        if (cMatch) {
-                            displayContent = displayContent.replace(cMatch[0], '').trim();
-                        }
-
-                        return {
-                            id: m.id,
-                            role: m.role,
-                            content: displayContent,
-                            rawContent: m.content,
-                            timestamp: new Date(m.created_at),
-                            options: options.length > 0 ? options : undefined
-                        };
-                    });
                     setMessages(formattedMessages);
 
-                    const lastBotMessage = formattedMessages.filter(m => m.role === 'assistant').pop();
-                    if (lastBotMessage && (lastBotMessage as any).rawContent) {
-                        const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/i;
-                        const confirmMatch = (lastBotMessage as any).rawContent.match(confirmRegex);
-                        if (confirmMatch && confirmMatch[1]) {
-                            try {
-                                let jsonStr = confirmMatch[1].trim();
-                                if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json/, '');
-                                if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```/, '');
-                                if (jsonStr.endsWith('```')) jsonStr = jsonStr.replace(/```$/, '');
-                                const confirmData = JSON.parse(jsonStr);
-                                setConfirmationData(confirmData);
-                            } catch (e) {
-                                console.error('Error recovering confirmation data:', e);
-                            }
-                        }
+                    if (lastConfirmation) {
+                        setConfirmationData(lastConfirmation);
                     }
                 } else {
                     const userName = session?.user?.user_metadata?.full_name || 'Usuario';
@@ -147,57 +112,29 @@ export function useChat(session: Session | null, activeTab: string) {
                 created_at: userMessage.timestamp.toISOString(),
                 user_id: session.user.id,
                 session_id: sessionId
-            }).then(({ error }) => {
-                if (error) console.error('Error logging user message:', error);
-            });
+            }).catch((error) => console.error('Error logging user message:', error));
         }
 
         try {
             const history = messages.slice(-15).map(m => ({ role: m.role, content: m.content }));
             const responseText = await getGeminiResponse(text, history);
 
-            // Parsing Logic
-            const quickRepliesMatch = responseText.match(/\[QUICK_REPLIES:\s*(\[.*?\])\s*\]/s);
-            let cleanResponse = responseText;
-            let messageOptions: string[] = [];
+            // Use the utility to parse parsing 
+            const { cleanContent, options, confirmationData, requestLocation } = parseBotMessage(responseText);
 
-            if (quickRepliesMatch) {
-                try {
-                    messageOptions = JSON.parse(quickRepliesMatch[1]);
-                    cleanResponse = cleanResponse.replace(quickRepliesMatch[0], '').trim();
-                } catch (e) { console.error('Error parsing quick replies:', e); }
+            if (confirmationData) {
+                setConfirmationData(confirmationData);
             }
-
-            const confirmRegex = /\[CONFIRM_READY:\s*({[\s\S]*?})\]/i;
-            const confirmMatch = cleanResponse.match(confirmRegex);
-
-            if (confirmMatch && confirmMatch[1]) {
-                try {
-                    let jsonStr = confirmMatch[1].trim();
-                    if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json/, '');
-                    if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```/, '');
-                    if (jsonStr.endsWith('```')) jsonStr = jsonStr.replace(/```$/, '');
-
-                    const confirmData = JSON.parse(jsonStr);
-                    setConfirmationData(confirmData);
-                    messageOptions = [];
-                    cleanResponse = cleanResponse.replace(confirmMatch[0], '').trim();
-                } catch (e) {
-                    console.error('Failed to parse confirmation data JSON:', e);
-                }
-            }
-
-            if (cleanResponse.includes('[REQUEST_LOCATION]')) {
+            if (requestLocation) {
                 setShowLocationBtn(true);
-                cleanResponse = cleanResponse.replace('[REQUEST_LOCATION]', '').trim();
             }
 
             const botMessage: Message = {
                 id: generateUUID(),
                 role: 'assistant',
-                content: cleanResponse || (confirmMatch ? 'He preparado tu solicitud. Por favor confirma los detalles abajo: 👇' : 'Lo siento, no pude procesar tu solicitud.'),
+                content: cleanContent || (confirmationData ? 'He preparado tu solicitud. Por favor confirma los detalles abajo: 👇' : 'Lo siento, no pude procesar tu solicitud.'),
                 timestamp: new Date(),
-                options: messageOptions.length > 0 ? messageOptions : undefined
+                options: options || undefined
             };
 
             setMessages((prev) => [...prev, botMessage]);
@@ -205,11 +142,11 @@ export function useChat(session: Session | null, activeTab: string) {
             if (session?.user?.id) {
                 supabase.from('messages').insert({
                     role: 'assistant',
-                    content: responseText,
+                    content: responseText, // Save Raw response for context in future
                     created_at: new Date().toISOString(),
                     user_id: session.user.id,
                     session_id: sessionId
-                }).then(({ error }) => { msgError: if (error) console.error('Error logging assistant message:', error); });
+                }).catch((error) => console.error('Error logging assistant message:', error));
             }
 
         } catch (error) {
@@ -219,7 +156,7 @@ export function useChat(session: Session | null, activeTab: string) {
         }
     };
 
-    const handleConfirm = async (additionalData?: any) => {
+    const handleConfirm = async (additionalData?: Record<string, unknown> & { attachment_id?: string, attachment_ids?: string[] }) => {
         if (!confirmationData || !session) return;
 
         try {
@@ -268,7 +205,7 @@ export function useChat(session: Session | null, activeTab: string) {
         }
     };
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, fileInputRef: any) => {
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, fileInputRef: React.RefObject<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
 
@@ -284,9 +221,10 @@ export function useChat(session: Session | null, activeTab: string) {
             setPendingAttachmentIds(prev => [...prev, result.id]);
             const msgText = `📎 Archivo adjunto: ${file.name}`;
             sendMessage(msgText);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Upload failed:', error);
-            alert(`Error al subir archivo: ${error.message}`);
+            const errMsg = error instanceof Error ? error.message : String(error);
+            alert(`Error al subir archivo: ${errMsg}`);
         } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
         }

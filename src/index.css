@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #135bec;
-  --color-primary-dark: #164cdb;
-  --color-secondary: #2563eb;
-  --color-background-light: #f6f7f8;
+  --color-primary: #0B1121; /* Dark Navy (Logo base) */
+  --color-primary-dark: #020617;
+  --color-primary-light: #1e293b;
+  --color-secondary: #2563eb; /* Bright Blue (Accent) */
+  --color-accent: #f43f5e; /* Red/Pink from Debt card */
+  
+  --color-background-light: #ffffff;
   --color-background-dark: #0f172a;
-  --color-surface-light: #ffffff;
-  --color-surface-dark: #1e293b;
-  --color-text-main: #111827;
-  --color-text-sub: #6B7280;
+  
+  --color-text-main: #0B1121;
+  --color-text-sub: #475569; /* Slate-600 for better contrast */
 
   --font-display: "Inter", "sans-serif";
   --font-body: "Inter", "sans-serif";

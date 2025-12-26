@@ -80,3 +80,13 @@ export interface LandingLead {
     status: string;
     created_at: string;
 }
+
+export interface Appointment {
+    id: string;
+    user_id: string;
+    service_type: 'transport' | 'workshop';
+    scheduled_at: string;
+    status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    notes?: string;
+    created_at: string;
+}

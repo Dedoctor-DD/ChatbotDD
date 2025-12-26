@@ -36,7 +36,7 @@ export function HistoryPanel({ onViewDetail }: HistoryPanelProps) {
     };
 
     return (
-        <div className="flex flex-col w-full min-h-full bg-slate-50/30 pb-24">
+        <div className="flex flex-col w-full min-h-full bg-slate-50/30 pb-24 md:pb-6">
             <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 h-20 flex items-center justify-between">
                 <div>
                    <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase">Mi Historial</h1>

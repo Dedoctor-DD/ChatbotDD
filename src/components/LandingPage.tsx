@@ -78,7 +78,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </header>
 
-      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-4 pb-10 scroll-smooth no-scrollbar">
+      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-4 pb-24 scroll-smooth no-scrollbar">
         <div className="flex flex-col px-6 max-w-7xl mx-auto w-full">
           <HeroSection onActionClick={onLoginClick} />
           
@@ -194,30 +194,30 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
             </div>
           </section>
         </div>
-      </div>
 
-      <footer className="w-full border-t border-slate-50 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col items-center gap-8">
-          <div className="flex gap-6">
-            <a href="#" className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
-              <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">social_leaderboard</span>
-              <span className="sr-only">Instagram</span>
-            </a>
-            <a href="#" className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
-              <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">chat</span>
-              <span className="sr-only">WhatsApp</span>
-            </a>
+        <footer className="w-full border-t border-slate-50 bg-white mt-10">
+          <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col items-center gap-6">
+            <div className="flex gap-4">
+              <a href="#" className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+                <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">social_leaderboard</span>
+                <span className="sr-only">Instagram</span>
+              </a>
+              <a href="#" className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-all border border-slate-100 active:scale-90 shadow-sm overflow-hidden group">
+                <span className="material-symbols-outlined text-xl group-hover:scale-110 transition-transform">chat</span>
+                <span className="sr-only">WhatsApp</span>
+              </a>
+            </div>
+            <div className="text-center">
+              <p className="text-[0.65rem] text-slate-400 font-black uppercase tracking-[0.3em] mb-1">
+                © {new Date().getFullYear()} Grupo DeDoctor & MMC
+              </p>
+              <p className="text-[0.6rem] text-slate-300 font-bold uppercase tracking-widest">
+                Comprometidos con la Movilidad Inclusiva
+              </p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="text-[0.7rem] text-slate-400 font-black uppercase tracking-[0.3em] mb-2">
-              © {new Date().getFullYear()} Grupo DeDoctor & MMC
-            </p>
-            <p className="text-xs text-slate-300 font-bold uppercase tracking-widest">
-              Comprometidos con la Movilidad Inclusiva
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </main>
     </div>
   );
