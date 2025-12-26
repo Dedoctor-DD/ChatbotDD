@@ -10,9 +10,6 @@ export function useAuth() {
     useEffect(() => {
         const handleSessionCheck = async () => {
             try {
-                // Check if we have a pending auth hash in the URL
-                const hasAuthHash = window.location.hash && window.location.hash.includes('access_token');
-
                 const { data: { session }, error } = await supabase.auth.getSession();
 
                 if (error) {
