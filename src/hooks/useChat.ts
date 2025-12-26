@@ -112,7 +112,9 @@ export function useChat(session: Session | null, activeTab: string) {
                 created_at: userMessage.timestamp.toISOString(),
                 user_id: session.user.id,
                 session_id: sessionId
-            }).catch((error) => console.error('Error logging user message:', error));
+            }).then(({ error }) => {
+                if (error) console.error('Error logging user message:', error);
+            });
         }
 
         try {
@@ -146,7 +148,9 @@ export function useChat(session: Session | null, activeTab: string) {
                     created_at: new Date().toISOString(),
                     user_id: session.user.id,
                     session_id: sessionId
-                }).catch((error) => console.error('Error logging assistant message:', error));
+                }).then(({ error }) => {
+                    if (error) console.error('Error logging assistant message:', error);
+                });
             }
 
         } catch (error) {
@@ -205,7 +209,7 @@ export function useChat(session: Session | null, activeTab: string) {
         }
     };
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, fileInputRef: React.RefObject<HTMLInputElement>) => {
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, fileInputRef: React.MutableRefObject<HTMLInputElement | null>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
 

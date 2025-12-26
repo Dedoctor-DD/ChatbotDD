@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { uploadAttachment } from '../../lib/storage';
-import { Loader2, MapPin, History, Upload, Image as ImageIcon, Star, Plus } from 'lucide-react';
+import { Loader2, MapPin, History, Upload, Image as ImageIcon, Star } from 'lucide-react';
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -16,7 +16,7 @@ interface SavedAddress {
     address: string;
 }
 
-export function BookingModal({ isOpen, onClose, userId, userName }: BookingModalProps) {
+export function BookingModal({ isOpen, onClose, userId }: BookingModalProps) {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -48,10 +48,6 @@ export function BookingModal({ isOpen, onClose, userId, userName }: BookingModal
             fetchSavedAddresses();
         }
     }, [isOpen]);
-
-    const fetchUniqueAddresses = async () => {
-         // ... helper to deduplicate recent + saved if needed, but keeping separate for now
-    };
 
     const fetchSavedAddresses = async () => {
         const { data } = await supabase.from('saved_addresses').select('*').eq('user_id', userId);

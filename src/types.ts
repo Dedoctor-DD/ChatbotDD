@@ -87,6 +87,10 @@ export interface Appointment {
     service_type: 'transport' | 'workshop';
     scheduled_at: string;
     status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    payment_status?: 'pending' | 'paid_reported' | 'paid_verified' | 'rejected';
+    payment_proof_url?: string | null;
+    origin?: string;
+    destination?: string;
     notes?: string;
     created_at: string;
 }
