@@ -236,7 +236,7 @@ function App() {
           )}
 
           {activeTab === 'chat' && (
-            <div className="flex-1 flex flex-col relative overflow-hidden h-full">
+            <div className="absolute inset-0 flex flex-col overflow-hidden bg-white z-20">
               {/* Header */}
               <header className="px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 flex justify-between items-center z-20">
                 <div className="flex items-center gap-3">
