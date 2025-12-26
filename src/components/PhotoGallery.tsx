@@ -16,11 +16,28 @@ export function PhotoGallery() {
   useEffect(() => {
     async function loadGallery() {
       const { data } = await supabase
-  .from('gallery')
-  .select('*')
-  .order('display_order', { ascending: true });
+        .from('gallery')
+        .select('*')
+        .order('display_order', { ascending: true });
       
-      if (data) setItems(data);
+      const staticItems: GalleryItem[] = [
+        {
+          id: 'promo-dd',
+          title: 'Servicios DeDoctor',
+          description: 'Transporte especializado para pacientes y personas con movilidad reducida.',
+          image_url: '/ANUNCIO DD.png',
+          category: 'Transporte'
+        },
+        {
+          id: 'promo-mmc',
+          title: 'Taller MMC',
+          description: 'Mantenimiento y reparación experta de sillas de ruedas y ayudas técnicas.',
+          image_url: '/ANUNCIO MMC.png',
+          category: 'Taller'
+        }
+      ];
+
+      setItems(data ? [...staticItems, ...data] : staticItems);
       setLoading(false);
     }
     loadGallery();
