@@ -126,16 +126,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, onViewHis
         userName={userName}
       />
 
-      {/* Floating WhatsApp Button */}
-      <a 
-        href="https://wa.me/56933003113" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 animate-bounce-slow"
-        aria-label="Contactar por WhatsApp"
-      >
-        <i className="fa-brands fa-whatsapp text-3xl"></i>
-      </a>
+
     </div>
   );
 }

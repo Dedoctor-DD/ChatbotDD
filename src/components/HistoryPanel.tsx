@@ -4,10 +4,11 @@ import { supabase } from '../lib/supabase';
 import type { ServiceRequest } from '../types';
 
 interface HistoryPanelProps {
+    userId: string;
     onViewDetail: (request: ServiceRequest) => void;
 }
 
-export function HistoryPanel({ onViewDetail }: HistoryPanelProps) {
+export function HistoryPanel({ userId, onViewDetail }: HistoryPanelProps) {
     const [requests, setRequests] = useState<ServiceRequest[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,13 +17,14 @@ export function HistoryPanel({ onViewDetail }: HistoryPanelProps) {
             const { data } = await supabase
                 .from('service_requests')
                 .select('*')
+                .eq('user_id', userId)
                 .order('created_at', { ascending: false });
             
             if (data) setRequests(data);
             setLoading(false);
         };
         fetchHistory();
-    }, []);
+    }, [userId]);
 
     const getStatusInfo = (status: string) => {
         switch (status) {

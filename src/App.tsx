@@ -211,6 +211,7 @@ function App() {
           {activeTab === 'history' && (
              <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
                <HistoryPanel 
+                 userId={session.user.id}
                  onViewDetail={(req) => {
                    setSelectedRequest(req);
                    setShowDetail(true);
