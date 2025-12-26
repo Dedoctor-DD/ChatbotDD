@@ -8,7 +8,7 @@ import { ServicesGrid } from './home/ServicesGrid';
 import { ChatbotBanner } from './home/ChatbotBanner';
 import { RecentActivity } from './home/RecentActivity';
 
-import type { Debt, ServiceRequest, Profile } from '../types';
+import type { ServiceRequest, Profile } from '../types';
 
 interface HomePanelProps {
   onServiceSelect: (service: 'transport' | 'workshop') => void;
@@ -19,7 +19,7 @@ interface HomePanelProps {
 }
 
 export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName: initialUserName, userId }: HomePanelProps) {
-  const [debts, setDebts] = useState<Debt[]>([]);
+
   const [recentRequests, setRecentRequests] = useState<ServiceRequest[]>([]);
   const [profile, setProfile] = useState<Partial<Profile> | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,14 +35,6 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, userName:
         .maybeSingle();
       
       if (profileData) setProfile(profileData);
-
-      const { data: debtsData } = await supabase
-        .from('client_debts')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('status', 'pending');
-
-      if (debtsData) setDebts(debtsData);
 
       const { data: reqData } = await supabase
         .from('service_requests')

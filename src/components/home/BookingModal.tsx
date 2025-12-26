@@ -16,7 +16,7 @@ interface SavedAddress {
     address: string;
 }
 
-export function BookingModal({ isOpen, onClose, userId }: BookingModalProps) {
+export function BookingModal({ isOpen, onClose, userId, userName }: BookingModalProps) {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -220,7 +220,7 @@ export function BookingModal({ isOpen, onClose, userId }: BookingModalProps) {
                             <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                                 <span className="material-symbols-outlined text-4xl filled">check_circle</span>
                             </div>
-                            <h4 className="text-2xl font-black text-slate-800 mb-2">¡Cita Confirmada!</h4>
+                            <h4 className="text-2xl font-black text-slate-800 mb-2">¡Cita Confirmada, {userName.split(' ')[0]}!</h4>
                             <p className="text-sm font-medium text-slate-500 mb-8">
                                 Se ha reservado tu hora para el <br/>
                                 <span className="font-bold text-slate-800">{new Date(`${formData.date}T${formData.time}`).toLocaleString()}</span>

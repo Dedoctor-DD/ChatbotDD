@@ -9,34 +9,37 @@ export function useAuth() {
 
     useEffect(() => {
         const handleSessionCheck = async () => {
-            // Check if we have a pending auth hash in the URL
-            const hasAuthHash = window.location.hash && window.location.hash.includes('access_token');
+            try {
+                // Check if we have a pending auth hash in the URL
+                const hasAuthHash = window.location.hash && window.location.hash.includes('access_token');
 
-            const { data: { session }, error } = await supabase.auth.getSession();
+                const { data: { session }, error } = await supabase.auth.getSession();
 
-            if (error) {
-                console.error('Error getting session:', error);
-                if (error.status === 401 || error.message.includes('invalid_grant')) {
-                    await supabase.auth.signOut();
-                    localStorage.clear();
-                    setIsCheckingSession(false);
+                if (error) {
+                    console.error('Error getting session:', error);
+                    if (error.status === 401 || error.message.includes('invalid_grant')) {
+                        await supabase.auth.signOut();
+                        localStorage.clear();
+                    }
                 }
-            }
 
-            if (session) {
-                setSession(session);
+                if (session) {
+                    setSession(session);
 
-                // Fetch Role
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .single();
+                    // Fetch Role - use maybeSingle() to avoid errors if profile doesn't exist yet
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
 
-                setUserRole(profile?.role as 'admin' | 'user' || 'user');
+                    setUserRole(profile?.role as 'admin' | 'user' || 'user');
+                }
+            } catch (err) {
+                console.error('Auth check failed:', err);
+            } finally {
+                // Always stop the checking state, even on error
                 setIsCheckingSession(false);
-            } else if (!hasAuthHash) {
-                setTimeout(() => setIsCheckingSession(false), 800);
             }
         };
 

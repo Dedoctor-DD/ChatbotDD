@@ -10,8 +10,8 @@ export function PromoPopup({ isOpen, onClose }: PromoPopupProps) {
   
   // Array de imágenes promocionales
   const images = [
-    '/promo_1.png', // Main Game Night
-    '/promo_2.png'  // Secondary Game Night
+    '/ANUNCIO DD.png',
+    '/ANUNCIO MMC.png'
   ];
 
   // Auto-rotate
