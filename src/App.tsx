@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from './lib/supabase';
 import { ConfirmationCard } from './components/ConfirmationCard';
 import { Login } from './components/Login';
 import { HomePanel } from './components/HomePanel';
@@ -103,73 +104,86 @@ function App() {
     sendMessage("Quiero modificar la información");
   };
 
-  if (isCheckingSession) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 mb-4">Verificando sesión...</p>
-        </div>
-      </div>
-    );
-  }
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+    };
 
-  if (!session) {
-    if (showLogin) {
-      return <Login onBack={() => setShowLogin(false)} />;
-    }
-    return <LandingPage onLoginClick={() => setShowLogin(true)} />;
-  }
-
-  return (
-    <div className="flex justify-center min-h-screen bg-white font-body relative">
-       {/* Ambient Background */}
-      <div className="hidden md:block absolute inset-0 z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:2s]"></div>
-      </div>
-
-      <div className="w-full bg-white relative flex flex-col md:flex-row h-[100dvh] overflow-hidden z-10">
-        
-        {/* DESKTOP SIDEBAR */}
-        <nav className="hidden md:flex flex-col w-64 bg-slate-50 border-r border-slate-100 py-8 px-4 justify-between z-30">
-            <div className="flex flex-col gap-8">
-                {/* Brand */}
-                <div className="px-2 mb-4">
-                    <h1 className="font-black text-xs uppercase tracking-[0.2em] leading-tight text-slate-800">
-                        DeDoctor <span className="text-primary">&</span> MMC
-                    </h1>
-                </div>
-
-                {/* Nav Items */}
-                <div className="flex flex-col gap-2">
-                    <button onClick={() => setActiveTab('home')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'home' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                        <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
-                        <span className="text-[10px] font-black uppercase tracking-widest">Inicio</span>
-                    </button>
-                    <button onClick={() => setActiveTab('chat')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'chat' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                        <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
-                        <span className="text-[10px] font-black uppercase tracking-widest">Chat AI</span>
-                    </button>
-                    {isAdmin && (
-                         <button onClick={() => setActiveTab('admin')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'admin' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                            <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
+    if (isCheckingSession) {
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600 mb-4">Verificando sesión...</p>
+            </div>
+          </div>
+        );
+      }
+    
+      if (!session) {
+        if (showLogin) {
+          return <Login onBack={() => setShowLogin(false)} />;
+        }
+        return <LandingPage onLoginClick={() => setShowLogin(true)} />;
+      }
+    
+      return (
+        <div className="flex justify-center min-h-screen bg-white font-body relative">
+           {/* Ambient Background */}
+          <div className="hidden md:block absolute inset-0 z-0">
+            <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:2s]"></div>
+          </div>
+    
+          <div className="w-full bg-white relative flex flex-col md:flex-row h-[100dvh] overflow-hidden z-10">
+            
+            {/* DESKTOP SIDEBAR */}
+            <nav className="hidden md:flex flex-col w-64 bg-slate-50 border-r border-slate-100 py-8 px-4 justify-between z-30">
+                <div className="flex flex-col gap-8">
+                    {/* Brand */}
+                    <div className="px-2 mb-4">
+                        <h1 className="font-black text-xs uppercase tracking-[0.2em] leading-tight text-slate-800">
+                            DeDoctor <span className="text-primary">&</span> MMC
+                        </h1>
+                    </div>
+    
+                    {/* Nav Items */}
+                    <div className="flex flex-col gap-2">
+                        <button onClick={() => setActiveTab('home')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'home' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                            <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Inicio</span>
                         </button>
-                    )}
+                        <button onClick={() => setActiveTab('chat')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'chat' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                            <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Chat AI</span>
+                        </button>
+                        {isAdmin && (
+                             <button onClick={() => setActiveTab('admin')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'admin' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
+                                <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </div>
-
-            {/* User Profile Mini */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
-                    {userName.charAt(0)}
+    
+                {/* User Profile Mini */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
+                            {userName.charAt(0)}
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[10px] font-bold text-slate-800 truncate">{userName}</p>
+                            <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{isAdmin ? 'Administrador' : 'Cliente'}</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center gap-2 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-sm">logout</span>
+                        Cerrar Sesión
+                    </button>
                 </div>
-                <div className="overflow-hidden">
-                    <p className="text-[10px] font-bold text-slate-800 truncate">{userName}</p>
-                    <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{isAdmin ? 'Administrador' : 'Cliente'}</p>
-                </div>
-            </div>
         </nav>
 
         <main className="flex-1 flex flex-col relative overflow-hidden">

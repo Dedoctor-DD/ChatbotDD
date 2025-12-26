@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { PhotoGallery } from './PhotoGallery';
 import { HeroSection } from './HeroSection';
 import { MissionVisionSection } from './MissionVisionSection';
+import { PromoPopup } from './PromoPopup';
 
 
 interface LandingPageProps {
@@ -47,6 +48,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
   return (
     <div className="flex justify-center h-[100dvh] bg-white overflow-hidden font-jakarta relative">
+      <PromoPopup />
       {/* Ambient Background for PC */}
       <div className="hidden md:block absolute inset-0 z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
