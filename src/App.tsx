@@ -127,14 +127,13 @@ function App() {
       }
     
       return (
-        <div className="flex justify-center min-h-screen bg-white font-body relative">
+        <div className="fixed inset-0 bg-white font-body flex flex-col md:flex-row overflow-hidden z-10">
            {/* Ambient Background */}
-          <div className="hidden md:block absolute inset-0 z-0">
+          <div className="hidden md:block absolute inset-0 z-0 pointer-events-none">
             <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow"></div>
             <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse-slow [animation-delay:2s]"></div>
           </div>
     
-          <div className="w-full bg-white relative flex flex-col md:flex-row h-[100dvh] overflow-hidden z-10">
             
             {/* DESKTOP SIDEBAR */}
             <nav className="hidden md:flex flex-col w-64 bg-slate-50 border-r border-slate-100 py-8 px-4 justify-between z-30">
@@ -415,7 +414,6 @@ function App() {
              )}
         </nav>
       </div>
-    </div>
   );
 }
 
