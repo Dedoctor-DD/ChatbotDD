@@ -16,6 +16,7 @@ export interface Profile {
     phone: string;
     address: string;
     avatar_url?: string;
+    role?: 'admin' | 'user';
     admin_notes: string;
     created_at: string;
 }

@@ -4,8 +4,9 @@ import { TariffsManager } from './TariffsManager';
 import { GalleryManager } from './admin/GalleryManager';
 import { AppointmentsManager } from './admin/AppointmentsManager';
 import { DebtManager } from './admin/DebtManager';
+import { UsersManager } from './admin/UsersManager';
 
-type AdminTab = 'appointments' | 'debts' | 'content';
+type AdminTab = 'appointments' | 'debts' | 'content' | 'users';
 
 export function AdminPanel() {
   const { isAdmin } = useAuth();
@@ -26,6 +27,7 @@ export function AdminPanel() {
   const tabs = [
       { id: 'appointments', label: 'Solicitudes', icon: 'calendar_month' },
       { id: 'debts', label: 'Cobranza', icon: 'attach_money' },
+      { id: 'users', label: 'Usuarios', icon: 'group' },
       { id: 'content', label: 'Contenido', icon: 'perm_media' },
   ];
 
@@ -68,6 +70,12 @@ export function AdminPanel() {
         {activeTab === 'debts' && (
             <div className="animate-fade-in space-y-6">
                 <DebtManager />
+            </div>
+        )}
+
+        {activeTab === 'users' && (
+            <div className="animate-fade-in">
+                <UsersManager />
             </div>
         )}
 
