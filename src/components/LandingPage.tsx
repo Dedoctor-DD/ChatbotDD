@@ -60,7 +60,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </header>
 
-      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-4 pb-24 scroll-smooth no-scrollbar">
+      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden pt-4 pb-8 scroll-smooth no-scrollbar">
         <div className="flex flex-col px-6 max-w-7xl mx-auto w-full">
           <HeroSection onActionClick={onLoginClick} />
           

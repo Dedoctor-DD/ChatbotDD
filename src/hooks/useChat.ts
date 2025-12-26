@@ -81,6 +81,7 @@ export function useChat(session: Session | null, activeTab: string) {
             } catch (err) {
                 console.error('Error loading history:', err);
             } finally {
+                console.log('History loaded for session:', sessionId);
                 setIsLoading(false);
             }
         };

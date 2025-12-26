@@ -74,7 +74,7 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, onViewHis
 
 
   return (
-    <div className="flex flex-col min-h-full pb-24 md:pb-8 bg-slate-50/30">
+    <div className="flex flex-col min-h-full pb-8 md:pb-8 bg-slate-50/30">
       <WelcomeHeader 
         userName={userName} 
         profile={profile} 
