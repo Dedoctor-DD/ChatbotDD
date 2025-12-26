@@ -105,7 +105,7 @@ export function BookingModal({ isOpen, onClose, userId }: BookingModalProps) {
         if (!showSaveLabel || !newLabel.trim()) return;
         
         try {
-            const { data, error } = await supabase.from('saved_addresses').insert({
+            const { data } = await supabase.from('saved_addresses').insert({
                 user_id: userId,
                 label: newLabel,
                 address: showSaveLabel.value
