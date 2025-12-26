@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { ProfileModal } from './ProfileModal';
 import { BookingModal } from './home/BookingModal';
 import { WelcomeHeader } from './home/WelcomeHeader';
-import { WelcomeHeader } from './home/WelcomeHeader';
+
 import { ServicesGrid } from './home/ServicesGrid';
 import { ChatbotBanner } from './home/ChatbotBanner';
 import { RecentActivity } from './home/RecentActivity';
