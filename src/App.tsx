@@ -273,39 +273,84 @@ function App() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth no-scrollbar bg-slate-50/50">
                 <div className="flex flex-col gap-8 max-w-full">
-                  {messages.map((msg) => (
-                    <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-                      <div className={`flex flex-col max-w-[88%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                        <div className={`px-6 py-4 rounded-3xl text-sm font-medium leading-relaxed relative ${
-                          msg.role === 'user' 
-                          ? 'bg-gradient-to-br from-primary to-blue-600 text-white rounded-tr-none shadow-xl shadow-primary/25' 
-                          : 'bg-white text-slate-800 rounded-tl-none shadow-2xl shadow-slate-200/50 border border-slate-50'
-                        }`}>
-                          {msg.content.split('\n').map((line, i) => (
-                            <p key={i} className={i > 0 ? 'mt-2' : ''}>{line}</p>
-                          ))}
-                        </div>
+                  {messages.map((msg) => {
+                    const isLocation = msg.content.includes('📍 Mi ubicación actual:') && msg.content.includes('maps?q=');
+                    const coords = isLocation ? msg.content.match(/q=([-.\d]+),([-.\d]+)/) : null;
+                    
+                    return (
+                      <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
+                        <div className={`flex flex-col max-w-[88%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                          {isLocation && coords ? (
+                            <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-slate-100 w-full max-w-[300px] group transition-all hover:scale-[1.02]">
+                                <div className="h-40 bg-slate-100 relative">
+                                    <iframe 
+                                      title="Location Map"
+                                      width="100%" 
+                                      height="100%" 
+                                      frameBorder="0" 
+                                      className="grayscale hover:grayscale-0 transition-all duration-700"
+                                      src={`https://maps.google.com/maps?q=${coords[1]},${coords[2]}&z=15&output=embed`}
+                                    />
+                                    <div className="absolute inset-0 pointer-events-none border-4 border-white/20"></div>
+                                    <div className="absolute top-2 right-2 flex gap-1">
+                                        <div className="bg-green-500 w-2 h-2 rounded-full animate-ping"></div>
+                                        <div className="bg-green-500 w-2 h-2 rounded-full absolute"></div>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-white">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
+                                            <span className="material-symbols-outlined text-lg filled">location_on</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Punto de Recojo</p>
+                                            <p className="text-xs font-black text-slate-800 tracking-tight">Geolocalización GPS</p>
+                                        </div>
+                                    </div>
+                                    <a 
+                                      href={`https://www.google.com/maps?q=${coords[1]},${coords[2]}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20 active:scale-95 transition-all"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                                        Abrir en Google Maps
+                                    </a>
+                                </div>
+                            </div>
+                          ) : (
+                            <div className={`px-6 py-4 rounded-3xl text-sm font-medium leading-relaxed relative ${
+                              msg.role === 'user' 
+                              ? 'bg-gradient-to-br from-primary to-blue-600 text-white rounded-tr-none shadow-xl shadow-primary/25' 
+                              : 'bg-white text-slate-800 rounded-tl-none shadow-2xl shadow-slate-200/50 border border-slate-50'
+                            }`}>
+                              {msg.content.split('\n').map((line, i) => (
+                                <p key={i} className={i > 0 ? 'mt-2' : ''}>{line}</p>
+                              ))}
+                            </div>
+                          )}
 
-                        {msg.role === 'assistant' && msg.options && (
-                          <div className="mt-4 flex flex-col gap-3 w-full animate-slide-up">
-                            {msg.options.map((opt, i) => (
-                              <button
-                                key={i}
-                                onClick={() => sendMessage(opt)}
-                                className="w-full text-left bg-white border border-slate-100 rounded-2xl px-5 py-4 text-xs font-black text-primary uppercase tracking-widest shadow-xl shadow-slate-200/40 active:scale-95 hover:bg-slate-50 transition-all flex justify-between items-center group"
-                              >
-                                {opt}
-                                <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-2 px-2">
-                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                          {msg.role === 'assistant' && msg.options && (
+                            <div className="mt-4 flex flex-col gap-3 w-full animate-slide-up">
+                              {msg.options.map((opt, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => sendMessage(opt)}
+                                  className="w-full text-left bg-white border border-slate-100 rounded-2xl px-5 py-4 text-xs font-black text-primary uppercase tracking-widest shadow-xl shadow-slate-200/40 active:scale-95 hover:bg-slate-50 transition-all flex justify-between items-center group"
+                                >
+                                  {opt}
+                                  <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                          <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest mt-2 px-2">
+                            {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {isLoading && (
                     <div className="flex justify-start animate-fade-in">

@@ -58,19 +58,49 @@ export function ServiceDetailPanel({ request, onBack }: ServiceDetailPanelProps)
                     </div>
                 </section>
 
-                {/* Map / Visual Mock */}
-                <section className="relative w-full h-48 rounded-[2.5rem] overflow-hidden shadow-xl border border-white bg-slate-200 group">
-                    <img 
-                        src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1000" 
-                        className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-1000"
-                        alt="Map"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                {/* Dynamic Map Header */}
+                <section className="relative w-full h-56 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-blue-500/10 border border-white bg-slate-100 group">
+                    {(() => {
+                        const origin = val('origen') || val('desde');
+                        const destination = val('destino') || val('hacia');
+                        const mapLink = [origin, destination].find(v => v.includes('maps?q='));
+                        const coords = mapLink ? mapLink.match(/q=([-.\d]+),([-.\d]+)/) : null;
+
+                        if (coords) {
+                            return (
+                                <iframe 
+                                  title="Service Map"
+                                  width="100%" 
+                                  height="100%" 
+                                  frameBorder="0" 
+                                  src={`https://maps.google.com/maps?q=${coords[1]},${coords[2]}&z=16&output=embed`}
+                                  className="w-full h-full grayscale-[0.3] hover:grayscale-0 transition-all duration-700"
+                                />
+                            );
+                        }
+
+                        return (
+                            <img 
+                                src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1000" 
+                                className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-1000"
+                                alt="Map Placeholder"
+                            />
+                        );
+                    })()}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"></div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
                         <div className="size-16 bg-primary/20 rounded-full animate-ping absolute"></div>
-                        <div className="size-8 bg-primary rounded-full border-4 border-white/50 shadow-lg flex items-center justify-center text-white">
-                            <span className="material-symbols-outlined text-sm filled">{isTransport ? 'ambulance' : 'build'}</span>
+                        <div className="size-10 bg-slate-900 rounded-full border-4 border-white shadow-2xl flex items-center justify-center text-white">
+                            <span className="material-symbols-outlined text-lg filled">{isTransport ? 'emergency_share' : 'build'}</span>
                         </div>
+                    </div>
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4">
+                        <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] font-black text-slate-800 shadow-xl border border-white/50 flex items-center gap-2">
+                           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                           Ubicación del Servicio
+                        </span>
                     </div>
                 </section>
 

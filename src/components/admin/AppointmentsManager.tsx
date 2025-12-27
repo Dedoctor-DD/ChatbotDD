@@ -129,16 +129,25 @@ export function AppointmentsManager() {
                                     )}
                                 </div>
 
-                                {/* Route Details (Only for Transport) */}
                                 {apt.service_type === 'transport' && apt.origin && (
                                     <div className="grid grid-cols-1 gap-2 mb-4">
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 bg-white p-2.5 rounded-xl border border-slate-50">
-                                            <span className="w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10" />
-                                            <span className="truncate">{apt.origin}</span>
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 bg-white p-2.5 rounded-xl border border-slate-50 relative group/info">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                                            <span className="truncate flex-1">{apt.origin.includes('maps?q=') ? 'Ubicación GPS Compartida' : apt.origin}</span>
+                                            {apt.origin.includes('maps?q=') && (
+                                                <a href={apt.origin} target="_blank" rel="noopener noreferrer" className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shadow-sm hover:bg-blue-600 hover:text-white transition-all">
+                                                    <span className="material-symbols-outlined text-[16px]">location_on</span>
+                                                </a>
+                                            )}
                                         </div>
-                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 bg-white p-2.5 rounded-xl border border-slate-50">
-                                            <span className="w-2 h-2 rounded-full bg-rose-500 ring-4 ring-rose-500/10" />
-                                            <span className="truncate">{apt.destination}</span>
+                                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 bg-white p-2.5 rounded-xl border border-slate-50 relative">
+                                            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                                            <span className="truncate flex-1">{apt.destination?.includes('maps?q=') ? 'Ubicación GPS Destino' : apt.destination || '---'}</span>
+                                            {apt.destination?.includes('maps?q=') && (
+                                                <a href={apt.destination} target="_blank" rel="noopener noreferrer" className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shadow-sm hover:bg-blue-600 hover:text-white transition-all">
+                                                    <span className="material-symbols-outlined text-[16px]">map</span>
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 )}
