@@ -133,7 +133,7 @@ export function ProfileModal({ isOpen, onClose, userId, onUpdate, onLogout }: Pr
                                 <div className="relative group">
                                     <div className="w-28 h-28 rounded-full bg-slate-100 border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
                                         {profile.avatar_url ? (
-                                            <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Avatar" />
+                                            <img src={profile.avatar_url || undefined} className="w-full h-full object-cover" alt="Avatar" />
                                         ) : (
                                             <span className="material-symbols-outlined text-4xl text-slate-300">person</span>
                                         )}

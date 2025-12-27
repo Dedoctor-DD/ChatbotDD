@@ -8,7 +8,7 @@ export function UsersManager() {
     const [searchTerm, setSearchTerm] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
 
-    const [processingId, setProcessingId] = useState<string | null>(null);
+
 
     useEffect(() => {
         fetchUsers();
@@ -100,9 +100,9 @@ export function UsersManager() {
                                     ? 'bg-gradient-to-br from-primary to-blue-600 text-white shadow-lg shadow-primary/20' 
                                     : 'bg-slate-100 text-slate-500'
                                 }`}>
-                                    {user.avatar_url ? (
-                                        <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover rounded-xl" />
-                                    ) : (
+                                {user.avatar_url ? (
+                                    <img src={user.avatar_url || undefined} alt={user.full_name || 'Usuario'} className="w-full h-full object-cover rounded-xl" />
+                                ) : (
                                         user.full_name?.charAt(0).toUpperCase() || 'U'
                                     )}
                                 </div>

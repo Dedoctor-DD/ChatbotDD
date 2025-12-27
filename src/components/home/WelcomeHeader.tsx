@@ -24,7 +24,7 @@ export function WelcomeHeader({ userName, profile, onProfileClick }: WelcomeHead
           className="w-14 h-14 rounded-2xl bg-white shadow-2xl shadow-slate-200 flex items-center justify-center border border-slate-50 overflow-hidden active:scale-90 transition-all group"
         >
           {profile?.avatar_url ? (
-            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+            <img src={profile.avatar_url || undefined} alt="Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
           ) : (
             <span className="material-symbols-outlined text-primary text-4xl group-hover:scale-110 transition-transform">account_circle</span>
           )}
