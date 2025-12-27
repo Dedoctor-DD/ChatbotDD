@@ -11,13 +11,14 @@ export interface ServiceRequest {
 
 export interface Profile {
     id: string;
-    full_name: string;
-    email: string;
-    phone: string;
-    address: string;
-    avatar_url?: string;
-    role?: 'admin' | 'user';
-    admin_notes: string;
+    full_name: string | null;
+    email: string | null;
+    phone: string | null;
+    address: string | null;
+    avatar_url?: string | null;
+    role?: 'admin' | 'user' | null;
+    admin_notes?: string | null;
+    updated_at?: string | null;
     created_at: string;
 }
 
