@@ -8,17 +8,17 @@ interface RecentActivityProps {
 
 export function RecentActivity({ requests, onViewDetail, onViewHistory }: RecentActivityProps) {
   return (
-    <section className="px-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-          Actividad Reciente
-          <div className="h-px w-12 bg-slate-100"></div>
+    <section className="px-6 pb-20 md:pb-8">
+      <div className="flex justify-between items-center mb-8 group/title">
+        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-3">
+          Historial Reciente
+          <div className="h-px w-10 bg-slate-200 group-hover/title:w-16 transition-all duration-500"></div>
         </h3>
         <button 
            onClick={onViewHistory}
-           className="text-[9px] font-black text-primary uppercase tracking-widest hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+           className="text-[9px] font-black text-secondary uppercase tracking-[0.2em] bg-secondary/5 px-4 py-2 rounded-xl hover:bg-secondary hover:text-white transition-all duration-300"
         >
-           Ver todo
+           Expedientes
         </button>
       </div>
       
@@ -30,38 +30,45 @@ export function RecentActivity({ requests, onViewDetail, onViewHistory }: Recent
               <button 
                 key={req.id} 
                 onClick={() => onViewDetail(req)}
-                className="w-full bg-white p-5 rounded-3xl border border-slate-50 flex items-center justify-between shadow-xl shadow-slate-200/40 cursor-pointer active:scale-98 transition-all text-left group"
+                className="w-full bg-white p-6 rounded-[2rem] border border-slate-50 flex items-center justify-between shadow-2xl shadow-slate-200/30 cursor-pointer btn-haptic text-left group hover:border-slate-200/50"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 ${isTransport ? 'bg-blue-50/50 text-primary' : 'bg-orange-50/50 text-orange-500'} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <div className="flex items-center gap-5">
+                  <div className={`size-14 ${isTransport ? 'bg-blue-50/80 text-secondary' : 'bg-amber-50/80 text-amber-600'} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-all ring-1 ring-slate-100 shadow-sm`}>
                     <span className="material-symbols-outlined text-2xl filled">
-                      {isTransport ? 'ambulance' : 'build'}
+                      {isTransport ? 'emergency_share' : 'engineering'}
                     </span>
                   </div>
-                  <div>
-                    <h5 className="font-black text-sm text-slate-800 tracking-tight uppercase">
-                      {isTransport ? 'Transporte' : 'Workshop'}
+                  <div className="space-y-1">
+                    <h5 className="font-black text-sm text-slate-800 tracking-tight uppercase leading-none">
+                      {isTransport ? 'Traslado' : 'Taller MMc'}
                     </h5>
-                    <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest mt-1">
-                      Solicitado el {new Date(req.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                    <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest flex items-center gap-1.5 opacity-80">
+                      <span className="material-symbols-outlined text-[10px]">calendar_today</span>
+                      {new Date(req.created_at).toLocaleDateString('es-CL', { day: 'numeric', month: 'short' })}
                     </p>
                   </div>
                 </div>
-                <div className={`text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm ${
-                  req.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 
-                  req.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  {req.status === 'completed' ? 'Finalizado' : 'En Proceso'}
+                
+                <div className="flex flex-col items-end gap-2">
+                   <div className={`text-[8px] font-black px-4 py-1.5 rounded-xl uppercase tracking-widest shadow-sm ring-1 ring-inset ${
+                     req.status === 'completed' ? 'bg-emerald-50 text-emerald-600 ring-emerald-100' : 
+                     req.status === 'confirmed' ? 'bg-blue-50 text-blue-600 ring-blue-100' : 
+                     req.status === 'pending' ? 'bg-amber-50 text-amber-600 ring-amber-100' :
+                     'bg-slate-50 text-slate-400 ring-slate-200'
+                   }`}>
+                     {req.status === 'completed' ? 'Finalizado' : req.status === 'pending' ? 'Pendiente' : req.status === 'confirmed' ? 'En Curso' : 'Draft'}
+                   </div>
+                   <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">#{req.id.slice(0, 4)}</span>
                 </div>
               </button>
             );
           })
         ) : (
-          <div className="py-16 text-center bg-white rounded-5xl border border-slate-100 shadow-inner">
-            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-               <span className="material-symbols-outlined text-4xl text-slate-200 group-hover:rotate-12 transition-transform">history_toggle_off</span>
+          <div className="py-20 text-center bg-white rounded-[3rem] border border-slate-100 shadow-inner group">
+            <div className="size-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500">
+               <span className="material-symbols-outlined text-4xl text-slate-200 animate-pulse-slow">history_edu</span>
             </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sin actividad reciente</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] px-8 leading-relaxed">Sin actividad registrada en los puntos de enlace.</p>
           </div>
         )}
       </div>

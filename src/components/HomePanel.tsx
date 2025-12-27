@@ -81,22 +81,26 @@ export function HomePanel({ onServiceSelect, onGoToChat, onViewDetail, onViewHis
         onProfileClick={() => setIsProfileModalOpen(true)} 
       />
 
-      <section className="px-6 mb-8 mt-6">
+      <section className="px-6 mb-12">
         <button 
           onClick={() => setIsBookingModalOpen(true)}
-          className="w-full bg-slate-900 text-white p-6 rounded-3xl shadow-xl shadow-slate-900/20 relative overflow-hidden group active:scale-[0.98] transition-all"
+          className="w-full bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-900/40 relative overflow-hidden group btn-haptic"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl group-hover:scale-110 transition-transform"></div>
-          <div className="flex items-center gap-4 relative z-10">
-             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                <span className="material-symbols-outlined text-white text-2xl">calendar_month</span>
+          {/* Animated Background Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full -mr-32 -mt-32 blur-[80px] group-hover:bg-secondary/40 transition-all duration-700"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full -ml-16 -mb-16 blur-[40px]"></div>
+          
+          <div className="flex items-center gap-6 relative z-10 px-2">
+             <div className="size-16 bg-white/10 backdrop-blur-2xl rounded-2xl flex items-center justify-center border border-white/10 shadow-inner group-hover:rotate-6 transition-transform">
+                <span className="material-symbols-outlined text-white text-3xl filled leading-none">calendar_add_on</span>
              </div>
-             <div className="text-left">
-                <h4 className="font-black uppercase tracking-widest text-xs mb-1 text-blue-200">Oferta Exclusiva</h4>
-                <div className="text-lg font-black tracking-tight">Agendar Hora / Cita</div>
+             <div className="text-left flex-1 min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] mb-1 text-secondary leading-none">Sistemas Activos</p>
+                <h4 className="text-xl md:text-2xl font-black tracking-tighter leading-tight">Agendar Cita / Hora</h4>
+                <p className="text-[10px] text-slate-400 font-bold mt-1 opacity-80">Reserva instantánea con Arise AI</p>
              </div>
-             <div className="ml-auto w-10 h-10 bg-white text-slate-900 rounded-full flex items-center justify-center">
-                <span className="material-symbols-outlined">arrow_forward</span>
+             <div className="size-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 group-hover:bg-white group-hover:text-slate-900 transition-all">
+                <span className="material-symbols-outlined">arrow_forward_ios</span>
              </div>
           </div>
         </button>

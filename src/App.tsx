@@ -135,77 +135,140 @@ function App() {
           </div>
     
             
-            {/* DESKTOP SIDEBAR */}
-            <nav className="hidden md:flex flex-col w-64 bg-slate-50 border-r border-slate-100 py-8 px-4 justify-between z-30">
-                <div className="flex flex-col gap-8">
-                    {/* Brand */}
-                    <div className="px-2 mb-4">
-                        <h1 className="font-black text-xs uppercase tracking-[0.2em] leading-tight text-slate-800">
-                            DeDoctor <span className="text-primary">&</span> MMC
-                        </h1>
+            {/* DESKTOP SIDEBAR - Obsidian Hub */}
+            <nav className="hidden md:flex flex-col w-72 bg-white border-r border-slate-100/50 py-10 px-6 justify-between z-30 relative overflow-hidden">
+                {/* Visual Accent */}
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-slate-900/10 to-transparent"></div>
+                
+                <div className="flex flex-col gap-12 relative z-10">
+                    {/* Brand Section */}
+                    <div className="flex items-center gap-3 px-2">
+                        <div className="size-10 bg-slate-900 rounded-2xl flex items-center justify-center shadow-2xl shadow-slate-900/20">
+                            <span className="material-symbols-outlined text-white text-xl filled">smart_toy</span>
+                        </div>
+                        <div>
+                            <h1 className="font-black text-[13px] uppercase tracking-[0.3em] leading-none text-slate-900 mb-1">
+                                Dedoctor
+                            </h1>
+                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">{isAdmin ? 'Control Center' : 'Nexus'}</p>
+                        </div>
                     </div>
     
-                    {/* Nav Items */}
-                    <div className="flex flex-col gap-2">
-                        <button onClick={() => setActiveTab('home')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'home' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                            <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Inicio</span>
+                    {/* Primary Navigation */}
+                    <div className="flex flex-col gap-1.5">
+                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] px-4 mb-3">Principal</p>
+                        
+                        <button 
+                          onClick={() => setActiveTab('home')} 
+                          className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${
+                            activeTab === 'home' 
+                            ? 'bg-slate-900 text-white shadow-2xl shadow-slate-900/20' 
+                            : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                          }`}
+                        >
+                            <div className="flex items-center gap-4">
+                                <span className={`material-symbols-outlined text-xl ${activeTab === 'home' ? 'filled' : ''}`}>grid_view</span>
+                                <span className="text-[11px] font-black uppercase tracking-[0.15em]">Dashboard</span>
+                            </div>
+                            {activeTab === 'home' && <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>}
                         </button>
-                        <button onClick={() => setActiveTab('chat')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'chat' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                            <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest">Chat AI</span>
+
+                        <button 
+                          onClick={() => setActiveTab('chat')} 
+                          className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${
+                            activeTab === 'chat' 
+                            ? 'bg-slate-900 text-white shadow-2xl shadow-slate-900/20' 
+                            : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                          }`}
+                        >
+                            <div className="flex items-center gap-4">
+                                <span className={`material-symbols-outlined text-xl ${activeTab === 'chat' ? 'filled' : ''}`}>bolt</span>
+                                <span className="text-[11px] font-black uppercase tracking-[0.15em]">Chat AI</span>
+                            </div>
+                            {activeTab === 'chat' && <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>}
                         </button>
+
+                        <button 
+                          onClick={() => setActiveTab('history')} 
+                          className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${
+                            activeTab === 'history' 
+                            ? 'bg-slate-900 text-white shadow-2xl shadow-slate-900/20' 
+                            : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                          }`}
+                        >
+                            <div className="flex items-center gap-4">
+                                <span className={`material-symbols-outlined text-xl ${activeTab === 'history' ? 'filled' : ''}`}>history_edu</span>
+                                <span className="text-[11px] font-black uppercase tracking-[0.15em]">Historial</span>
+                            </div>
+                        </button>
+
                         {isAdmin && (
-                             <button onClick={() => setActiveTab('admin')} className={`flex items-center gap-4 p-4 rounded-2xl transition-all text-left group ${activeTab === 'admin' ? 'bg-white shadow-lg shadow-slate-200/50 text-primary' : 'text-slate-400 hover:bg-white hover:text-slate-600'}`}>
-                                <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest">Admin</span>
-                            </button>
+                            <div className="mt-8">
+                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] px-4 mb-3">Gestión</p>
+                                <button 
+                                  onClick={() => setActiveTab('admin')} 
+                                  className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${
+                                    activeTab === 'admin' 
+                                    ? 'bg-slate-900 text-white shadow-2xl shadow-slate-900/20' 
+                                    : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                                  }`}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <span className={`material-symbols-outlined text-xl ${activeTab === 'admin' ? 'filled' : ''}`}>shield_person</span>
+                                        <span className="text-[11px] font-black uppercase tracking-[0.15em]">Panel Admin</span>
+                                    </div>
+                                    {activeTab === 'admin' && <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>}
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
     
-                {/* User Profile Mini */}
-                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs">
+                {/* User Card - Bottom */}
+                <div className="bg-slate-50 rounded-3xl p-5 border border-slate-100 relative group transition-all hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="size-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-900 font-black text-sm border border-slate-100">
                             {userName.charAt(0)}
                         </div>
-                        <div className="overflow-hidden">
-                            <p className="text-[10px] font-bold text-slate-800 truncate">{userName}</p>
-                            <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wider">{isAdmin ? 'Administrador' : 'Cliente'}</p>
+                        <div className="min-w-0">
+                            <p className="text-[11px] font-black text-slate-900 truncate leading-tight mb-1">{userName}</p>
+                            <div className="flex items-center gap-1.5">
+                                <div className={`size-1.5 rounded-full ${isAdmin ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                                <p className="text-[8px] text-slate-400 font-black uppercase tracking-wider">{isAdmin ? 'Administrator' : 'Verified Member'}</p>
+                            </div>
                         </div>
                     </div>
                     <button 
                         onClick={handleLogout}
-                        className="w-full flex items-center justify-center gap-2 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                        className="w-full flex items-center justify-center gap-2 py-3 text-[9px] font-black bg-white text-slate-400 uppercase tracking-widest hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all border border-slate-100 group/logout"
                     >
-                        <span className="material-symbols-outlined text-sm">logout</span>
+                        <span className="material-symbols-outlined text-sm group-hover/logout:rotate-12 transition-transform">logout</span>
                         Cerrar Sesión
                     </button>
                 </div>
-        </nav>
-
-        <main className="flex-1 flex flex-col relative overflow-hidden">
-          {activeTab === 'home' && (
-            <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
-              <HomePanel 
-                onServiceSelect={(type) => {
-                  setActiveTab('chat');
-                  const msg = type === 'transport' ? 'Necesito solicitar un transporte' : 'Necesito mantención para un equipo o ayuda técnica';
-                  sendMessage(msg);
-                }}
-                onGoToChat={() => setActiveTab('chat')}
-                onViewDetail={(req) => {
-                  setSelectedRequest(req);
-                  setShowDetail(true);
-                }}
-                onViewHistory={() => setActiveTab('history')}
-                onLogout={handleLogout}
-                userName={userName}
-                userId={session.user.id}
-              />
-            </div>
-          )}
+            </nav>
+    
+            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-50/20">
+              {activeTab === 'home' && (
+                <div className="flex-1 overflow-y-auto hide-scrollbar scroll-smooth">
+                  <HomePanel 
+                    onServiceSelect={(type) => {
+                      setActiveTab('chat');
+                      const msg = type === 'transport' ? 'Necesito solicitar un transporte' : 'Necesito mantención para un equipo o ayuda técnica';
+                      sendMessage(msg);
+                    }}
+                    onGoToChat={() => setActiveTab('chat')}
+                    onViewDetail={(req) => {
+                      setSelectedRequest(req);
+                      setShowDetail(true);
+                    }}
+                    onViewHistory={() => setActiveTab('history')}
+                    onLogout={handleLogout}
+                    userName={userName}
+                    userId={session.user.id}
+                  />
+                </div>
+              )}
 
           {activeTab === 'history' && (
              <div className="flex-1 overflow-y-auto scroll-smooth no-scrollbar">
@@ -441,23 +504,40 @@ function App() {
           )}
         </main>
 
-        {/* MOBILE BOTTOM NAV */}
-        <nav className="md:hidden bg-white border-t border-gray-100 py-2 px-6 flex justify-between items-center z-30">
-             <button onClick={() => setActiveTab('home')} className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all ${activeTab === 'home' ? 'text-primary bg-blue-50' : 'text-gray-400 hover:text-gray-600'}`}>
-                <span className={`material-symbols-outlined ${activeTab === 'home' ? 'filled' : ''}`}>home</span>
-                <span className="text-[9px] font-black uppercase tracking-wider">Inicio</span>
-             </button>
-             <button onClick={() => setActiveTab('chat')} className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all ${activeTab === 'chat' ? 'text-primary bg-blue-50' : 'text-gray-400 hover:text-gray-600'}`}>
-                <span className={`material-symbols-outlined ${activeTab === 'chat' ? 'filled' : ''}`}>chat_bubble</span>
-                <span className="text-[9px] font-black uppercase tracking-wider">Chat</span>
-             </button>
-             {isAdmin && (
-               <button onClick={() => setActiveTab('admin')} className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all ${activeTab === 'admin' ? 'text-primary bg-blue-50' : 'text-gray-400 hover:text-gray-600'}`}>
-                  <span className={`material-symbols-outlined ${activeTab === 'admin' ? 'filled' : ''}`}>admin_panel_settings</span>
-                  <span className="text-[9px] font-black uppercase tracking-wider">Admin</span>
-               </button>
-             )}
-        </nav>
+            {/* MOBILE NAVIGATION - Obsidian Style */}
+            <nav className="md:hidden fixed bottom-6 left-6 right-6 z-50">
+                <div className="bg-slate-900/95 backdrop-blur-2xl px-6 py-4 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 flex justify-between items-center relative overflow-hidden">
+                    {/* Visual Light Effect */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>
+                    
+                    {[
+                        { id: 'home', icon: 'grid_view', label: 'Inicio' },
+                        { id: 'chat', icon: 'bolt', label: 'Chat' },
+                        { id: 'history', icon: 'history_edu', label: 'Historial' },
+                        { id: 'admin', icon: 'shield_person', label: 'Admin', hide: !isAdmin }
+                    ].filter(item => !item.hide).map((item) => (
+                        <button 
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id as any)}
+                            className={`flex flex-col items-center gap-1.5 transition-all relative ${
+                                activeTab === item.id ? 'text-white scale-110' : 'text-slate-500 hover:text-slate-300'
+                            }`}
+                        >
+                            <span className={`material-symbols-outlined text-2xl ${activeTab === item.id ? 'filled' : ''}`}>
+                                {item.icon}
+                            </span>
+                            <span className={`text-[8px] font-black uppercase tracking-[0.2em] transition-opacity ${
+                                activeTab === item.id ? 'opacity-100' : 'opacity-0'
+                            }`}>
+                                {item.label}
+                            </span>
+                            {activeTab === item.id && (
+                                <span className="absolute -top-1 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </nav>
       </div>
   );
 }

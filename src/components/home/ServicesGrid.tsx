@@ -1,39 +1,62 @@
 interface ServicesGridProps {
-    onServiceSelect: (service: 'transport' | 'workshop') => void;
-  }
-  
-  export function ServicesGrid({ onServiceSelect }: ServicesGridProps) {
-    return (
-      <section className="px-6 mb-10">
-        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-            Nuestros Servicios
-            <div className="h-px flex-1 bg-slate-100"></div>
+  onServiceSelect: (service: 'transport' | 'workshop') => void;
+}
+
+export function ServicesGrid({ onServiceSelect }: ServicesGridProps) {
+  return (
+    <section className="px-6 mb-12">
+      <div className="flex items-center justify-between mb-8 group/title">
+        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-3">
+          Servicios Disponibles
+          <div className="h-px w-12 bg-slate-200 group-hover/title:w-20 transition-all duration-500"></div>
         </h3>
-        <div className="grid grid-cols-2 gap-5">
-          <button 
-            onClick={() => onServiceSelect('transport')}
-            className="bg-white p-8 rounded-5xl shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-            <div className="w-14 h-14 bg-blue-50/50 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:rotate-6 transition-all relative z-10">
-              <span className="material-symbols-outlined text-3xl filled">ambulance</span>
-            </div>
-            <h4 className="font-black text-slate-900 text-sm tracking-tight uppercase">Transporte</h4>
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Traslado Seguro</p>
-          </button>
-  
-          <button 
-            onClick={() => onServiceSelect('workshop')}
-            className="bg-white p-8 rounded-5xl shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group active:scale-95 transition-all relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/5 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-            <div className="w-14 h-14 bg-orange-50/50 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:rotate-6 transition-all relative z-10">
-              <span className="material-symbols-outlined text-3xl filled">build</span>
-            </div>
-            <h4 className="font-black text-slate-900 text-sm tracking-tight uppercase">Taller MMc</h4>
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Técnico experto</p>
-          </button>
-        </div>
-      </section>
-    );
-  }
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6">
+        <button 
+          onClick={() => onServiceSelect('transport')}
+          className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group btn-haptic relative overflow-hidden flex flex-col items-start"
+        >
+          {/* Surface Detail */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 group-hover:bg-secondary/10 transition-colors duration-500 blur-2xl"></div>
+          
+          <div className="size-16 bg-blue-50/80 rounded-3xl flex items-center justify-center text-secondary mb-8 group-hover:scale-110 group-hover:-rotate-6 transition-all ring-1 ring-blue-100 shadow-lg shadow-blue-500/5">
+            <span className="material-symbols-outlined text-3xl filled">emergency_share</span>
+          </div>
+          
+          <div className="mt-auto">
+            <h4 className="font-black text-slate-900 text-sm md:text-base leading-tight uppercase tracking-tight mb-1">Traslados</h4>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest opacity-80">Logística Médica</p>
+          </div>
+          
+          <div className="mt-6 flex items-center gap-1.5">
+            <div className="size-1 bg-secondary rounded-full"></div>
+            <p className="text-[8px] font-black text-secondary uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">Sistema Activo</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => onServiceSelect('workshop')}
+          className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-50 text-left group btn-haptic relative overflow-hidden flex flex-col items-start"
+        >
+          {/* Surface Detail */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors duration-500 blur-2xl"></div>
+          
+          <div className="size-16 bg-amber-50/80 rounded-3xl flex items-center justify-center text-amber-600 mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all ring-1 ring-amber-100 shadow-lg shadow-amber-500/5">
+            <span className="material-symbols-outlined text-3xl filled">engineering</span>
+          </div>
+          
+          <div className="mt-auto">
+            <h4 className="font-black text-slate-900 text-sm md:text-base leading-tight uppercase tracking-tight mb-1">Taller MMc</h4>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest opacity-80">Soporte Técnico</p>
+          </div>
+
+          <div className="mt-6 flex items-center gap-1.5">
+            <div className="size-1 bg-amber-500 rounded-full"></div>
+            <p className="text-[8px] font-black text-amber-600 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">Ingeniería</p>
+          </div>
+        </button>
+      </div>
+    </section>
+  );
+}
