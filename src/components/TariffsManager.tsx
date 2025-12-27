@@ -156,33 +156,54 @@ export function TariffsManager() {
       )}
 
       {/* List */}
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 md:gap-4">
         {tariffs.map(tariff => (
-          <div key={tariff.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                  tariff.category === 'Transporte' ? 'bg-blue-100 text-blue-600' : 
-                  tariff.category === 'Taller' ? 'bg-orange-100 text-orange-600' : 'bg-slate-200 text-slate-500'
+          <div key={tariff.id} className="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all group">
+            {/* Header: Category & Price */}
+            <div className="flex justify-between items-start mb-2">
+                <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md ${
+                  tariff.category === 'Transporte' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 
+                  tariff.category === 'Taller' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 
+                  'bg-slate-50 text-slate-500 border border-slate-200'
                 }`}>
                   {tariff.category}
                 </span>
-                <span className="font-bold text-slate-700 text-sm">{tariff.sub_category}</span>
-              </div>
-              <p className="text-xs text-slate-400">{tariff.description}</p>
+                <span className="text-lg font-black text-slate-900 tracking-tight">
+                    ${tariff.price.toLocaleString()}
+                </span>
             </div>
-            <div className="flex items-center gap-4">
-               <span className="font-black text-slate-900">${tariff.price.toLocaleString()}</span>
-               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                 <button onClick={() => handleEdit(tariff)} className="p-1.5 text-slate-400 hover:text-blue-500 bg-white rounded-lg shadow-sm"><span className="material-symbols-outlined text-sm">edit</span></button>
-                 <button onClick={() => handleDelete(tariff.id)} className="p-1.5 text-slate-400 hover:text-red-500 bg-white rounded-lg shadow-sm"><span className="material-symbols-outlined text-sm">delete</span></button>
-               </div>
+
+            {/* Content */}
+            <div className="mb-4">
+              <h4 className="font-bold text-slate-800 text-sm md:text-base mb-1">{tariff.sub_category}</h4>
+              <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 md:line-clamp-none">
+                {tariff.description || 'Sin descripción'}
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-50">
+                <button 
+                  onClick={() => handleEdit(tariff)} 
+                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all border-none"
+                >
+                    <span className="material-symbols-outlined text-sm">edit</span>
+                    Editar
+                </button>
+                <button 
+                  onClick={() => handleDelete(tariff.id)} 
+                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-all border-none"
+                >
+                    <span className="material-symbols-outlined text-sm">delete</span>
+                    Borrar
+                </button>
             </div>
           </div>
         ))}
         {tariffs.length === 0 && (
-          <div className="text-center py-10">
-            <p className="text-sm text-slate-400 font-bold">No hay tarifas registradas</p>
+          <div className="bg-white p-12 rounded-3xl text-center border border-slate-100 border-dashed">
+            <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">payments</span>
+            <p className="text-sm font-bold text-slate-400">No hay tarifas registradas</p>
           </div>
         )}
       </div>

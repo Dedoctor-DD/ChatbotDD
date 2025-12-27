@@ -55,7 +55,7 @@ export function AppointmentsManager() {
     const slotsUsed = appointments.filter(a => a.status !== 'cancelled').length;
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-50 h-[500px] flex flex-col">
+        <div className="bg-white p-4 md:p-6 rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-50 flex flex-col">
             <div className="flex justify-between items-center mb-6">
                  <div>
                     <h3 className="font-black text-slate-800">Gestión de Citas</h3>
@@ -80,14 +80,15 @@ export function AppointmentsManager() {
                     </div>
                 ) : (
                     appointments.map(apt => (
-                        <div key={apt.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <div className="flex gap-2 mb-2">
+                        <div key={apt.id} className="bg-slate-50 p-4 rounded-3xl border border-slate-100 flex flex-col gap-4 animate-fade-in hover:border-primary/20 transition-all">
+                            {/* Header Info */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex flex-col gap-1.5">
+                                    <div className="flex flex-wrap gap-2">
                                         <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
                                             apt.status === 'confirmed' ? 'bg-green-100 text-green-700' : 
                                             apt.status === 'cancelled' ? 'bg-red-100 text-red-700' : 
-                                            'bg-yellow-100 text-yellow-700'
+                                            'bg-amber-100 text-amber-700'
                                         }`}>
                                             {apt.status === 'pending' ? 'Pendiente' : apt.status === 'confirmed' ? 'Confirmada' : 'Cancelada'}
                                         </span>
@@ -98,20 +99,18 @@ export function AppointmentsManager() {
                                         )}
                                         {(apt as any).payment_status === 'paid_verified' && (
                                             <span className="bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border border-emerald-200">
-                                                Pago OK
+                                                Pago Verificado
                                             </span>
                                         )}
                                     </div>
-                                    <h4 className="font-bold text-slate-800 text-sm">{formatDate(apt.scheduled_at)}</h4>
-                                    <p className="text-xs text-slate-500 uppercase font-black tracking-wider mt-1">
+                                    <h4 className="font-black text-slate-800 text-base tracking-tight">{formatDate(apt.scheduled_at)}</h4>
+                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
                                         {apt.service_type === 'transport' ? '🚑 Traslado' : '🔧 Taller'}
                                     </p>
                                 </div>
-                                <div className="text-right">
-                                    {(apt as any).profiles?.full_name && (
-                                        <p className="text-xs font-bold text-slate-700 mb-0.5">{(apt as any).profiles.full_name}</p>
-                                    )}
-                                    <p className="text-[10px] text-slate-400 font-mono">{(apt as any).profiles?.phone || 'Sin teléfono'}</p>
+                                <div className="bg-white/50 p-3 rounded-2xl border border-slate-100 sm:text-right">
+                                    <p className="text-xs font-black text-slate-800">{(apt as any).profiles?.full_name || 'Sin Nombre'}</p>
+                                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">{(apt as any).profiles?.phone || 'Sin teléfono'}</p>
                                 </div>
                             </div>
                             
