@@ -54,33 +54,36 @@ export function DebtManager() {
             ) : (
                 <div className="grid gap-4">
                     {debts.map((debt) => (
-                        <div key={debt.id} className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 hover:border-rose-200 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-                            {/* User & Description */}
+                        <div key={debt.id} className="relative bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_4px_25px_rgb(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl group p-5 flex flex-col gap-4">
+                            {/* User & Info Row */}
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-50 to-orange-50 text-rose-500 flex items-center justify-center font-black text-lg shadow-inner">
+                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-amber-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-rose-500/20">
                                     {debt.profiles?.full_name?.charAt(0) || '?'}
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-800 text-sm md:text-base leading-none mb-1">{debt.profiles?.full_name || 'Usuario Desconocido'}</h4>
-                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-wider">{debt.description}</p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                         <span className="material-symbols-outlined text-[12px] text-slate-300">calendar_today</span>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-black text-slate-800 text-base leading-tight truncate">{debt.profiles?.full_name || 'Usuario Desconocido'}</h4>
+                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5 truncate">{debt.description}</p>
+                                    <div className="flex items-center gap-1.5 mt-1.5">
+                                         <span className="material-symbols-outlined text-[14px] text-rose-300">event</span>
                                          <span className="text-[10px] text-slate-400 font-bold">{new Date(debt.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Price & Action */}
-                            <div className="flex items-center justify-between sm:flex-col sm:items-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-50">
-                                <div>
-                                    <p className="text-xs text-slate-400 md:hidden font-bold uppercase tracking-widest mb-0.5">Monto</p>
-                                    <p className="text-lg font-black text-rose-600 tracking-tight">
+                            {/* Divider Dot Line */}
+                            <div className="border-t border-slate-50 border-dashed" />
+
+                            {/* Bottom Row: Amount & Action */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] text-slate-300 font-black uppercase tracking-[0.2em]">Deuda Total</span>
+                                    <span className="text-xl font-black text-rose-600 tracking-tighter">
                                         ${debt.amount.toLocaleString('es-CL')}
-                                    </p>
+                                    </span>
                                 </div>
-                                <button className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all shadow-lg shadow-slate-900/10 active:scale-95 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-sm">notifications</span>
-                                    Notificar
+                                <button className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all shadow-xl shadow-slate-900/10 active:scale-95 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[18px]">send_time_extension</span>
+                                    Cobrar
                                 </button>
                             </div>
                         </div>

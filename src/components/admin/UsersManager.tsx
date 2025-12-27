@@ -60,121 +60,103 @@ export function UsersManager() {
 
     return (
         <div className="space-y-4 md:space-y-6 pb-20 md:pb-0">
-            {/* Header & Search */}
-            <div className="bg-white p-4 md:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sticky top-0 md:static z-10">
-                <div>
-                   <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Usuarios</h3>
-                   <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-wider">Gestión de Acceso</p>
+            {/* Premium Header & Search */}
+            <div className="bg-white p-5 md:p-8 rounded-[2.5rem] shadow-[0_4px_30px_rgb(0,0,0,0.03)] border border-slate-50 flex flex-col gap-6 sticky top-0 md:static z-10 backdrop-blur-md bg-white/95">
+                <div className="flex justify-between items-center">
+                    <div>
+                       <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">Socios</h3>
+                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Gestión de Acceso</p>
+                    </div>
                 </div>
-                <div className="w-full md:w-auto relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                <div className="relative group">
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-slate-900 transition-colors">person_search</span>
                     <input 
                         type="text" 
-                        placeholder="Buscar usuario..." 
+                        placeholder="Buscar por nombre, email o RUT..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full md:w-64 pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-slate-400"
+                        className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl text-[13px] font-bold text-slate-700 focus:outline-none focus:bg-white focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all placeholder:text-slate-300 shadow-inner"
                     />
                 </div>
             </div>
 
-            {/* List */}
-            <div className="grid grid-cols-1 gap-3 md:gap-4">
+            {/* List of User Tiles */}
+            <div className="grid grid-cols-1 gap-4">
                 {loading ? (
-                    <div className="bg-white p-12 rounded-3xl text-center">
-                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargando...</p>
+                    <div className="bg-white p-16 rounded-[2.5rem] text-center border border-slate-50">
+                        <div className="w-12 h-12 border-[6px] border-slate-100 border-t-slate-900 rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-xs font-black text-slate-300 uppercase tracking-widest animate-pulse">Sincronizando Usuarios...</p>
                     </div>
                 ) : filteredUsers.length === 0 ? (
-                    <div className="bg-white p-12 rounded-3xl text-center border border-slate-100 border-dashed">
-                        <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">person_off</span>
-                        <p className="text-sm font-bold text-slate-400">Sin resultados</p>
+                    <div className="bg-white p-16 rounded-[2.5rem] text-center border border-slate-50 border-dashed">
+                        <span className="material-symbols-outlined text-6xl text-slate-100 mb-4 scale-110">group_off</span>
+                        <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Sin coincidencias</p>
                     </div>
                 ) : (
                     filteredUsers.map((user) => (
-                        <div key={user.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-4 group transition-all hover:shadow-md">
-                            {/* Header Mobile / Left Desktop */}
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-base md:text-lg font-black shrink-0 ${
+                        <div key={user.id} className="relative bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-[0_4px_25px_rgb(0,0,0,0.03)] flex flex-col gap-5 group transition-all duration-300 hover:shadow-xl hover:border-slate-200 overflow-hidden">
+                            {/* Admin Indicator Background */}
+                            {user.role === 'admin' && (
+                                <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-slate-900/5 rounded-full blur-2xl pointer-events-none" />
+                            )}
+
+                            {/* Main Info Row */}
+                            <div className="flex items-center gap-4 relative">
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black shrink-0 shadow-lg transition-transform duration-500 group-hover:scale-105 ${
                                     user.role === 'admin' 
-                                    ? 'bg-gradient-to-br from-primary to-blue-600 text-white shadow-lg shadow-primary/20' 
-                                    : 'bg-slate-100 text-slate-500'
+                                    ? 'bg-slate-900 text-white shadow-slate-900/20' 
+                                    : 'bg-slate-50 text-slate-400 shadow-inner'
                                 }`}>
                                 {user.avatar_url ? (
-                                    <img src={user.avatar_url || undefined} alt={user.full_name || 'Usuario'} className="w-full h-full object-cover rounded-xl" />
+                                    <img src={user.avatar_url || undefined} alt={user.full_name || 'Usuario'} className="w-full h-full object-cover rounded-2xl" />
                                 ) : (
                                         user.full_name?.charAt(0).toUpperCase() || 'U'
                                     )}
                                 </div>
-                                <div className="sm:hidden flex-1">
-                                    <h4 className="font-bold text-slate-800 text-sm truncate">{user.full_name || 'Sin Nombre'}</h4>
-                                    <p className="text-xs text-slate-400 truncate">{user.email}</p>
-                                </div>
-                                {/* Flag for Mobile */}
-                                {user.role === 'admin' && (
-                                    <span className="sm:hidden bg-primary/10 text-primary text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider">
-                                        Admin
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Info Desktop */}
-                            <div className="hidden sm:block flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h4 className="font-bold text-slate-800">{user.full_name || 'Sin Nombre'}</h4>
-                                    {user.role === 'admin' && (
-                                        <span className="bg-primary/10 text-primary text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider border border-primary/10">Admin</span>
-                                    )}
-                                </div>
-                                <div className="flex flex-col md:flex-row gap-1 md:gap-4 mt-1">
-                                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-[14px]">mail</span>
-                                        {user.email}
-                                    </span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="font-black text-slate-900 text-base tracking-tight truncate">{user.full_name || 'Sin Nombre'}</h4>
+                                        {user.role === 'admin' && (
+                                            <span className="bg-slate-900 text-[8px] text-white font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-lg shadow-slate-900/20">Admin</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest truncate mb-1">{user.email}</p>
                                     {user.phone && (
-                                        <span className="text-xs text-slate-400 flex items-center gap-1">
+                                        <div className="flex items-center gap-1.5 text-slate-500">
                                             <span className="material-symbols-outlined text-[14px]">call</span>
-                                            {user.phone}
-                                        </span>
+                                            <span className="text-[11px] font-bold">{user.phone}</span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Actions & Mobile Details */}
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-50">
-                                <div className="sm:hidden grid grid-cols-2 gap-2 text-xs text-slate-500">
-                                   {user.phone && (
-                                       <div className="flex items-center gap-1">
-                                           <span className="material-symbols-outlined text-[14px]">call</span>
-                                           {user.phone}
-                                       </div>
-                                   )}
-                                </div>
+                            {/* Actions Divider */}
+                            <div className="border-t border-slate-50 border-dashed" />
 
-                                <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100 self-start sm:self-auto w-full sm:w-auto">
-                                    <button 
-                                        onClick={() => handleRoleUpdate(user.id, 'user')}
-                                        disabled={user.role !== 'admin' || processingId === user.id}
-                                        className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                                            user.role !== 'admin' 
-                                            ? 'bg-white text-slate-700 shadow-sm' 
-                                            : 'text-slate-400 hover:text-slate-600 disabled:opacity-50'
-                                        }`}
-                                    >
-                                        Usuario
-                                    </button>
-                                    <button 
-                                        onClick={() => handleRoleUpdate(user.id, 'admin')}
-                                        disabled={user.role === 'admin' || processingId === user.id}
-                                        className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                                            user.role === 'admin' 
-                                            ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                                            : 'text-slate-400 hover:text-slate-600 disabled:opacity-50'
-                                        }`}
-                                    >
-                                        {processingId === user.id ? '...' : 'Admin'}
-                                    </button>
-                                </div>
+                            {/* Action Buttons */}
+                            <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100 items-center justify-between gap-1 relative z-10">
+                                <button 
+                                    onClick={() => handleRoleUpdate(user.id, 'user')}
+                                    disabled={user.role !== 'admin' || processingId === user.id}
+                                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                                        user.role !== 'admin' 
+                                        ? 'bg-white text-slate-900 shadow-md shadow-slate-200/50 ring-1 ring-slate-100' 
+                                        : 'text-slate-400 hover:text-slate-600 disabled:opacity-50'
+                                    }`}
+                                >
+                                    Usuario
+                                </button>
+                                <button 
+                                    onClick={() => handleRoleUpdate(user.id, 'admin')}
+                                    disabled={user.role === 'admin' || processingId === user.id}
+                                    className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                                        user.role === 'admin' 
+                                        ? 'bg-slate-900 text-white shadow-xl shadow-slate-900/40 translate-z-10' 
+                                        : 'text-slate-400 hover:text-slate-600 disabled:opacity-50'
+                                    }`}
+                                >
+                                    {processingId === user.id ? 'Cambiando...' : 'Administrador'}
+                                </button>
                             </div>
                         </div>
                     ))

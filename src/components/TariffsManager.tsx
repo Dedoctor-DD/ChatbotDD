@@ -156,47 +156,57 @@ export function TariffsManager() {
       )}
 
       {/* List */}
-      <div className="grid grid-cols-1 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 gap-4 md:gap-5">
         {tariffs.map(tariff => (
-          <div key={tariff.id} className="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-primary/20 transition-all group">
-            {/* Header: Category & Price */}
-            <div className="flex justify-between items-start mb-2">
-                <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md ${
-                  tariff.category === 'Transporte' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 
-                  tariff.category === 'Taller' ? 'bg-orange-50 text-orange-600 border border-orange-100' : 
-                  'bg-slate-50 text-slate-500 border border-slate-200'
-                }`}>
-                  {tariff.category}
-                </span>
-                <span className="text-lg font-black text-slate-900 tracking-tight">
-                    ${tariff.price.toLocaleString()}
-                </span>
-            </div>
+          <div key={tariff.id} className="relative bg-white rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-slate-200 group">
+            {/* Top Shine Effect */}
+            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none" />
+            
+            <div className="p-5 md:p-6 relative">
+                {/* Header: Category & Price */}
+                <div className="flex justify-between items-center mb-5">
+                    <span className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-xl flex items-center gap-1.5 ${
+                      tariff.category === 'Transporte' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 
+                      tariff.category === 'Taller' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 
+                      'bg-slate-50 text-slate-500 border border-slate-200'
+                    }`}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                      {tariff.category}
+                    </span>
+                    <div className="flex flex-col items-end">
+                        <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tighter leading-none">
+                            ${tariff.price.toLocaleString()}
+                        </span>
+                        <span className="text-[10px] text-slate-300 font-black uppercase tracking-widest mt-0.5">Monto Final</span>
+                    </div>
+                </div>
 
-            {/* Content */}
-            <div className="mb-4">
-              <h4 className="font-bold text-slate-800 text-sm md:text-base mb-1">{tariff.sub_category}</h4>
-              <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 md:line-clamp-none">
-                {tariff.description || 'Sin descripción'}
-              </p>
-            </div>
+                {/* Content */}
+                <div className="mb-6">
+                    <h4 className="font-black text-slate-800 text-base md:text-lg mb-2 tracking-tight line-clamp-1">{tariff.sub_category}</h4>
+                    <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-50/50">
+                        <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 italic">
+                            {tariff.description || 'Sin descripción detallada registrada'}
+                        </p>
+                    </div>
+                </div>
 
-            {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-50">
-                <button 
-                  onClick={() => handleEdit(tariff)} 
-                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all border-none"
-                >
-                    <span className="material-symbols-outlined text-sm">edit</span>
-                    Editar
-                </button>
-                <button 
-                  onClick={() => handleDelete(tariff.id)} 
-                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-all border-none"
-                >
-                    <span className="material-symbols-outlined text-sm">delete</span>
-                    Borrar
-                </button>
+                {/* Actions: Glassy Buttons */}
+                <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => handleEdit(tariff)} 
+                      className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-lg shadow-slate-900/10 active:scale-95"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">edit_square</span>
+                        Editar
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(tariff.id)} 
+                      className="w-14 flex items-center justify-center py-3.5 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-100 transition-all duration-300 active:scale-95 border border-rose-100/50"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                </div>
             </div>
           </div>
         ))}
