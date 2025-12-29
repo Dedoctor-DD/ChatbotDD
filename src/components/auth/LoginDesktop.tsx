@@ -66,7 +66,7 @@ export function LoginDesktop({ onBack }: LoginProps) {
 
     // Shared wrapper for desktop forms to keep them centered and elegant
     const DesktopWrapper = ({ children }: { children: React.ReactNode }) => (
-        <div className="flex justify-center items-center min-h-screen bg-slate-50 font-jakarta relative overflow-hidden">
+        <div className="flex justify-center items-center min-h-screen bg-slate-50 font-jakarta relative overflow-y-auto">
              {/* Ambient Background for PC - Enhanced */}
              <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full animate-pulse-slow"></div>

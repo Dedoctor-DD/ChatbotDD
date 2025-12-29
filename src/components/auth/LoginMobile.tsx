@@ -66,7 +66,7 @@ export function LoginMobile({ onBack }: LoginProps) {
 
     if (view === 'register') {
         return (
-            <div className="flex justify-center h-[100dvh] bg-white overflow-hidden font-jakarta relative">
+            <div className="flex justify-center min-h-[100dvh] bg-white overflow-y-auto font-jakarta relative">
                 <div className="w-full bg-white h-full relative flex flex-col items-center z-10 transition-all duration-500 overflow-y-auto custom-scrollbar">
                     <Register onBack={() => setView('login')} onSuccess={() => setView('login')} />
                 </div>
